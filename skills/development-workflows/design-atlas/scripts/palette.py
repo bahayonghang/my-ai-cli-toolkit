@@ -6,11 +6,15 @@ This module is pure: colour math, WCAG contrast gates, preset choice, hue
 derivation, and DESIGN.md rendering. It never reads or writes project files;
 design_catalog.py passes in the project signals and does the I/O.
 
+A colourway has two groups, light and dark, with the same nine roles. Both are
+chosen, gated, and rendered together.
+
 Contrast method: every layer is mixed over the one below per sRGB channel with
 8-bit rounding, then WCAG 2.x relative luminance is used. The field has eight
 backgrounds: its two ends, and each of the three blobs at blob-alpha over each
-end. Paper is white at sheet-alpha over one of them. A "worst" row reports the
-background with the lowest ratio for that pair.
+end. Light paper is white at sheet-alpha over one of them. Dark paper is its
+own colour at its own alpha, and the dark group is measured on overlays as
+well. A "worst" row reports the background with the lowest ratio for that pair.
 """
 
 from __future__ import annotations
@@ -748,29 +752,40 @@ def comment(choice: dict) -> str:
 
 
 def format_text(entry_id: str, choice: dict, spec: dict) -> str:
+    """The choice, then the nine colours and the measured rows of each group, light first."""
     lines = [f"entry: {entry_id}", f"palette: {choice['palette']} ({choice['reason']})"]
     lines.extend(f"note: {note}" for note in choice["notes"])
-    lines.append("colors:")
-    lines.extend(f"  {role:<12} {choice['colors'][role]}" for role in ROLES)
-    lines.append("contrast:")
-    for row in gates(choice["colors"], spec["fixed"]):
-        verdict = "report" if row["pass"] is None else ("pass" if row["pass"] else "FAIL")
-        minimum = f">= {row['min']:g}" if row["min"] is not None else ""
-        lines.append(
-            f"  {row['id']:<18} {row['fg']} on {row['bg']}  {row['ratio']:>5.2f}  {minimum:<6}  {verdict}"
-        )
+    for prefix, colors, theme in (("", choice["colors"], "light"), ("dark ", choice["dark"], "dark")):
+        lines.append(f"{prefix}colors:")
+        lines.extend(f"  {role:<12} {colors[role]}" for role in ROLES)
+        lines.append(f"{prefix}contrast:")
+        rows = gates(colors, spec["fixed"], theme)
+        width = max(len(row["id"]) for row in rows)
+        for row in rows:
+            verdict = "report" if row["pass"] is None else ("pass" if row["pass"] else "FAIL")
+            minimum = f">= {row['min']:g}" if row["min"] is not None else ""
+            lines.append(
+                f"  {row['id']:<{width}} {row['fg']} on {row['bg']}  {row['ratio']:>5.2f}  "
+                f"{minimum:<6}  {verdict}"
+            )
     return "\n".join(lines)
 
 
 def as_json(entry_id: str, choice: dict, spec: dict) -> dict:
+    """The choice and both measured tables. The top-level colors and contrast are the light group."""
+
+    def table(colors: dict, theme: str) -> list[dict]:
+        return [
+            {k: row[k] for k in ("id", "fg", "bg", "ratio", "min", "pass")}
+            for row in gates(colors, spec["fixed"], theme)
+        ]
+
     return {
         "entry": entry_id,
         "palette": choice["palette"],
         "reason": choice["reason"],
         "notes": choice["notes"],
         "colors": choice["colors"],
-        "contrast": [
-            {k: row[k] for k in ("id", "fg", "bg", "ratio", "min", "pass")}
-            for row in gates(choice["colors"], spec["fixed"])
-        ],
+        "contrast": table(choice["colors"], "light"),
+        "dark": {"colors": choice["dark"], "contrast": table(choice["dark"], "dark")},
     }

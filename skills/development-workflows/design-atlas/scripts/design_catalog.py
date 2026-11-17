@@ -21,17 +21,20 @@ case stops the command with exit 3 unless --force is given; --force first
 renames the old file to <name>.bak-YYYYMMDD-HHMMSS.
 
 An entry with data in overlays/palettes.json (style:airy-glass) has a colourway
-dial. apply picks the colourway from the project: a chromatic accent token
+dial. A colourway has a light group and a dark group, and apply always writes
+both. apply picks the colourway from the project: a chromatic accent token
 first (a preset when its hue is close, a derived colourway otherwise), then
 preset keywords in --prompt and the project text, then the default. --palette
 names a preset or hue:N (0-359) and skips the automatic choice. apply renders
 the entry with that colourway, adds a palette comment under the provenance
-comment, and prints a palette: line. palette prints the same choice and its
-contrast table and never writes. A colourway that fails a contrast gate is
-exit 1 in both commands, and apply writes nothing. --palette or --prompt on an
-entry without palette data is exit 2 and writes nothing. When several accent
-tokens exist, the first one with enough chroma and lightness is used (signals
-"accents"); a near-gray or near-black token is skipped with a note.
+comment, and prints a palette: line. palette prints the same choice with the
+colours and the contrast table of each group, and never writes. A colourway
+that fails a contrast gate in either group is exit 1 in both commands, and
+apply writes nothing; a failed dark gate is named with a "dark " prefix.
+--palette or --prompt on an entry without palette data is exit 2 and writes
+nothing. When several accent tokens exist, the first one with enough chroma
+and lightness is used (signals "accents"); a near-gray or near-black token is
+skipped with a note.
 
 signals reads the project root (package.json, pyproject.toml, Cargo.toml, the
 README head, CSS token blocks, Tailwind config, DESIGN.md) and prints JSON. It
@@ -215,7 +218,7 @@ def apply(
         # Render before any rename, so a failure leaves the project untouched.
         try:
             choice = pick_colourway(spec, root, prompt, override)
-            failed = colourway.failures(colourway.gates(choice["colors"], spec["fixed"]))
+            failed = colourway.failed_gates(choice["colors"], choice["dark"], spec["fixed"])
             if failed:
                 raise ValueError(
                     f"{choice['palette']} fails contrast gates {', '.join(failed)}; nothing written"
@@ -285,7 +288,7 @@ def show_colourway(entry: dict, spec: dict, args: argparse.Namespace) -> int:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
         print(colourway.format_text(entry["id"], choice, spec))
-    failed = colourway.failures(colourway.gates(choice["colors"], spec["fixed"]))
+    failed = colourway.failed_gates(choice["colors"], choice["dark"], spec["fixed"])
     if failed:
         print(f"error: contrast gates failed: {', '.join(failed)}", file=sys.stderr)
         return 1
@@ -1221,7 +1224,8 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     palette_cmd = commands.add_parser(
-        "palette", help="print the colourway an entry would get, with its contrast table"
+        "palette",
+        help="print the colourway an entry would get, with the light and dark contrast tables",
     )
     palette_cmd.add_argument("id")
     palette_cmd.add_argument("--root", type=Path, default=Path.cwd())

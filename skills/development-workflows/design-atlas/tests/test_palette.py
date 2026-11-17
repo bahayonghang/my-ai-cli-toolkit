@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import contextlib
 import copy
 import io
@@ -1878,6 +1879,28 @@ class CliTests(unittest.TestCase):
             code = dc.apply(index, entry, self.root, True, spec=weak, override="mint")
         self.assertEqual(code, 0)
 
+    def test_apply_refuses_a_colourway_whose_dark_group_alone_fails(self) -> None:
+        # #3F8F70 on the opaque dark paper #1C2530 is 3.96:1. The light group of sky is untouched.
+        weak = copy.deepcopy(SPEC)
+        weak["presets"]["sky"]["dark"]["input"] = "#3F8F70"
+        index = dc.load_index()
+        entry = next(e for e in index["entries"] if e["id"] == ENTRY)
+        existing = self.root / "design.md"
+        existing.write_bytes(b"mine\n")
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = dc.apply(index, entry, self.root, True, spec=weak, override="sky")
+        self.assertEqual(code, 1)
+        self.assertEqual(out.getvalue(), "")
+        self.assertEqual(
+            err.getvalue(),
+            "error: style:airy-glass colourway: sky fails contrast gates dark input-wash, "
+            "dark input-sheet-worst, dark input-solid, dark input-overlay-worst; nothing written\n",
+        )
+        # --force was given, and the old file was still neither renamed nor replaced.
+        self.assertEqual(self.names(), ["design.md"])
+        self.assertEqual(existing.read_bytes(), b"mine\n")
+
     def test_readme_keywords_pick_a_preset(self) -> None:
         make_project(self.root, readme="# 门店会员\n\n连锁餐饮的会员与外卖管理后台。\n")
         result = run("apply", "style:airy-glass", "--root", str(self.root))
@@ -2048,8 +2071,10 @@ class CliTests(unittest.TestCase):
         self.assertTrue(lines[1].startswith("palette: sky (accent --color-primary #2563EB"))
         self.assertIn("  input        #1F6CB0", text.stdout)
         self.assertIn("  blob-mid     #D6EDEE", text.stdout)
-        self.assertEqual(sum(line.endswith("  pass") for line in lines), len(GATED))
-        self.assertEqual(sum(line.endswith("  report") for line in lines), len(REPORTED))
+        self.assertEqual(
+            sum(line.endswith("  pass") for line in lines), len(GATED) + len(DARK_GATED)
+        )
+        self.assertEqual(sum(line.endswith("  report") for line in lines), 2 * len(REPORTED))
         self.assertNotIn("FAIL", text.stdout)
         for line in lines:
             self.assertEqual(line, line.rstrip())
@@ -2058,7 +2083,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(self.names(), before)
         data = json.loads(as_json.stdout)
         self.assertEqual(
-            set(data), {"entry", "palette", "reason", "notes", "colors", "contrast"}
+            set(data), {"entry", "palette", "reason", "notes", "colors", "contrast", "dark"}
         )
         self.assertEqual(data["entry"], "style:airy-glass")
         self.assertEqual(data["palette"], "sky")
@@ -2074,6 +2099,114 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(row["min"], minimum(row["id"]))
                 self.assertGreaterEqual(row["ratio"], row["min"])
 
+    def test_palette_json_carries_the_dark_group(self) -> None:
+        make_project(self.root, css=BLUE_CSS)
+        shown = run("palette", "style:airy-glass", "--root", str(self.root), "--format", "json")
+        self.assertEqual(shown.returncode, 0, shown.stderr)
+        data = json.loads(shown.stdout)
+        # The keys that were there before the dark group keep their place and their meaning.
+        self.assertEqual(
+            list(data), ["entry", "palette", "reason", "notes", "colors", "contrast", "dark"]
+        )
+        self.assertEqual(data["colors"], preset_colors("sky"))
+        self.assertEqual([row["id"] for row in data["contrast"]], list(GATE_ORDER))
+        dark = data["dark"]
+        self.assertEqual(list(dark), ["colors", "contrast"])
+        self.assertEqual(list(dark["colors"]), list(palette.ROLES))
+        self.assertEqual(dark["colors"]["field-start"], "#121A22")
+        self.assertEqual(dark["colors"]["input"], "#82C0FF")
+        self.assertEqual([row["id"] for row in dark["contrast"]], list(DARK_GATE_ORDER))
+        for row in dark["contrast"]:
+            self.assertEqual(set(row), {"id", "fg", "bg", "ratio", "min", "pass"})
+            if row["id"] in REPORTED:
+                self.assertIsNone(row["min"])
+                self.assertIsNone(row["pass"])
+            else:
+                self.assertTrue(row["pass"])
+                self.assertEqual(row["min"], minimum(row["id"]))
+                self.assertGreaterEqual(row["ratio"], row["min"])
+        # The opaque fallback row is ink on the dark paper colour in every colourway.
+        solid = dark["contrast"][0]
+        self.assertEqual(
+            {key: solid[key] for key in ("id", "fg", "bg", "ratio")},
+            {"id": "ink-solid", "fg": "#E7EDF3", "bg": "#1C2530", "ratio": 13.12},
+        )
+
+    def test_palette_text_lists_the_light_group_then_the_dark_group(self) -> None:
+        shown = run("palette", "style:airy-glass", "--root", str(self.root), "--palette", "mint")
+        self.assertEqual(shown.returncode, 0, shown.stderr)
+        lines = shown.stdout.splitlines()
+        self.assertEqual(
+            [line for line in lines if not line.startswith("  ")],
+            [
+                "entry: style:airy-glass", "palette: mint (explicit --palette mint)",
+                "colors:", "contrast:", "dark colors:", "dark contrast:",
+            ],
+        )
+
+        def section(name: str) -> list[str]:
+            start = lines.index(name) + 1
+            end = start
+            while end < len(lines) and lines[end].startswith("  "):
+                end += 1
+            return lines[start:end]
+
+        self.assertEqual(
+            section("colors:"), [f"  {role:<12} {MINT[role]}" for role in palette.ROLES]
+        )
+        self.assertEqual(
+            section("dark colors:"), [f"  {role:<12} {MINT_DARK[role]}" for role in palette.ROLES]
+        )
+        light, dark = section("contrast:"), section("dark contrast:")
+        self.assertEqual([line.split()[0] for line in light], list(GATE_ORDER))
+        self.assertEqual([line.split()[0] for line in dark], list(DARK_GATE_ORDER))
+        # The light rows read as they did before the dark group: the id column is 18 wide.
+        self.assertIn("  ink-white          #24303A on #FFFFFF  13.47  >= 4.5  pass", light)
+        self.assertIn("  input-wash         #187A56 on #E7F7F0   4.79  >= 4.5  pass", light)
+        self.assertIn("  edge-field         #FFFFFF on #E7F6F1   1.11          report", light)
+        # The dark id column is 20 wide, the length of its longest id. The edge over the
+        # worst overlay is white 0.36 over #1C2832; the paper edge is white 0.08 over #172129.
+        self.assertIn("  ink-solid            #E7EDF3 on #1C2530  13.12  >= 4.5  pass", dark)
+        self.assertIn("  control-edge-overlay #6E757C on #1C2832   3.22  >= 3    pass", dark)
+        self.assertIn("  edge-field           #2A333A on #0F1B1F   1.36          report", dark)
+        for line in lines:
+            self.assertEqual(line, line.rstrip())
+
+    def test_palette_command_fails_when_the_dark_group_alone_fails(self) -> None:
+        # The same weak dark accent that apply refuses: 3.96:1 on the opaque dark paper.
+        weak = copy.deepcopy(SPEC)
+        weak["presets"]["sky"]["dark"]["input"] = "#3F8F70"
+        entry = next(e for e in dc.load_index()["entries"] if e["id"] == ENTRY)
+        failed = ("input-wash", "input-sheet-worst", "input-solid", "input-overlay-worst")
+        for fmt in ("text", "json"):
+            args = argparse.Namespace(root=self.root, prompt=None, palette="sky", format=fmt)
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                code = dc.show_colourway(entry, weak, args)
+            self.assertEqual(code, 1, fmt)
+            self.assertEqual(
+                err.getvalue(),
+                "error: contrast gates failed: dark input-wash, dark input-sheet-worst, "
+                "dark input-solid, dark input-overlay-worst\n",
+                fmt,
+            )
+            # The report is still printed, with the failed rows marked in the dark table only.
+            if fmt == "json":
+                data = json.loads(out.getvalue())
+                self.assertEqual([r["id"] for r in data["contrast"] if r["pass"] is False], [])
+                self.assertEqual(
+                    [r["id"] for r in data["dark"]["contrast"] if r["pass"] is False], list(failed)
+                )
+            else:
+                lines = out.getvalue().splitlines()
+                marked_fail = [line.split()[0] for line in lines if line.endswith("  FAIL")]
+                self.assertEqual(marked_fail, list(failed))
+                self.assertGreater(
+                    lines.index(next(l for l in lines if l.endswith("  FAIL"))),
+                    lines.index("dark contrast:"),
+                )
+        self.assertEqual(self.names(), [])
+
     def test_every_preset_exits_0_with_the_worst_background_rows(self) -> None:
         for name in SPEC["presets"]:
             result = run(
@@ -2081,17 +2214,26 @@ class CliTests(unittest.TestCase):
                 "--palette", name, "--format", "json",
             )
             self.assertEqual(result.returncode, 0, f"{name}: {result.stderr}")
-            rows = {row["id"]: row for row in json.loads(result.stdout)["contrast"]}
+            data = json.loads(result.stdout)
+            rows = {row["id"]: row for row in data["contrast"]}
             for gate_id in MINT_WORST:
                 self.assertIn(gate_id, rows, name)
             for gate_id in GATED:
                 self.assertIs(rows[gate_id]["pass"], True, f"{name} {gate_id}")
+            dark = {row["id"]: row for row in data["dark"]["contrast"]}
+            for gate_id in DARK_GATED:
+                self.assertIs(dark[gate_id]["pass"], True, f"{name} dark {gate_id}")
         mint = run(
             "palette", "style:airy-glass", "--root", str(self.root),
             "--palette", "mint", "--format", "json",
         )
-        rows = {row["id"]: row for row in json.loads(mint.stdout)["contrast"]}
+        data = json.loads(mint.stdout)
+        rows = {row["id"]: row for row in data["contrast"]}
         self.assertEqual({k: rows[k]["ratio"] for k in MINT_WORST}, MINT_WORST)
+        self.assertEqual(data["dark"]["colors"], MINT_DARK)
+        self.assertEqual(
+            {row["id"]: row["ratio"] for row in data["dark"]["contrast"]}, MINT_DARK_TABLE
+        )
 
     def test_apply_writes_the_material_model(self) -> None:
         result = run("apply", "style:airy-glass", "--root", str(self.root), "--palette", "sky")
@@ -2119,6 +2261,46 @@ class CliTests(unittest.TestCase):
         self.assertIn("| `#24303A` 0.54 叠纸 |", table)
         self.assertIn(f"`{sky['blob-end']}` 0.70 叠 `{sky['field-end']}`", table)
 
+    def test_apply_always_writes_the_light_and_the_dark_group(self) -> None:
+        result = run("apply", "style:airy-glass", "--root", str(self.root))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = self.design()
+        blocks = blocks_of(text)
+        self.assertEqual(list(blocks), list(BLOCK_NAMES))
+        self.assertTrue(blocks["colourway"].startswith("Colourway: `mint` ("))
+        self.assertIn("- Field: `#E7F6F1` to `#EDE7F8`.", blocks["colourway"])
+        self.assertTrue(blocks["colourway-dark"].startswith("Dark group of `mint`.\n"))
+        self.assertIn("- Field: `#0F1B1F` to `#18172B`.", blocks["colourway-dark"])
+        # Two measured tables: 19 light rows, and 24 dark rows that end on the overlay rows.
+        self.assertEqual(text.count("| 前景 | 背景 | 比值 | 门槛 | 用途 |"), 2)
+        tables = {
+            name: [line for line in blocks[name].split("\n") if line.startswith("| ")][2:]
+            for name in ("contrast", "contrast-dark")
+        }
+        self.assertEqual({name: len(rows) for name, rows in tables.items()},
+                         {"contrast": 19, "contrast-dark": 24})
+        self.assertEqual(tables["contrast"][0], "| `#24303A` | `#FFFFFF` | 13.47 | 4.5 | 正文,不透明回退 |")
+        self.assertEqual(
+            tables["contrast-dark"][0], "| `#E7EDF3` | `#1C2530` | 13.12 | 4.5 | 正文,不透明回退 |"
+        )
+        self.assertTrue(tables["contrast-dark"][-1].endswith("| 7.10 | 4.5 | 输出色的文字,最差的浮层 |"))
+        # Another colourway moves both groups, and leaves no mint value of either behind.
+        result = run(
+            "apply", "style:airy-glass", "--root", str(self.root), "--palette", "sky", "--force"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = self.design()
+        head = text[: text.index("\n---\n", 4)]
+        self.assertIn('  field-start: "#E8F3FF"', head)
+        self.assertIn('  field-start-dark: "#121A22"', head)
+        self.assertIn('  input-dark: "#82C0FF"', head)
+        self.assertTrue(blocks_of(text)["colourway-dark"].startswith("Dark group of `sky`.\n"))
+        for value in (*MINT.values(), *MINT_DARK.values()):
+            self.assertNotIn(value, text)
+        # The fixed dark material is the same in every colourway.
+        self.assertIn('  sheet-dark: "rgba(28,37,48,0.60)"', head)
+        self.assertIn('  control-edge-dark: "rgba(255,255,255,0.36)"', head)
+
     def test_palette_command_matches_apply(self) -> None:
         make_project(self.root, css=":root { --brand: #E11D48; --bg: #fff }\n")
         shown = run("palette", "style:airy-glass", "--root", str(self.root), "--format", "json")
@@ -2126,8 +2308,12 @@ class CliTests(unittest.TestCase):
         applied = run("apply", "style:airy-glass", "--root", str(self.root))
         self.assertIn(f"palette: {data['palette']} ({data['reason']})", applied.stdout)
         text = self.design()
-        for value in data["colors"].values():
+        for value in (*data["colors"].values(), *data["dark"]["colors"].values()):
             self.assertIn(value, text)
+        # The dark table apply wrote carries the ratios the palette command printed.
+        table = blocks_of(text)["contrast-dark"]
+        for row in data["dark"]["contrast"]:
+            self.assertIn(f"| {row['ratio']:.2f} |", table, row["id"])
 
     def test_palette_command_options(self) -> None:
         hue = run("palette", "airy-glass", "--root", str(self.root), "--palette", "hue:18")
