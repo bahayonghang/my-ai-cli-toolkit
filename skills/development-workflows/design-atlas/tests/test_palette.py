@@ -459,16 +459,20 @@ class PresetDataTests(unittest.TestCase):
             self.assertRegex(name, r"^[a-z]+$")
             self.assertEqual(
                 set(preset),
-                {"anchor", "label", *palette.ROLES, "keywords_en", "keywords_zh"},
+                {"anchor", "label", *palette.ROLES, "dark", "keywords_en", "keywords_zh"},
                 name,
             )
             self.assertTrue(0 <= preset["anchor"] <= 359, name)
             self.assertTrue(preset["label"]["zh"] and preset["label"]["en"], name)
             for role in palette.ROLES:
                 self.assertRegex(preset[role], HEX, f"{name}.{role}")
+            self.assertEqual(list(preset["dark"]), list(palette.ROLES), name)
+            for role in palette.ROLES:
+                self.assertRegex(preset["dark"][role], HEX, f"{name}.dark.{role}")
 
     def test_mint_is_the_shipped_palette(self) -> None:
         self.assertEqual({role: SPEC["presets"]["mint"][role] for role in palette.ROLES}, MINT)
+        self.assertEqual(SPEC["presets"]["mint"]["dark"], MINT_DARK)
 
     def test_every_preset_passes_the_gates(self) -> None:
         for name, preset in SPEC["presets"].items():
@@ -480,6 +484,63 @@ class PresetDataTests(unittest.TestCase):
                 )
             self.assertEqual(palette.failures(list(rows.values())), [], name)
             self.assertLess(rows["edge-field"]["ratio"], 3.0, name)
+
+    def test_every_preset_dark_group_passes_the_gates(self) -> None:
+        for name, preset in SPEC["presets"].items():
+            rows = ratios(preset["dark"], "dark")
+            self.assertEqual(list(rows), list(DARK_GATE_ORDER), name)
+            for gate_id in DARK_GATED:
+                self.assertGreaterEqual(
+                    rows[gate_id]["ratio"], minimum(gate_id), f"{name} dark {gate_id}"
+                )
+            self.assertEqual(palette.failures(list(rows.values())), [], name)
+            self.assertLess(rows["edge-field"]["ratio"], 3.0, name)
+            # Light secondary text may sit on a dark field in every preset.
+            self.assertGreaterEqual(rows["muted-field-worst"]["ratio"], 4.5, name)
+
+    def test_dark_groups_keep_the_hues_and_reverse_the_lightness(self) -> None:
+        for name, preset in SPEC["presets"].items():
+            dark = preset["dark"]
+            hues = {}
+            for role in ("input", "output"):
+                L, C, H = palette.hex_to_oklch(dark[role])
+                hues[role] = H
+                self.assertLessEqual(
+                    palette.hue_distance(H, palette.hex_to_oklch(preset[role])[2]), 5,
+                    f"{name}.dark.{role}",
+                )
+                # An accent is text on dark paper here, so it is lighter than its light twin.
+                self.assertGreaterEqual(L, 0.75, f"{name}.dark.{role}")
+            self.assertLessEqual(palette.hue_distance(hues["input"], preset["anchor"]), 5, name)
+            self.assertGreaterEqual(palette.hue_distance(hues["input"], hues["output"]), 90, name)
+            self.assertFalse(palette.in_reserved(hues["output"], SPEC["reserved_hues"]), name)
+            for role in ("field-start", "field-end"):
+                L, C, H = palette.hex_to_oklch(dark[role])
+                self.assertLessEqual(L, 0.23, f"{name}.dark.{role}")
+                self.assertLessEqual(C, 0.045, f"{name}.dark.{role}")
+            for role, hue in (("blob-start", hues["input"]), ("blob-end", hues["output"])):
+                H = palette.hex_to_oklch(dark[role])[2]
+                self.assertLessEqual(palette.hue_distance(H, hue), 15, f"{name}.dark.{role}")
+            for role in palette.BLOBS:
+                L, C, H = palette.hex_to_oklch(dark[role])
+                self.assertLessEqual(C, 0.08, f"{name}.dark.{role}")
+                self.assertLessEqual(L, 0.30, f"{name}.dark.{role}")
+                # A dark blob is a glow: a little lighter than either field end.
+                for end in ("field-start", "field-end"):
+                    self.assertGreater(
+                        palette.luminance(dark[role]), palette.luminance(dark[end]),
+                        f"{name}.dark.{role} against {end}",
+                    )
+            for role in ("input-wash", "output-wash"):
+                L, C, H = palette.hex_to_oklch(dark[role])
+                self.assertLessEqual(C, 0.04, f"{name}.dark.{role}")
+                self.assertLessEqual(L, 0.32, f"{name}.dark.{role}")
+                # A wash is a fill inside paper: lighter than the opaque paper colour.
+                self.assertGreater(
+                    palette.luminance(dark[role]),
+                    palette.luminance(SPEC["fixed"]["dark"]["sheet"]["color"]),
+                    f"{name}.dark.{role}",
+                )
 
     def test_preset_blobs_follow_the_field_and_stay_low_chroma(self) -> None:
         for name, preset in SPEC["presets"].items():
@@ -543,11 +604,19 @@ class PresetDataTests(unittest.TestCase):
             self.assertEqual(listed & generic, set(), name)
 
     def test_default_hex_values_are_distinct(self) -> None:
-        # render() swaps the default hex values one for one.
+        # render() swaps the default hex values one for one, light and dark in one pass.
         self.assertEqual(len(set(MINT.values())), len(MINT))
         self.assertNotIn(SPEC["fixed"]["ink"], MINT.values())
         self.assertNotIn(SPEC["fixed"]["muted"], MINT.values())
         self.assertNotIn("#FFFFFF", MINT.values())
+        swapped = [*MINT.values(), *MINT_DARK.values()]
+        self.assertEqual(len(set(swapped)), len(swapped))
+        dark = SPEC["fixed"]["dark"]
+        kept = {
+            SPEC["fixed"]["ink"], SPEC["fixed"]["muted"], "#FFFFFF", dark["ink"], dark["muted"],
+            dark["sheet"]["color"], dark["overlay"]["color"],
+        }
+        self.assertEqual(kept & set(swapped), set())
 
     def test_template_tokens_match_the_fixed_values(self) -> None:
         head = template()[: template().index("\n---\n", 4)]
@@ -654,11 +723,82 @@ class DeriveTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             palette.output_hue(214, {**SPEC, "output_offsets": [126, -126, 150, -150]})
 
+    def test_every_hue_derives_a_dark_group_that_passes_every_gate(self) -> None:
+        for hue in range(360):
+            derived = palette.derive(hue, SPEC)
+            dark = derived["dark"]
+            self.assertEqual(list(dark), list(palette.ROLES))
+            for role in palette.ROLES:
+                self.assertRegex(dark[role], HEX, f"hue {hue} {role}")
+            rows = ratios(dark, "dark")
+            self.assertEqual(list(rows), list(DARK_GATE_ORDER), hue)
+            for gate_id in DARK_GATED:
+                self.assertGreaterEqual(
+                    rows[gate_id]["ratio"], minimum(gate_id), f"hue {hue} dark {gate_id}"
+                )
+            self.assertEqual(palette.failures(list(rows.values())), [], hue)
+            self.assertLess(rows["edge-field"]["ratio"], 3.0, f"hue {hue}")
+            # Light secondary text may sit on a dark field at every hue.
+            self.assertGreaterEqual(rows["muted-field-worst"]["ratio"], 4.5, f"hue {hue}")
+            # render() swaps hex for hex, so no two roles of one colourway share a value.
+            both = [*derived["colors"].values(), *dark.values()]
+            self.assertEqual(len(set(both)), len(both), hue)
+
+    def test_derived_dark_group_follows_the_same_two_hues(self) -> None:
+        for hue in range(360):
+            derived = palette.derive(hue, SPEC)
+            dark, out_hue = derived["dark"], derived["output_hue"]
+            wanted = {
+                "input": hue, "output": out_hue, "blob-start": hue, "blob-end": out_hue,
+                "blob-mid": palette.mid_hue(hue, out_hue),
+            }
+            for role, target in wanted.items():
+                H = palette.hex_to_oklch(dark[role])[2]
+                self.assertLessEqual(palette.hue_distance(H, target), 5, f"{hue} {role}")
+            measured = palette.hex_to_oklch(dark["output"])[2]
+            self.assertFalse(palette.in_reserved(measured, SPEC["reserved_hues"]), hue)
+            for role in ("input", "output"):
+                self.assertGreaterEqual(palette.hex_to_oklch(dark[role])[0], 0.75, f"{hue} {role}")
+            for role in ("field-start", "field-end"):
+                L, C, H = palette.hex_to_oklch(dark[role])
+                self.assertLessEqual(L, 0.23, f"{hue} {role}")
+                self.assertLessEqual(C, 0.045, f"{hue} {role}")
+            for role in palette.BLOBS:
+                L, C, H = palette.hex_to_oklch(dark[role])
+                self.assertLessEqual(C, 0.08, f"{hue} {role}")
+                self.assertLessEqual(L, 0.30, f"{hue} {role}")
+                for end in ("field-start", "field-end"):
+                    self.assertGreater(
+                        palette.luminance(dark[role]), palette.luminance(dark[end]),
+                        f"{hue} {role} against {end}",
+                    )
+            for role in ("input-wash", "output-wash"):
+                self.assertGreater(
+                    palette.luminance(dark[role]),
+                    palette.luminance(SPEC["fixed"]["dark"]["sheet"]["color"]),
+                    f"{hue} {role}",
+                )
+        # The mint dark group is the model for the rule: its hues give nearly its values.
+        mint = palette.derive(163, SPEC)["dark"]
+        for role in palette.ROLES:
+            got, want = palette.hex_to_rgb(mint[role]), palette.hex_to_rgb(MINT_DARK[role])
+            self.assertLessEqual(max(abs(a - b) for a, b in zip(got, want)), 10, role)
+
+    def test_derive_refuses_a_hue_whose_dark_group_fails(self) -> None:
+        # The light group of hue 18 passes; a lighter overlay fails the dark one alone.
+        weak = copy.deepcopy(SPEC)
+        weak["fixed"]["dark"]["overlay"]["color"] = "#59636E"
+        with self.assertRaises(ValueError) as caught:
+            palette.derive(18, weak)
+        self.assertIn("dark muted-overlay-worst", str(caught.exception))
+        self.assertNotIn("fails ink", str(caught.exception))
+
     def test_derive_is_deterministic_and_wraps(self) -> None:
         self.assertEqual(palette.derive(18, SPEC), palette.derive(18, SPEC))
         self.assertEqual(
             palette.derive(378, SPEC)["colors"], palette.derive(18, SPEC)["colors"]
         )
+        self.assertEqual(palette.derive(378, SPEC)["dark"], palette.derive(18, SPEC)["dark"])
 
     def test_blobs_did_not_move_the_six_colours_derived_before(self) -> None:
         # hue:202 as written by apply at 0.6.0 (the slop fixture of that release).

@@ -44,6 +44,17 @@ ACCENT_MIN_C = 0.04
 STEP_L = 0.005
 STEP_C = 0.02
 
+# Dark derivation template (OKLCH lightness, chroma), modelled on the dark group of
+# the mint preset. The lightness order is reversed: the field is the darkest layer,
+# a blob is a little lighter than it, and an accent is light enough to be text.
+DARK_FIELD_START = (0.213, 0.019)
+DARK_FIELD_END = (0.217, 0.039)
+DARK_BLOB_START = (0.284, 0.038)
+DARK_BLOB_END = (0.294, 0.076)
+DARK_BLOB_MID = (0.258, 0.039)
+DARK_WASH = (0.31, 0.035)
+DARK_ACCENT = (0.79, 0.125)
+
 
 def load_palettes(path: Path | None = None) -> dict:
     return json.loads((path or PALETTES).read_text(encoding="utf-8"))
@@ -350,6 +361,13 @@ def failures(rows: list[dict]) -> list[str]:
     return [row["id"] for row in rows if row["pass"] is False]
 
 
+def failed_gates(colors: dict, dark: dict, fixed: dict) -> list[str]:
+    """Failed gate ids of both groups of one colourway. A dark id is prefixed with 'dark '."""
+    return failures(gates(colors, fixed)) + [
+        f"dark {gate_id}" for gate_id in failures(gates(dark, fixed, "dark"))
+    ]
+
+
 # --- derivation --------------------------------------------------------------
 
 
@@ -390,12 +408,32 @@ def mid_hue(a: float, b: float) -> float:
     return (a + (((b - a + 180) % 360) - 180) / 2) % 360
 
 
+def _dark(hue: int, out_hue: int) -> dict:
+    """The dark group at the same two hues: every role is the dark template at one hue."""
+
+    def at(template: tuple[float, float], h: float) -> str:
+        return oklch_to_hex(template[0], template[1], h)
+
+    return {
+        "field-start": at(DARK_FIELD_START, hue),
+        "field-end": at(DARK_FIELD_END, out_hue),
+        "blob-start": at(DARK_BLOB_START, hue),
+        "blob-end": at(DARK_BLOB_END, out_hue),
+        "blob-mid": at(DARK_BLOB_MID, mid_hue(hue, out_hue)),
+        "input": at(DARK_ACCENT, hue),
+        "input-wash": at(DARK_WASH, hue),
+        "output": at(DARK_ACCENT, out_hue),
+        "output-wash": at(DARK_WASH, out_hue),
+    }
+
+
 def derive(hue: int, spec: dict) -> dict:
-    """A full colourway for one input hue. Every gate passes or ValueError.
+    """A full colourway for one input hue, light and dark. Every gate passes or ValueError.
 
     Blobs are tints of the field: one at the input hue, one at the output hue,
-    one halfway between. A colourway that fails a gate is refused; paper is
-    never made more opaque to rescue it.
+    one halfway between. The dark group uses the same three hues. A colourway
+    that fails a gate in either group is refused; paper is never made more
+    opaque to rescue it.
     """
     hue = int(hue) % 360
     out_hue = output_hue(hue, spec)
@@ -413,10 +451,11 @@ def derive(hue: int, spec: dict) -> dict:
         "output": _accent(out_hue, output_wash),
         "output-wash": output_wash,
     }
-    failed = failures(gates(colors, fixed))
+    dark = _dark(hue, out_hue)
+    failed = failed_gates(colors, dark, fixed)
     if failed:
         raise ValueError(f"derived hue {hue} fails {', '.join(failed)}")
-    return {"hue": hue, "output_hue": out_hue, "colors": colors}
+    return {"hue": hue, "output_hue": out_hue, "colors": colors, "dark": dark}
 
 
 # --- choice ------------------------------------------------------------------
