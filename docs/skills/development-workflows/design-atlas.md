@@ -31,7 +31,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | 目录 | 1 | 配套 agent |
-| `skills/development-workflows/design-atlas/assets` | 目录 | 214 | 素材资源 |
+| `skills/development-workflows/design-atlas/assets` | 目录 | 215 | 素材资源 |
 | `skills/development-workflows/design-atlas/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/design-atlas/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/development-workflows/design-atlas/references` | 目录 | 10 | 引用资料 |

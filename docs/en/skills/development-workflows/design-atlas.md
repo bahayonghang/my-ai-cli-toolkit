@@ -31,7 +31,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | directory | 1 | Companion agents |
-| `skills/development-workflows/design-atlas/assets` | directory | 214 | Assets |
+| `skills/development-workflows/design-atlas/assets` | directory | 215 | Assets |
 | `skills/development-workflows/design-atlas/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/design-atlas/README.md` | file | 1 | Top-level file |
 | `skills/development-workflows/design-atlas/references` | directory | 10 | Reference material |

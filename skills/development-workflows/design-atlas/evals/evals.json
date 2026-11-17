@@ -262,7 +262,7 @@
         "The colourway follows the project's blue accent: DESIGN.md does not contain the mint defaults #E7F6F1, #187A56, or #6D4BD6",
         "Reports the palette line from apply, with --color-primary #2563EB as the reason",
         "DESIGN.md carries the measured contrast table for the chosen colourway, every text pair at 4.5:1 or above",
-        "Keeps the airy-glass material rules: one blur on paper only, opaque fallback, solid wells"
+        "Keeps the airy-glass material model: at least two papers directly on the field with the field showing between them, paper with no backdrop-filter (fill, white edge, top highlight, one soft shadow), flat wells without a gray outline, and blur only on an overlay that has content scrolling beneath it"
       ]
     },
     {
@@ -371,10 +371,10 @@
     {
       "id": 31,
       "prompt": "现有轻盈毛玻璃设置页在关闭 blur 的设备上字看不清，保留色板拨盘和深浅主题做精修。",
-      "expected_output": "Keeps airy-glass material/palette contracts and adds only applicable readable surface fallbacks.",
+      "expected_output": "Keeps the material and palette contracts of the existing DESIGN.md and adds only applicable readable surface fallbacks.",
       "files": [],
       "assertions": [
-        "Preserves the existing colourway dial, paper-only blur, opaque fallback and layer limits; does not hand-edit palette hex values",
+        "Preserves the material contract in the project's existing DESIGN.md (its colourway dial, which surfaces may blur, its opaque fallback and layer limits) and does not rewrite it to another material model; does not hand-edit palette hex values",
         "Uses existing surface/on-surface/border roles and an opaque baseline when backdrop-filter is unavailable or unsuitable",
         "Does not add liquid refraction, Halo, blend-mode text, mock browser chrome or animation dependencies",
         "Checks actual worst-case text/boundary contrast, both supported themes, focus/disabled states and fallback",

@@ -248,6 +248,18 @@ not delete `first-party/` or `LICENSES/`.
 - Preset hex values are fixed by hand and proven by tests; derivation is the
   fallback for a brand hue far from every preset. Do not regenerate presets
   from `derive` in a rebuild.
+- Material model (0.7.0): `style:airy-glass` holds with no blur. Field, paper
+  and wells never blur; `backdrop-filter` appears only in overlay rules and
+  overlay CSS. Each preset carries three blob hex values, and `fixed` carries
+  the alphas and `control-edge`. Gates use the worst background (each blob
+  over each field end, then paper). When a colourway fails, lower the blob
+  chroma or opacity; do not make paper more opaque.
+- The 3:1 boundary applies to inputs, checkboxes, radios and switches. Buttons,
+  tags and segmented items with a text label and a fill get no outline.
+- `assets/reference/airy-glass/index.html` is the target picture for stacks
+  without CSS. Its `:root` values equal the mint preset and the `fixed`
+  values; change them together. It has no dark group yet
+  (`bahayonghang/my-ai-cli-toolkit#51`).
 - Command contract, selection order, and required tests:
   `.trellis/spec/backend/skill-helper-command-contracts.md`.
 

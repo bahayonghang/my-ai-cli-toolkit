@@ -372,9 +372,18 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
 
 - `palettes.json` per entry: `default`, `match_degrees`, `min_accent_chroma`,
   `min_accent_lightness`, `output_offsets`, `reserved_hues` (a band with
-  lo > hi wraps through 0), `fixed` (`ink`, `muted`, `sheet-alpha`), and
-  `presets.<name>` with `anchor`, `label.{zh,en}`, six role hex values, and
-  `keywords_en` / `keywords_zh`.
+  lo > hi wraps through 0), `fixed`, and `presets.<name>` with `anchor`,
+  `label.{zh,en}`, nine role hex values (`field-start`, `field-end`,
+  `blob-start`, `blob-end`, `blob-mid`, `input`, `input-wash`, `output`,
+  `output-wash`), and `keywords_en` / `keywords_zh`.
+- `fixed` (design-atlas 0.7.0): `ink`, `muted`, `sheet-alpha` (0.62),
+  `overlay-alpha` (0.82), `blob-alpha` (0.7), `well-alpha` (0.04), and
+  `control-edge` as `{color, alpha}` (`#24303A`, 0.54). The entry frontmatter
+  repeats these as `rgba()` tokens; `tests/test_palette.py` keeps them equal.
+- `derive` adds the three blobs at fixed OKLCH lightness and chroma: the input
+  hue, the output hue, and the hue halfway between on the shorter arc. The six
+  colours derived before 0.7.0 do not change. A colourway that fails a gate is
+  refused; lower the blob chroma or `blob-alpha`, never raise `sheet-alpha`.
 - Selection order for `auto`: explicit `--palette`; first accent-named CSS
   token that clears both chroma and lightness floors (nearest preset within
   `match_degrees`, else derived from its hue); preset keywords in prompt
@@ -409,10 +418,24 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
   `<!-- palette: <name>; reason: ... -->` under the provenance comment and
   prints `palette: <name> (<reason>)` after `wrote:`.
 - `palette --format json`: `entry`, `palette`, `reason`, `notes`, `colors`,
-  `contrast[]` of `{id, fg, bg, ratio, min, pass}`.
-- Contrast: white at `sheet-alpha` over each field end, mixed per sRGB channel
-  and rounded to 8 bits, then WCAG 2.x luminance. Ink and muted are gated on
-  both field ends.
+  `contrast[]` of `{id, fg, bg, ratio, min, pass}`. A reported row has
+  `min: null` and `pass: null`.
+- Contrast: each layer is mixed over the one below per sRGB channel and
+  rounded to 8 bits, then WCAG 2.x luminance. The field has eight backgrounds:
+  the two ends, and each blob at `blob-alpha` over each end. Paper is white at
+  `sheet-alpha` over one of them; the neutral well is `ink` at `well-alpha`
+  over that paper. A `-worst` row uses the background with the lowest ratio
+  for that pair.
+- Gate rows, in order. Minimum 4.5 unless stated: `ink-white`,
+  `ink-sheet-start`, `ink-sheet-end`, `muted-sheet-start`, `muted-sheet-end`,
+  `ink-sheet-worst`, `muted-sheet-worst`, `muted-well-worst`,
+  `ink-field-worst`, `muted-field-worst` (reported), `control-edge-sheet`
+  (3.0), `input-wash`, `input-sheet-worst`, `input-white`, `output-wash`,
+  `output-sheet-worst`, `output-white`, `edge-field` (reported), `sheet-field`
+  (reported; the smallest paper-to-field ratio, which is about 1.07 by design).
+- Inference, not confirmed by the ticket: the rows `muted-well-worst`,
+  `input-sheet-worst`, `output-sheet-worst` and `sheet-field`, the
+  `well-alpha` of 0.04, and the blob lightness and chroma template.
 
 ### 4. Validation & Error Matrix
 
@@ -437,9 +460,22 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
 
 `tests/test_palette.py` must keep asserting:
 
-- the mint table reproduces 13.47 / 13.16 / 5.37 / 4.79 / 5.31 / 5.08 / 5.79 / 1.11;
+- the mint rows that do not depend on paper reproduce 13.47 / 4.79 / 5.31 /
+  5.08 / 5.79 / 1.11; paper over the bare field ends gives 12.97 / 12.56
+  (ink) and 5.29 / 5.13 (muted);
+- the mint worst-background rows are 12.16 (`ink-sheet-worst`), 4.96
+  (`muted-sheet-worst`), 10.19 (`ink-field-worst`), 4.16
+  (`muted-field-worst`), 3.17 (`control-edge-sheet`) and 1.07 (`sheet-field`).
+  3.17 is this entry's ink; 3.29 in the parent issue needs SkillPort's ink
+  `#1F2A37`, and the test asserts both;
 - every preset and all 360 derived hues pass every gate, field chroma stays
   at or below 0.03, and the output hue is outside the reserved bands;
+- `hue:202` still derives the six colours it derived at 0.6.0;
+- the entry names `backdrop-filter` only in overlay rules and overlay CSS, and
+  `styles/airy-glass.md` equals `first-party/airy-glass.md` byte for byte;
+- `assets/reference/airy-glass/index.html` has the mint `:root` values, blurs
+  only `.overlay`, makes no external request, and passes `slop_check` next to
+  the `apply` output;
 - rendering a rendered file again with the same choice changes nothing, and
   no default hex that the chosen colourway does not use is left in the output;
 - every exit-2 and exit-1 path leaves the project directory unchanged;

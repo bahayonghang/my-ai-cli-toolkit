@@ -90,7 +90,7 @@ Compile success is not visual verification. Do these checks in a running page:
 
 1. Start the dev server or open the HTML file in a browser.
 2. Take screenshots at a desktop width (about 1440px) and a mobile width (about 390px).
-3. Compare with `DESIGN.md`: canvas and surface colors, primary action color, display and body fonts, radius, section spacing.
+3. Compare with `DESIGN.md`: canvas and surface colors, primary action color, display and body fonts, radius, section spacing. When the entry ships a reference page (`assets/reference/<slug>/index.html` in the skill directory; `style:airy-glass` has one), that page is the target picture. Open it at the same window size, put it beside the result, and compare layer by layer. The reference page shows the default colourway and placeholder content, so compare material and structure, not hue or copy.
 4. Tab through the page: every control receives a visible focus indicator.
 5. Check contrast for text on each surface used.
 6. Check one hover, one disabled, and one error state.
