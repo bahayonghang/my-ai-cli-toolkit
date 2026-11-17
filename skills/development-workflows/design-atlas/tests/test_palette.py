@@ -25,30 +25,74 @@ import palette  # noqa: E402
 
 ENTRY = "style:airy-glass"
 SPEC = palette.load_palettes()[ENTRY]
+REFERENCE_PAGE = SKILL_ROOT / "assets" / "reference" / "airy-glass" / "index.html"
+SLOP_CHECK = SKILL_ROOT / "scripts" / "slop_check.mjs"
+FIXED = {
+    "ink": "#24303A",
+    "muted": "#5C6B76",
+    "sheet-alpha": 0.62,
+    "overlay-alpha": 0.82,
+    "blob-alpha": 0.7,
+    "well-alpha": 0.04,
+    "control-edge": {"color": "#24303A", "alpha": 0.54},
+}
 MINT = {
     "field-start": "#E7F6F1",
     "field-end": "#EDE7F8",
+    "blob-start": "#CDEEE2",
+    "blob-end": "#DCD8F6",
+    "blob-mid": "#D8EBF6",
     "input": "#187A56",
     "input-wash": "#E7F7F0",
     "output": "#6D4BD6",
     "output-wash": "#F3EEFC",
 }
-# The table that shipped with the entry before the colourway dial.
+# Pairs that do not depend on the paper alpha: unchanged since the first table.
 MINT_TABLE = {
     "ink-white": 13.47,
-    "ink-sheet-start": 13.16,
-    "muted-sheet-start": 5.37,
     "input-wash": 4.79,
     "input-white": 5.31,
     "output-wash": 5.08,
     "output-white": 5.79,
     "edge-field": 1.11,
 }
+# Paper at white 0.62 over each bare field end.
+MINT_SHEET_ENDS = {
+    "ink-sheet-start": 12.97,
+    "ink-sheet-end": 12.56,
+    "muted-sheet-start": 5.29,
+    "muted-sheet-end": 5.13,
+}
+# Worst background, from the "起点数值" table of bahayonghang/my-ai-cli-toolkit#47.
+# control-edge-sheet is 3.17 with this entry's ink; the table's 3.29 needs SkillPort's
+# ink #1F2A37 (bahayonghang/devsweep#5).
+MINT_WORST = {
+    "ink-sheet-worst": 12.16,
+    "muted-sheet-worst": 4.96,
+    "ink-field-worst": 10.19,
+    "muted-field-worst": 4.16,
+    "control-edge-sheet": 3.17,
+    "sheet-field": 1.07,
+}
 GATED = (
     "ink-white", "ink-sheet-start", "ink-sheet-end", "muted-sheet-start",
-    "muted-sheet-end", "input-wash", "input-white", "output-wash", "output-white",
+    "muted-sheet-end", "ink-sheet-worst", "muted-sheet-worst", "muted-well-worst",
+    "ink-field-worst", "control-edge-sheet", "input-wash", "input-sheet-worst",
+    "input-white", "output-wash", "output-sheet-worst", "output-white",
+)
+REPORTED = ("muted-field-worst", "edge-field", "sheet-field")
+GATE_ORDER = (
+    "ink-white", "ink-sheet-start", "ink-sheet-end", "muted-sheet-start",
+    "muted-sheet-end", "ink-sheet-worst", "muted-sheet-worst", "muted-well-worst",
+    "ink-field-worst", "muted-field-worst", "control-edge-sheet", "input-wash",
+    "input-sheet-worst", "input-white", "output-wash", "output-sheet-worst",
+    "output-white", "edge-field", "sheet-field",
 )
 HEX = re.compile(r"#[0-9A-F]{6}")
+
+
+def minimum(gate_id: str) -> float:
+    return 3.0 if gate_id == "control-edge-sheet" else 4.5
 
 
 def ratios(colors: dict) -> dict[str, dict]:
@@ -75,15 +119,38 @@ def preset_colors(name: str) -> dict:
 class ColourMathTests(unittest.TestCase):
     def test_mint_reproduces_the_shipped_contrast_table(self) -> None:
         rows = ratios(MINT)
-        for gate_id, expected in MINT_TABLE.items():
+        for gate_id, expected in {**MINT_TABLE, **MINT_SHEET_ENDS}.items():
             self.assertAlmostEqual(rows[gate_id]["ratio"], expected, delta=0.01, msg=gate_id)
-        # The lavender end is the worse sheet for muted text; it is gated too.
-        self.assertAlmostEqual(rows["muted-sheet-end"]["ratio"], 5.29, delta=0.01)
-        self.assertAlmostEqual(rows["ink-sheet-end"]["ratio"], 12.95, delta=0.01)
+
+    def test_mint_worst_background_rows_match_the_spec_table(self) -> None:
+        rows = ratios(MINT)
+        for gate_id, expected in MINT_WORST.items():
+            self.assertEqual(rows[gate_id]["ratio"], expected, gate_id)
+        # The darkest background is the end blob over the field end; paper sits on that.
+        self.assertEqual(rows["ink-field-worst"]["bg"], palette.over("#DCD8F6", "#EDE7F8", 0.7))
+        self.assertEqual(
+            rows["ink-sheet-worst"]["bg"],
+            palette.over("#FFFFFF", rows["ink-field-worst"]["bg"], 0.62),
+        )
+        # The spec table's 3.29 is the control edge drawn in SkillPort's ink.
+        skillport = {**FIXED, "control-edge": {"color": "#1F2A37", "alpha": 0.54}}
+        edge = {row["id"]: row for row in palette.gates(MINT, skillport)}["control-edge-sheet"]
+        self.assertEqual(edge["ratio"], 3.29)
+
+    def test_worst_background_includes_the_bare_field_ends(self) -> None:
+        # Blobs lighter than both field ends: the bare end is then the darkest background.
+        pale = {**MINT, "blob-start": "#FFFFFF", "blob-end": "#FFFFFF", "blob-mid": "#FFFFFF"}
+        rows = ratios(pale)
+        self.assertEqual(rows["ink-field-worst"]["bg"], "#EDE7F8")
+        self.assertEqual(rows["muted-sheet-worst"]["ratio"], rows["muted-sheet-end"]["ratio"])
+        # The paper-to-field ratio is the smallest one, on the lightest background.
+        self.assertEqual(ratios(MINT)["sheet-field"]["bg"], "#E7F6F1")
 
     def test_sheet_is_an_8_bit_srgb_mix(self) -> None:
         self.assertEqual(palette.over("#FFFFFF", "#E7F6F1", 0.78), "#FAFDFC")
         self.assertEqual(palette.over("#FFFFFF", "#EDE7F8", 0.78), "#FBFAFD")
+        # 0.62 * 255 + 0.38 * (231, 246, 241) = (245.88, 251.58, 249.68).
+        self.assertEqual(palette.over("#FFFFFF", "#E7F6F1", 0.62), "#F6FCFA")
         self.assertEqual(palette.over("#FFFFFF", "#000000", 1.0), "#FFFFFF")
         self.assertEqual(palette.over("#FFFFFF", "#000000", 0.0), "#000000")
 
@@ -118,21 +185,47 @@ class ColourMathTests(unittest.TestCase):
 
     def test_gate_rows(self) -> None:
         rows = palette.gates(MINT, SPEC["fixed"])
-        self.assertEqual([row["id"] for row in rows], [*GATED, "edge-field"])
+        self.assertEqual([row["id"] for row in rows], list(GATE_ORDER))
+        self.assertEqual(set(GATE_ORDER), {*GATED, *REPORTED})
         for row in rows:
-            if row["id"] == "edge-field":
-                self.assertIsNone(row["min"])
-                self.assertIsNone(row["pass"])
+            if row["id"] in REPORTED:
+                self.assertIsNone(row["min"], row["id"])
+                self.assertIsNone(row["pass"], row["id"])
             else:
-                self.assertEqual(row["min"], 4.5)
-                self.assertIs(row["pass"], True)
+                self.assertEqual(row["min"], minimum(row["id"]), row["id"])
+                self.assertIs(row["pass"], True, row["id"])
+            self.assertRegex(row["fg"], HEX, row["id"])
+            self.assertRegex(row["bg"], HEX, row["id"])
         self.assertEqual(palette.failures(rows), [])
         weak = {**MINT, "input": "#1F8A62"}
         self.assertEqual(
-            palette.failures(palette.gates(weak, SPEC["fixed"])), ["input-wash", "input-white"]
+            palette.failures(palette.gates(weak, SPEC["fixed"])),
+            ["input-wash", "input-sheet-worst", "input-white"],
         )
         low = {**MINT, "field-end": "#8A8FA0"}
         self.assertIn("muted-sheet-end", palette.failures(palette.gates(low, SPEC["fixed"])))
+
+    def test_a_dark_blob_fails_the_worst_background_rows_only(self) -> None:
+        # Both bare field ends still pass; the blob over them does not.
+        failed = palette.failures(palette.gates({**MINT, "blob-mid": "#8A8FA0"}, SPEC["fixed"]))
+        self.assertEqual(
+            failed,
+            ["muted-sheet-worst", "muted-well-worst", "control-edge-sheet", "input-sheet-worst",
+             "output-sheet-worst"],
+        )
+        self.assertFalse([gate_id for gate_id in failed if gate_id.endswith(("-start", "-end"))])
+
+    def test_muted_on_the_field_is_reported_not_gated(self) -> None:
+        row = ratios(MINT)["muted-field-worst"]
+        self.assertLess(row["ratio"], 4.5)
+        self.assertIsNone(row["pass"])
+        self.assertIn("本色板不可", row["use"])
+        # A muted dark enough for the field gets the other verdict, and still no gate.
+        dark = {**FIXED, "muted": "#3A4650"}
+        strong = {r["id"]: r for r in palette.gates(MINT, dark)}["muted-field-worst"]
+        self.assertGreaterEqual(strong["ratio"], 4.5)
+        self.assertIsNone(strong["pass"])
+        self.assertIn("本色板可以", strong["use"])
 
 
 class PresetDataTests(unittest.TestCase):
@@ -150,8 +243,11 @@ class PresetDataTests(unittest.TestCase):
         self.assertEqual(SPEC["default"], "mint")
         self.assertIn(SPEC["default"], SPEC["presets"])
         self.assertGreaterEqual(len(SPEC["presets"]), 4)
+        self.assertEqual(SPEC["fixed"], FIXED)
         self.assertEqual(
-            SPEC["fixed"], {"ink": "#24303A", "muted": "#5C6B76", "sheet-alpha": 0.78}
+            palette.ROLES,
+            ("field-start", "field-end", "blob-start", "blob-end", "blob-mid",
+             "input", "input-wash", "output", "output-wash"),
         )
         for name, preset in SPEC["presets"].items():
             self.assertRegex(name, r"^[a-z]+$")
@@ -173,9 +269,29 @@ class PresetDataTests(unittest.TestCase):
             colors = {role: preset[role] for role in palette.ROLES}
             rows = ratios(colors)
             for gate_id in GATED:
-                self.assertGreaterEqual(rows[gate_id]["ratio"], 4.5, f"{name} {gate_id}")
+                self.assertGreaterEqual(
+                    rows[gate_id]["ratio"], minimum(gate_id), f"{name} {gate_id}"
+                )
             self.assertEqual(palette.failures(list(rows.values())), [], name)
             self.assertLess(rows["edge-field"]["ratio"], 3.0, name)
+
+    def test_preset_blobs_follow_the_field_and_stay_low_chroma(self) -> None:
+        for name, preset in SPEC["presets"].items():
+            in_hue = palette.hex_to_oklch(preset["input"])[2]
+            out_hue = palette.hex_to_oklch(preset["output"])[2]
+            for role, hue in (("blob-start", in_hue), ("blob-end", out_hue)):
+                L, C, H = palette.hex_to_oklch(preset[role])
+                self.assertLessEqual(palette.hue_distance(H, hue), 12, f"{name}.{role}")
+            for role in palette.BLOBS:
+                L, C, H = palette.hex_to_oklch(preset[role])
+                self.assertLessEqual(C, 0.045, f"{name}.{role}")
+                # A blob is a tint of the field, a little deeper than either end.
+                self.assertGreaterEqual(L, 0.88, f"{name}.{role}")
+                for end in ("field-start", "field-end"):
+                    self.assertLess(
+                        palette.luminance(preset[role]), palette.luminance(preset[end]),
+                        f"{name}.{role} against {end}",
+                    )
 
     def test_preset_fields_are_low_chroma_and_outputs_avoid_reserved_hues(self) -> None:
         for name, preset in SPEC["presets"].items():
@@ -229,10 +345,18 @@ class PresetDataTests(unittest.TestCase):
 
     def test_template_tokens_match_the_fixed_values(self) -> None:
         head = template()[: template().index("\n---\n", 4)]
-        alpha = SPEC["fixed"]["sheet-alpha"]
-        self.assertIn(f'  sheet: "rgba(255,255,255,{alpha:.2f})"', head)
-        self.assertIn(f'  ink: "{SPEC["fixed"]["ink"]}"', head)
-        self.assertIn(f'  muted: "{SPEC["fixed"]["muted"]}"', head)
+        fixed = SPEC["fixed"]
+        self.assertIn(f'  sheet: "rgba(255,255,255,{fixed["sheet-alpha"]:.2f})"', head)
+        self.assertIn(f'  overlay: "rgba(255,255,255,{fixed["overlay-alpha"]:.2f})"', head)
+        self.assertIn(f'  ink: "{fixed["ink"]}"', head)
+        self.assertIn(f'  muted: "{fixed["muted"]}"', head)
+        r, g, b = palette.hex_to_rgb(fixed["ink"])
+        self.assertIn(f'  well: "rgba({r},{g},{b},{fixed["well-alpha"]:.2f})"', head)
+        r, g, b = palette.hex_to_rgb(fixed["control-edge"]["color"])
+        self.assertIn(
+            f'  control-edge: "rgba({r},{g},{b},{fixed["control-edge"]["alpha"]:.2f})"', head
+        )
+        self.assertIn(f'  blob-opacity: {fixed["blob-alpha"]:.2f}\n', head)
 
     def test_anchors_are_further_apart_than_the_match_window(self) -> None:
         anchors = sorted(p["anchor"] for p in SPEC["presets"].values())
@@ -248,7 +372,9 @@ class DeriveTests(unittest.TestCase):
             self.assertEqual(list(colors), list(palette.ROLES))
             rows = ratios(colors)
             for gate_id in GATED:
-                self.assertGreaterEqual(rows[gate_id]["ratio"], 4.5, f"hue {hue} {gate_id}")
+                self.assertGreaterEqual(
+                    rows[gate_id]["ratio"], minimum(gate_id), f"hue {hue} {gate_id}"
+                )
             self.assertLess(rows["edge-field"]["ratio"], 3.0, f"hue {hue}")
             for role in palette.ROLES:
                 self.assertRegex(colors[role], HEX, f"hue {hue} {role}")
@@ -327,6 +453,43 @@ class DeriveTests(unittest.TestCase):
         self.assertEqual(
             palette.derive(378, SPEC)["colors"], palette.derive(18, SPEC)["colors"]
         )
+
+    def test_blobs_did_not_move_the_six_colours_derived_before(self) -> None:
+        # hue:202 as written by apply at 0.6.0 (the slop fixture of that release).
+        colors = palette.derive(202, SPEC)["colors"]
+        before = {
+            "field-start": "#E3F6F7", "field-end": "#F5E6F4", "input": "#00787F",
+            "input-wash": "#E5F8F9", "output": "#8D4D8C", "output-wash": "#FBEFFA",
+        }
+        self.assertEqual({role: colors[role] for role in before}, before)
+
+    def test_derived_blobs_follow_the_two_hues(self) -> None:
+        self.assertEqual(palette.mid_hue(163, 289), 226)
+        self.assertEqual(palette.mid_hue(350, 30), 10)
+        self.assertEqual(palette.mid_hue(30, 350), 10)
+        for hue in range(360):
+            derived = palette.derive(hue, SPEC)
+            colors = derived["colors"]
+            out_hue = derived["output_hue"]
+            wanted = {
+                "blob-start": hue, "blob-end": out_hue,
+                "blob-mid": palette.mid_hue(hue, out_hue),
+            }
+            for role, target in wanted.items():
+                L, C, H = palette.hex_to_oklch(colors[role])
+                self.assertLessEqual(palette.hue_distance(H, target), 15, f"{hue} {role}")
+                self.assertLessEqual(C, 0.045, f"{hue} {role}")
+                self.assertGreaterEqual(L, 0.88, f"{hue} {role}")
+                for end in ("field-start", "field-end"):
+                    self.assertLess(
+                        palette.luminance(colors[role]), palette.luminance(colors[end]),
+                        f"{hue} {role} against {end}",
+                    )
+        # The mint preset is the model for the rule: its hues give nearly its blobs.
+        mint = palette.derive(163, SPEC)["colors"]
+        for role in palette.BLOBS:
+            got, want = palette.hex_to_rgb(mint[role]), palette.hex_to_rgb(MINT[role])
+            self.assertLessEqual(max(abs(a - b) for a, b in zip(got, want)), 6, role)
 
 
 class ChooseTests(unittest.TestCase):
@@ -551,10 +714,25 @@ class RenderTests(unittest.TestCase):
         table = text[text.index("<!-- palette:begin contrast -->") :]
         table = table[: table.index("<!-- palette:end contrast -->")]
         rows = palette.gates(colors, SPEC["fixed"])
-        self.assertEqual(table.count("\n| `#"), len(rows))
-        for row in rows:
-            self.assertIn(f"| `{row['fg']}` |", table)
-            self.assertIn(f"| {row['ratio']:.2f} |", table)
+        lines = [line for line in table.split("\n") if line.startswith("| ")]
+        self.assertEqual(lines[0], "| 前景 | 背景 | 比值 | 门槛 | 用途 |")
+        self.assertEqual(len(lines) - 2, len(rows))
+        for line, row in zip(lines[2:], rows):
+            wanted = "只报告" if row["min"] is None else f"{row['min']:g}"
+            self.assertEqual(
+                line,
+                f"| {row['fg_label']} | {row['bg_label']} | {row['ratio']:.2f} | {wanted} "
+                f"| {row['use']} |",
+            )
+        self.assertEqual(sum("| 只报告 |" in line for line in lines), len(REPORTED))
+        # The three blob tokens, the control boundary table, and the lead numbers.
+        for role in palette.BLOBS:
+            self.assertIn(f"`{{colors.{role}}}` (`{colors[role]}`)", text)
+            self.assertIn(f"color-mix(in srgb, {colors[role]} 70%, transparent), transparent 70%)", text)
+        by_id = {row["id"]: row for row in rows}
+        self.assertIn(f"that edge is {by_id['control-edge-sheet']['ratio']:.2f}:1", table)
+        self.assertIn(f"on the field is {by_id['muted-field-worst']['ratio']:.2f}:1 at worst", table)
+        self.assertIn("### Control boundaries", text)
         self.assertNotIn("\u2014", text)
         for line in text.split("\n"):
             self.assertEqual(line, line.rstrip())
@@ -600,6 +778,144 @@ class RenderTests(unittest.TestCase):
         broken = template().replace("<!-- palette:begin contrast -->", "<!-- gone -->")
         with self.assertRaises(ValueError):
             palette.render(broken, palette.choose(SPEC, override="sky"), SPEC)
+
+    def test_muted_on_the_field_verdict_follows_the_measured_ratio(self) -> None:
+        choice = palette.choose(SPEC, override="mint")
+        self.assertIn("so secondary text stays on paper or a well", palette.contrast_block(choice, SPEC))
+        dark = {**SPEC, "fixed": {**SPEC["fixed"], "muted": "#3A4650"}}
+        self.assertIn(
+            "so 12px secondary text may sit on the field", palette.contrast_block(choice, dark)
+        )
+
+
+def css_rules(css: str) -> list[tuple[str, str]]:
+    """Flat (selector, body) pairs of a stylesheet; an at-rule prefixes its inner selectors."""
+    out: list[tuple[str, str]] = []
+
+    def walk(text: str, prefix: str) -> None:
+        pos = 0
+        while True:
+            brace = text.find("{", pos)
+            if brace == -1:
+                return
+            depth, end = 1, brace + 1
+            while depth:
+                depth += {"{": 1, "}": -1}.get(text[end], 0)
+                end += 1
+            selector = " ".join(text[pos:brace].split())
+            body = text[brace + 1 : end - 1]
+            if selector.startswith("@"):
+                walk(body, f"{prefix}{selector} ")
+            else:
+                out.append((f"{prefix}{selector}", body))
+            pos = end
+
+    walk(re.sub(r"/\*.*?\*/", "", css, flags=re.S), "")
+    return out
+
+
+class MaterialModelTests(unittest.TestCase):
+    """The entry states the four-layer material: nothing but an overlay may blur."""
+
+    def setUp(self) -> None:
+        self.text = template()
+        self.css = "\n".join(re.findall(r"```css\n(.*?)```", self.text, flags=re.S))
+        self.rules = css_rules(self.css)
+
+    def bodies(self, selector: str) -> list[str]:
+        return [body for name, body in self.rules if name == selector]
+
+    def test_both_entry_files_are_byte_identical(self) -> None:
+        self.assertEqual(
+            (CATALOG / "styles" / "airy-glass.md").read_bytes(),
+            (CATALOG / "first-party" / "airy-glass.md").read_bytes(),
+        )
+
+    def test_backdrop_filter_belongs_to_overlays_only(self) -> None:
+        prose = re.sub(r"```css\n.*?```", "", self.text, flags=re.S)
+        mentions = [line for line in prose.split("\n") if "backdrop-filter" in line]
+        self.assertTrue(mentions)
+        for line in mentions:
+            self.assertRegex(line, r"(?i)\boverlays?\b", line)
+        blurred = [name for name, body in self.rules if "backdrop-filter" in body]
+        self.assertTrue(blurred)
+        for name in blurred:
+            self.assertIn(".overlay", name)
+            self.assertNotIn(".sheet", name)
+        for line in self.text.split("\n"):
+            self.assertNotRegex(line, r"(?i)paper (is the only surface that )?may blur")
+            self.assertNotRegex(line, r"(?i)blur only the paper")
+        head = self.text[: self.text.index("\n---\n", 4)]
+        for stale in ("sheet-blur", "sheet-saturate", "blob-blur", "solid-breakpoint"):
+            self.assertNotIn(stale, head)
+
+    def test_paper_recipe(self) -> None:
+        (sheet,) = self.bodies(".sheet")
+        self.assertIn("background: rgba(255,255,255,0.62);", sheet)
+        self.assertIn("border: 1px solid rgba(255,255,255,0.70);", sheet)
+        self.assertIn(
+            "box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), "
+            "0 12px 40px -16px rgba(30,60,90,0.14);",
+            sheet,
+        )
+        self.assertNotIn("backdrop-filter", sheet)
+        head = self.text[: self.text.index("\n---\n", 4)]
+        self.assertIn('  sheet-edge: "rgba(255,255,255,0.70)"', head)
+        self.assertIn('  sheet-highlight: "inset 0 1px 0 rgba(255,255,255,0.55)"', head)
+        self.assertIn('  sheet-shadow: "0 12px 40px -16px rgba(30,60,90,0.14)"', head)
+
+    def test_field_blobs_are_radial_falloffs_over_the_linear_gradient(self) -> None:
+        (field,) = self.bodies(".field")
+        layers = [layer.strip() for layer in field.split("background:")[1].split(",\n")]
+        self.assertEqual(len(layers), 4)
+        for layer in layers[:3]:
+            self.assertRegex(layer, r"^radial-gradient\(.*, transparent 70%\)$")
+        self.assertRegex(layers[3], r"^linear-gradient\(160deg, #E7F6F1, #EDE7F8\);$")
+        self.assertNotIn("filter", field)
+        self.assertNotIn("Blob paints raise chroma without a separate hex", self.text)
+
+    def test_overlay_recipe_and_fallbacks(self) -> None:
+        (overlay,) = self.bodies(".overlay")
+        self.assertIn("background: rgba(255,255,255,0.82);", overlay)
+        self.assertIn("0 24px 64px -24px rgba(30,60,90,0.22);", overlay)
+        self.assertNotIn("backdrop-filter", overlay)
+        (blur,) = self.bodies(".overlay.is-scrolled-under")
+        self.assertIn("backdrop-filter: blur(20px) saturate(1.15);", blur)
+        (no_blur,) = self.bodies("@supports not (backdrop-filter: blur(1px)) .overlay")
+        self.assertIn("rgba(255,255,255,0.96)", no_blur)
+        reduced = "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) "
+        (solid,) = self.bodies(f"{reduced}.sheet, .overlay")
+        self.assertIn("rgba(255,255,255,0.96)", solid)
+        self.assertNotIn("max-width", self.css)
+        self.assertNotIn("960px", self.text)
+        self.assertIn("at most 6 overlays that use `backdrop-filter`", self.text)
+
+    def test_layout_and_text_placement_rules(self) -> None:
+        layout = self.text[self.text.index("## Layout") : self.text.index("## Elevation & Depth")]
+        self.assertIn("At least two papers sit directly on the field", layout)
+        self.assertIn("Do not nest paper inside paper", layout)
+        self.assertIn("A page title may sit directly on the field in `{colors.ink}`", layout)
+        self.assertNotIn("never on the field", self.text)
+        self.assertNotIn("Don't put text on the field", self.text)
+
+    def test_control_boundary_table(self) -> None:
+        section = self.text[self.text.index("### Control boundaries") :]
+        section = section[: section.index("\n## ")]
+        rows = {
+            cells[0]: cells[1:]
+            for cells in (
+                [cell.strip() for cell in line.strip("|").split("|")]
+                for line in section.split("\n")
+                if line.startswith("| ") and not line.startswith("| ---")
+            )
+        }
+        for control in ("Text input, textarea, select", "Checkbox or radio, off", "Switch, off"):
+            self.assertIn("`{colors.control-edge}`", rows[control][0], control)
+            self.assertEqual(rows[control][1], "Required: 3:1 on paper", control)
+        for control in ("Primary button", "Secondary button", "Tag", "Segmented item"):
+            self.assertEqual(rows[control][1], "No outline", control)
+            self.assertNotIn("control-edge", rows[control][0], control)
+        self.assertIn("2px `{colors.input}`", rows["Focus ring, every control"][0])
 
     def test_comment_cannot_close_itself(self) -> None:
         choice = {**palette.choose(SPEC), "reason": "keywords a --> b"}
@@ -725,7 +1041,10 @@ class CliTests(unittest.TestCase):
             code = dc.apply(index, entry, self.root, True, spec=weak, override="sky")
         self.assertEqual(code, 1)
         self.assertEqual(out.getvalue(), "")
-        self.assertIn("sky fails contrast gates input-wash, input-white", err.getvalue())
+        self.assertIn(
+            "sky fails contrast gates input-wash, input-sheet-worst, input-white",
+            err.getvalue(),
+        )
         # --force was given, and the old file was still neither renamed nor replaced.
         self.assertEqual(self.names(), ["design.md"])
         self.assertEqual(existing.read_bytes(), b"mine\n")
@@ -903,9 +1222,12 @@ class CliTests(unittest.TestCase):
         self.assertEqual(lines[0], "entry: style:airy-glass")
         self.assertTrue(lines[1].startswith("palette: sky (accent --color-primary #2563EB"))
         self.assertIn("  input        #1F6CB0", text.stdout)
-        self.assertEqual(sum(" pass" in line for line in lines), 9)
-        self.assertEqual(sum(line.endswith("report") for line in lines), 1)
+        self.assertIn("  blob-mid     #D6EDEE", text.stdout)
+        self.assertEqual(sum(line.endswith("  pass") for line in lines), len(GATED))
+        self.assertEqual(sum(line.endswith("  report") for line in lines), len(REPORTED))
         self.assertNotIn("FAIL", text.stdout)
+        for line in lines:
+            self.assertEqual(line, line.rstrip())
         as_json = run("palette", "style:airy-glass", "--root", str(self.root), "--format", "json")
         self.assertEqual(as_json.returncode, 0, as_json.stderr)
         self.assertEqual(self.names(), before)
@@ -916,14 +1238,61 @@ class CliTests(unittest.TestCase):
         self.assertEqual(data["entry"], "style:airy-glass")
         self.assertEqual(data["palette"], "sky")
         self.assertEqual(data["colors"], preset_colors("sky"))
-        self.assertEqual(len(data["contrast"]), 10)
+        self.assertEqual([row["id"] for row in data["contrast"]], list(GATE_ORDER))
         for row in data["contrast"]:
             self.assertEqual(set(row), {"id", "fg", "bg", "ratio", "min", "pass"})
-            if row["id"] == "edge-field":
+            if row["id"] in REPORTED:
+                self.assertIsNone(row["min"])
                 self.assertIsNone(row["pass"])
             else:
                 self.assertTrue(row["pass"])
-                self.assertGreaterEqual(row["ratio"], 4.5)
+                self.assertEqual(row["min"], minimum(row["id"]))
+                self.assertGreaterEqual(row["ratio"], row["min"])
+
+    def test_every_preset_exits_0_with_the_worst_background_rows(self) -> None:
+        for name in SPEC["presets"]:
+            result = run(
+                "palette", "style:airy-glass", "--root", str(self.root),
+                "--palette", name, "--format", "json",
+            )
+            self.assertEqual(result.returncode, 0, f"{name}: {result.stderr}")
+            rows = {row["id"]: row for row in json.loads(result.stdout)["contrast"]}
+            for gate_id in MINT_WORST:
+                self.assertIn(gate_id, rows, name)
+            for gate_id in GATED:
+                self.assertIs(rows[gate_id]["pass"], True, f"{name} {gate_id}")
+        mint = run(
+            "palette", "style:airy-glass", "--root", str(self.root),
+            "--palette", "mint", "--format", "json",
+        )
+        rows = {row["id"]: row for row in json.loads(mint.stdout)["contrast"]}
+        self.assertEqual({k: rows[k]["ratio"] for k in MINT_WORST}, MINT_WORST)
+
+    def test_apply_writes_the_material_model(self) -> None:
+        result = run("apply", "style:airy-glass", "--root", str(self.root), "--palette", "sky")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = self.design()
+        head = text[: text.index("\n---\n", 4)]
+        sky = preset_colors("sky")
+        for role in palette.BLOBS:
+            self.assertIn(f'  {role}: "{sky[role]}"', head)
+            self.assertNotIn(MINT[role], text)
+        self.assertIn("  blob-opacity: 0.70\n", head)
+        self.assertIn('  sheet: "rgba(255,255,255,0.62)"', head)
+        self.assertIn('  sheet-highlight: "inset 0 1px 0 rgba(255,255,255,0.55)"', head)
+        self.assertIn('  sheet-shadow: "0 12px 40px -16px rgba(30,60,90,0.14)"', head)
+        self.assertIn('  control-edge: "rgba(36,48,58,0.54)"', head)
+        self.assertIn("### Control boundaries", text)
+        self.assertIn("| Text input, textarea, select | 1px `{colors.control-edge}` |", text)
+        table = text[text.index("<!-- palette:begin contrast -->") :]
+        table = table[: table.index("<!-- palette:end contrast -->")]
+        rows = {row["id"]: row for row in palette.gates(sky, SPEC["fixed"])}
+        for gate_id in ("ink-sheet-worst", "muted-sheet-worst", "ink-field-worst",
+                        "muted-field-worst", "control-edge-sheet"):
+            row = rows[gate_id]
+            self.assertIn(f"| {row['bg_label']} | {row['ratio']:.2f} |", table, gate_id)
+        self.assertIn("| `#24303A` 0.54 叠纸 |", table)
+        self.assertIn(f"`{sky['blob-end']}` 0.70 叠 `{sky['field-end']}`", table)
 
     def test_palette_command_matches_apply(self) -> None:
         make_project(self.root, css=":root { --brand: #E11D48; --bg: #fff }\n")
