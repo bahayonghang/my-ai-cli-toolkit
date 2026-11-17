@@ -1027,10 +1027,34 @@ class ChooseTests(unittest.TestCase):
             with self.assertRaises(ValueError, msg=value):
                 palette.choose(SPEC, override=value)
 
-    def test_dark_project_gets_a_note_and_still_a_light_palette(self) -> None:
+    def test_dark_project_gets_a_note_that_points_at_the_dark_group(self) -> None:
+        light = palette.choose(SPEC, signal=self.signal())
         choice = palette.choose(SPEC, signal=self.signal(band="dark"))
         self.assertEqual(choice["palette"], "sky")
-        self.assertTrue(any("dark" in note for note in choice["notes"]))
+        self.assertEqual(
+            choice["notes"],
+            ["the project paper is dark; DESIGN.md carries a light and a dark group, "
+             "and this project starts from the dark one"],
+        )
+        # The paper band moves no colour: both groups are written either way.
+        self.assertEqual(light["notes"], [])
+        self.assertEqual((choice["colors"], choice["dark"]), (light["colors"], light["dark"]))
+
+    def test_every_choice_carries_both_groups(self) -> None:
+        preset = palette.choose(SPEC, signal=self.signal())
+        self.assertEqual(preset["colors"], preset_colors("sky"))
+        self.assertEqual(preset["dark"], SPEC["presets"]["sky"]["dark"])
+        self.assertEqual(list(preset["dark"]), list(palette.ROLES))
+        derived = palette.choose(SPEC, override="hue:18")
+        self.assertEqual(derived["dark"], palette.derive(18, SPEC)["dark"])
+        fallback = palette.choose(SPEC)
+        self.assertEqual((fallback["colors"], fallback["dark"]), (MINT, MINT_DARK))
+        # A choice is a copy: changing it does not change the palette data.
+        fallback["dark"]["input"] = "#000000"
+        self.assertEqual(palette.choose(SPEC)["dark"], MINT_DARK)
+        for name in SPEC["presets"]:
+            choice = palette.choose(SPEC, override=name)
+            self.assertEqual(palette.failed_gates(choice["colors"], choice["dark"], SPEC["fixed"]), [])
 
     def test_choice_is_deterministic(self) -> None:
         cases = [

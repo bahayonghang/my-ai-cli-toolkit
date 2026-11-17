@@ -514,6 +514,11 @@ def _preset(name: str, spec: dict) -> dict:
     return {role: preset[role] for role in ROLES}
 
 
+def _preset_dark(name: str, spec: dict) -> dict:
+    dark = spec["presets"][name]["dark"]
+    return {role: dark[role] for role in ROLES}
+
+
 def choose(
     spec: dict,
     *,
@@ -526,25 +531,28 @@ def choose(
 
     Order: explicit override, the first accent token with enough chroma and
     lightness, preset keywords in the prompt and project text, then the default.
-    Returns {palette, kind, hue, reason, colors, notes}. Deterministic.
+    Returns {palette, kind, hue, reason, colors, dark, notes}: colors is the light
+    group and dark the dark one. The project's paper band picks neither; it only
+    adds a note. Deterministic.
     """
     notes: list[str] = []
     signal = signal or {}
     if signal.get("band") == "dark":
         notes.append(
-            "the project paper is dark; this entry has a light colourway only, "
-            "so DESIGN.md is still written in light"
+            "the project paper is dark; DESIGN.md carries a light and a dark group, "
+            "and this project starts from the dark one"
         )
 
     def preset_result(name: str, reason: str) -> dict:
         return {"palette": name, "kind": "preset", "hue": spec["presets"][name]["anchor"],
-                "reason": reason, "colors": _preset(name, spec), "notes": notes}
+                "reason": reason, "colors": _preset(name, spec),
+                "dark": _preset_dark(name, spec), "notes": notes}
 
     def derived_result(hue: int, reason: str) -> dict:
         derived = derive(hue, spec)
         return {"palette": f"hue:{derived['hue']}", "kind": "derived", "hue": derived["hue"],
                 "output_hue": derived["output_hue"], "reason": reason,
-                "colors": derived["colors"], "notes": notes}
+                "colors": derived["colors"], "dark": derived["dark"], "notes": notes}
 
     parsed = parse_override(override, spec)
     if parsed and parsed[0] == "preset":
