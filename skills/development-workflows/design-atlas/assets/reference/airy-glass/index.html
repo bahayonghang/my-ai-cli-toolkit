@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>轻盈毛玻璃参考页（占位内容）</title>
 <style>
-/* Reference picture for style:airy-glass, colourway mint, light.
-   The :root values equal assets/catalog/overlays/palettes.json (mint + fixed);
-   tests/test_palette.py keeps them equal. All content is placeholder. */
+/* Reference picture for style:airy-glass, colourway mint, light and dark.
+   The token values equal assets/catalog/overlays/palettes.json (mint, mint.dark, fixed,
+   fixed.dark); tests/test_palette.py keeps them equal. All content is placeholder. */
 :root {
+  color-scheme: light;
   --color-field-start: #E7F6F1;
   --color-field-end: #EDE7F8;
   --color-blob-start: #CDEEE2;
@@ -45,6 +46,62 @@
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
+}
+/* Dark group. It follows the system appearance. data-theme on the root element is the
+   reader's own choice and wins in both directions. The two blocks hold the same values. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-field-start: #0F1B1F;
+    --color-field-end: #18172B;
+    --color-blob-start: #12302A;
+    --color-blob-end: #2A2550;
+    --color-blob-mid: #142536;
+    --color-sheet: rgba(28,37,48,0.60);
+    --color-sheet-solid: rgba(28,37,48,0.96);
+    --color-sheet-edge: rgba(255,255,255,0.08);
+    --color-overlay: rgba(30,40,52,0.84);
+    --color-well: rgba(231,237,243,0.04);
+    --color-control-fill: rgba(231,237,243,0.08);
+    --color-control-edge: rgba(255,255,255,0.36);
+    --color-ink: #E7EDF3;
+    --color-muted: #A3AFBD;
+    --color-input: #5FD6A8;
+    --color-input-wash: #243B31;
+    --color-output: #B3A8FF;
+    --color-output-wash: #353346;
+    --color-on-input: #1C2530;
+    --highlight-sheet: inset 0 1px 0 rgba(255,255,255,0.06);
+    --shadow-sheet: 0 12px 40px -16px rgba(0,0,0,0.45);
+    --highlight-overlay: inset 0 1px 0 rgba(255,255,255,0.08);
+    --shadow-overlay: 0 24px 64px -24px rgba(0,0,0,0.60);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-field-start: #0F1B1F;
+  --color-field-end: #18172B;
+  --color-blob-start: #12302A;
+  --color-blob-end: #2A2550;
+  --color-blob-mid: #142536;
+  --color-sheet: rgba(28,37,48,0.60);
+  --color-sheet-solid: rgba(28,37,48,0.96);
+  --color-sheet-edge: rgba(255,255,255,0.08);
+  --color-overlay: rgba(30,40,52,0.84);
+  --color-well: rgba(231,237,243,0.04);
+  --color-control-fill: rgba(231,237,243,0.08);
+  --color-control-edge: rgba(255,255,255,0.36);
+  --color-ink: #E7EDF3;
+  --color-muted: #A3AFBD;
+  --color-input: #5FD6A8;
+  --color-input-wash: #243B31;
+  --color-output: #B3A8FF;
+  --color-output-wash: #353346;
+  --color-on-input: #1C2530;
+  --highlight-sheet: inset 0 1px 0 rgba(255,255,255,0.06);
+  --shadow-sheet: 0 12px 40px -16px rgba(0,0,0,0.45);
+  --highlight-overlay: inset 0 1px 0 rgba(255,255,255,0.08);
+  --shadow-overlay: 0 24px 64px -24px rgba(0,0,0,0.60);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
@@ -97,7 +154,8 @@ h2 { font-family: var(--font-display); font-size: 16px; font-weight: 650; margin
 .nav-item:hover { background: var(--color-well); }
 .nav-item:active { background: var(--color-control-fill); }
 .nav-item[aria-current="page"] { background: var(--color-input-wash); color: var(--color-input); font-weight: 600; }
-.sidebar .meta { margin-top: var(--space-md); }
+.theme { display: grid; gap: 4px; justify-items: start; margin-top: var(--space-md); }
+.sidebar > .meta { margin-top: var(--space-md); }
 
 .main { display: grid; gap: var(--space-md); min-width: 0; position: relative; }
 .page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); padding: 4px var(--space-min); }
@@ -243,7 +301,15 @@ h2 { font-family: var(--font-display); font-size: 16px; font-weight: 650; margin
           <li><a class="nav-item" href="#settings">占位：设置</a></li>
         </ul>
       </nav>
-      <p class="meta">本页所有文字和数字都是占位内容，不代表真实产品或数据。</p>
+      <div class="theme">
+        <span class="meta" id="theme-label">外观</span>
+        <div class="segmented" role="group" aria-labelledby="theme-label">
+          <button class="segment" type="button" data-theme-choice="system" aria-pressed="true">系统</button>
+          <button class="segment" type="button" data-theme-choice="light" aria-pressed="false">浅色</button>
+          <button class="segment" type="button" data-theme-choice="dark" aria-pressed="false">深色</button>
+        </div>
+      </div>
+      <p class="meta">除「外观」切换外，本页的文字和数字都是占位内容，不代表真实产品或数据。</p>
     </aside>
 
     <main class="main" id="overview">
@@ -304,5 +370,29 @@ h2 { font-family: var(--font-display); font-size: 16px; font-weight: 650; margin
       </div>
     </main>
   </div>
+<script>
+/* Manual theme switch. "system" removes the explicit choice, so the page follows
+   prefers-color-scheme again. The choice is not stored. */
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll("[data-theme-choice]");
+  function choose(value) {
+    if (value === "system") {
+      root.removeAttribute("data-theme");
+    } else {
+      root.setAttribute("data-theme", value);
+    }
+    buttons.forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-theme-choice") === value));
+    });
+  }
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      choose(button.getAttribute("data-theme-choice"));
+    });
+  });
+  choose(root.getAttribute("data-theme") || "system");
+})();
+</script>
 </body>
 </html>

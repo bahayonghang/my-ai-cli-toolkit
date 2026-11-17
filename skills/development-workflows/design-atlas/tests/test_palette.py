@@ -1645,6 +1645,11 @@ class DarkGroupTests(unittest.TestCase):
 class ReferencePageTests(unittest.TestCase):
     """assets/reference/airy-glass/index.html is the mint target picture for non-CSS stacks."""
 
+    # The two places that bind the dark group: the system appearance, unless the reader
+    # chose light by hand, and the reader's own choice of dark.
+    FOLLOWED = '@media (prefers-color-scheme: dark) :root:not([data-theme="light"])'
+    CHOSEN = ':root[data-theme="dark"]'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.page = REFERENCE_PAGE.read_text(encoding="utf-8")
@@ -1652,6 +1657,80 @@ class ReferencePageTests(unittest.TestCase):
         cls.rules = css_rules(cls.css)
         root = next(body for name, body in cls.rules if name == ":root")
         cls.tokens = dict(re.findall(r"(--[\w-]+):\s*([^;]+);", root))
+
+    def block(self, selector: str) -> dict:
+        (body,) = [body for name, body in self.rules if name == selector]
+        return dict(re.findall(r"([\w-]+):\s*([^;]+);", body))
+
+    def test_dark_tokens_are_the_mint_dark_group(self) -> None:
+        followed, chosen = self.block(self.FOLLOWED), self.block(self.CHOSEN)
+        # The system appearance and the explicit choice bind the same values.
+        self.assertEqual(followed, chosen)
+        self.assertEqual(chosen.pop("color-scheme"), "dark")
+        self.assertEqual(self.block(":root")["color-scheme"], "light")
+        dark, fixed = SPEC["presets"]["mint"]["dark"], SPEC["fixed"]["dark"]
+
+        def rgba(layer: dict) -> str:
+            r, g, b = palette.hex_to_rgb(layer["color"])
+            return f"rgba({r},{g},{b},{layer['alpha']:.2f})"
+
+        for role in palette.ROLES:
+            self.assertEqual(chosen[f"--color-{role}"], dark[role], role)
+        self.assertEqual(chosen["--color-field-start"], "#0F1B1F")
+        self.assertEqual(chosen["--color-ink"], fixed["ink"])
+        self.assertEqual(chosen["--color-muted"], fixed["muted"])
+        self.assertEqual(chosen["--color-sheet"], rgba(fixed["sheet"]))
+        self.assertEqual(chosen["--color-sheet"], "rgba(28,37,48,0.60)")
+        self.assertEqual(chosen["--color-overlay"], rgba(fixed["overlay"]))
+        self.assertEqual(chosen["--color-sheet-edge"], rgba(fixed["sheet-edge"]))
+        self.assertEqual(chosen["--color-control-edge"], rgba(fixed["control-edge"]))
+        self.assertEqual(
+            chosen["--color-well"],
+            rgba({"color": fixed["ink"], "alpha": SPEC["fixed"]["well-alpha"]}),
+        )
+        # The label on an input fill and the opaque fallback are the paper colour.
+        self.assertEqual(chosen["--color-on-input"], fixed["sheet"]["color"])
+        self.assertEqual(
+            chosen["--color-sheet-solid"], rgba({"color": fixed["sheet"]["color"], "alpha": 0.96})
+        )
+        self.assertEqual(
+            chosen["--highlight-sheet"], f"inset 0 1px 0 {rgba(fixed['sheet-highlight'])}"
+        )
+        self.assertEqual(
+            chosen["--highlight-overlay"], f"inset 0 1px 0 {rgba(fixed['overlay-highlight'])}"
+        )
+        # The dark group rebinds every colour and elevation token of :root, and only those:
+        # fonts, radii, spacing and the blob opacity are shared.
+        themed = {
+            name for name in self.tokens
+            if name.startswith(("--color-", "--highlight-", "--shadow-"))
+        }
+        self.assertEqual(set(chosen), themed)
+        self.assertEqual(len(themed), 23)
+
+    def test_dark_material_matches_the_entry(self) -> None:
+        head = template()[: template().index("\n---\n", 4)]
+        chosen = self.block(self.CHOSEN)
+        for token, key in (
+            ("--color-sheet-solid", "sheet-solid-dark"), ("--color-sheet-edge", "sheet-edge-dark"),
+            ("--color-control-fill", "control-fill-dark"), ("--color-well", "well-dark"),
+            ("--color-on-input", "on-input-dark"),
+            ("--highlight-sheet", "sheet-highlight-dark"), ("--shadow-sheet", "sheet-shadow-dark"),
+            ("--highlight-overlay", "overlay-highlight-dark"),
+            ("--shadow-overlay", "overlay-shadow-dark"),
+        ):
+            self.assertIn(f'  {key}: "{chosen[token]}"', head, token)
+        self.assertEqual(
+            f"{chosen['--highlight-sheet']}, {chosen['--shadow-sheet']}",
+            "inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 40px -16px rgba(0,0,0,0.45)",
+        )
+        self.assertEqual(
+            f"{chosen['--highlight-overlay']}, {chosen['--shadow-overlay']}",
+            "inset 0 1px 0 rgba(255,255,255,0.08), 0 24px 64px -24px rgba(0,0,0,0.60)",
+        )
+        # Only the token blocks differ between the groups: no other rule names a theme.
+        themed_rules = [name for name, _ in self.rules if "data-theme" in name or "color-scheme" in name]
+        self.assertEqual(themed_rules, [self.FOLLOWED, self.CHOSEN])
 
     def test_root_values_are_the_mint_preset(self) -> None:
         mint = SPEC["presets"]["mint"]
@@ -1676,8 +1755,14 @@ class ReferencePageTests(unittest.TestCase):
             f"rgba({r},{g},{b},{fixed['control-edge']['alpha']:.2f})",
         )
         self.assertEqual(self.tokens["--blob-opacity"], f"{fixed['blob-alpha'] * 100:.0f}%")
-        # No other hex in the page: every colour comes from the preset or the fixed values.
-        allowed = {*(mint[role] for role in palette.ROLES), fixed["ink"], fixed["muted"], "#FFFFFF"}
+        # No other hex in the page: every colour comes from the preset or the fixed values
+        # of one of the two groups.
+        dark = fixed["dark"]
+        allowed = {
+            *(mint[role] for role in palette.ROLES), fixed["ink"], fixed["muted"], "#FFFFFF",
+            *(mint["dark"][role] for role in palette.ROLES), dark["ink"], dark["muted"],
+            dark["sheet"]["color"],
+        }
         self.assertEqual(set(re.findall(r"#[0-9A-Fa-f]{6}\b", self.css)) - allowed, set())
 
     def test_root_material_matches_the_entry(self) -> None:
@@ -1710,8 +1795,104 @@ class ReferencePageTests(unittest.TestCase):
         self.assertIn("linear-gradient(160deg, var(--color-field-start), var(--color-field-end))", field)
 
     def test_page_makes_no_external_request(self) -> None:
-        for needle in ("http://", "https://", "url(", "@import", "<link", "<script", "<img", "src="):
+        for needle in ("http://", "https://", "url(", "@import", "<link", "<img", "src="):
             self.assertNotIn(needle, self.page, needle)
+        # One inline script, for the manual theme switch. It has no attribute, so no source.
+        self.assertEqual(re.findall(r"<script\b[^>]*>", self.page), ["<script>"])
+        (script,) = re.findall(r"<script>(.*?)</script>", self.page, flags=re.S)
+        for needle in ("fetch", "XMLHttpRequest", "import", "WebSocket", "sendBeacon", "location"):
+            self.assertNotIn(needle, script, needle)
+
+    @unittest.skipUnless(shutil.which("node"), "node is not installed")
+    def test_theme_switch_sets_and_clears_the_explicit_choice(self) -> None:
+        body = self.page[self.page.index("<body") :]
+        buttons = re.findall(
+            r'<button class="segment" type="button" data-theme-choice="([a-z]+)" '
+            r'aria-pressed="(true|false)">([^<]+)</button>',
+            body,
+        )
+        # The page opens on the system appearance, with no explicit choice on the root.
+        self.assertEqual(
+            buttons, [("system", "true", "系统"), ("light", "false", "浅色"), ("dark", "false", "深色")]
+        )
+        self.assertNotRegex(self.page, r"<html[^>]*data-theme")
+        (script,) = re.findall(r"<script>(.*?)</script>", self.page, flags=re.S)
+        # Run the page script against the three buttons, starting from each root state.
+        harness = r"""
+const vm = require('node:vm');
+const fs = require('node:fs');
+const script = fs.readFileSync(process.argv[2], 'utf8');
+function run(initial, clicks) {
+  const attrs = new Map(initial ? [['data-theme', initial]] : []);
+  const element = (own) => {
+    const map = new Map(Object.entries(own));
+    const listeners = [];
+    return {
+      getAttribute: (k) => (map.has(k) ? map.get(k) : null),
+      setAttribute: (k, v) => { map.set(k, String(v)); },
+      removeAttribute: (k) => { map.delete(k); },
+      addEventListener: (type, fn) => { if (type === 'click') listeners.push(fn); },
+      click() { listeners.forEach((fn) => fn({ currentTarget: this, target: this })); },
+    };
+  };
+  const buttons = ['system', 'light', 'dark'].map((choice) =>
+    element({ 'data-theme-choice': choice, 'aria-pressed': String(choice === 'system') }));
+  const document = {
+    documentElement: {
+      getAttribute: (k) => (attrs.has(k) ? attrs.get(k) : null),
+      setAttribute: (k, v) => { attrs.set(k, String(v)); },
+      removeAttribute: (k) => { attrs.delete(k); },
+      hasAttribute: (k) => attrs.has(k),
+    },
+    querySelectorAll: (selector) => (selector === '[data-theme-choice]' ? buttons : []),
+  };
+  vm.runInNewContext(script, { document });
+  const state = () => ({
+    theme: attrs.has('data-theme') ? attrs.get('data-theme') : null,
+    pressed: buttons.filter((b) => b.getAttribute('aria-pressed') === 'true')
+      .map((b) => b.getAttribute('data-theme-choice')),
+  });
+  const out = [state()];
+  for (const choice of clicks) {
+    buttons.find((b) => b.getAttribute('data-theme-choice') === choice).click();
+    out.push(state());
+  }
+  return out;
+}
+console.log(JSON.stringify({
+  fromSystem: run(null, ['dark', 'light', 'system', 'dark', 'dark']),
+  fromDark: run('dark', ['system']),
+  fromLight: run('light', []),
+}));
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "harness.cjs").write_text(harness, encoding="utf-8")
+            (Path(tmp) / "page.js").write_text(script, encoding="utf-8")
+            result = subprocess.run(
+                ["node", str(Path(tmp) / "harness.cjs"), str(Path(tmp) / "page.js")],
+                capture_output=True, text=True, encoding="utf-8",
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout),
+            {
+                "fromSystem": [
+                    {"theme": None, "pressed": ["system"]},
+                    {"theme": "dark", "pressed": ["dark"]},
+                    {"theme": "light", "pressed": ["light"]},
+                    # Back to the system appearance: the explicit choice is removed, not set.
+                    {"theme": None, "pressed": ["system"]},
+                    {"theme": "dark", "pressed": ["dark"]},
+                    {"theme": "dark", "pressed": ["dark"]},
+                ],
+                # A root that already carries a choice opens with that segment pressed.
+                "fromDark": [
+                    {"theme": "dark", "pressed": ["dark"]},
+                    {"theme": None, "pressed": ["system"]},
+                ],
+                "fromLight": [{"theme": "light", "pressed": ["light"]}],
+            },
+        )
 
     def test_page_has_the_workbench_parts(self) -> None:
         body = self.page[self.page.index("<body") :]
@@ -1736,16 +1917,30 @@ class ReferencePageTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("node"), "node is not installed")
     def test_slop_check_passes_next_to_the_apply_output(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            applied = run("apply", "style:airy-glass", "--root", tmp, "--palette", "mint")
-            self.assertEqual(applied.returncode, 0, applied.stderr)
-            shutil.copyfile(REFERENCE_PAGE, Path(tmp) / "index.html")
-            result = subprocess.run(
-                ["node", str(SLOP_CHECK), tmp], capture_output=True, text=True, encoding="utf-8"
-            )
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn("files 1", result.stdout)
-            self.assertIn("Floor 0 FAIL", result.stdout)
+        # slop_check reads one value per token and the last declaration wins, so the page as
+        # shipped is checked with the dark group. Without the dark blocks it is the light one.
+        start = self.page.index("@media (prefers-color-scheme: dark) {")
+        end = self.page.index("*, *::before, *::after")
+        removed = self.page[start:end]
+        self.assertIn(':root:not([data-theme="light"])', removed)
+        self.assertIn(':root[data-theme="dark"]', removed)
+        light_only = self.page[:start] + self.page[end:]
+        self.assertNotIn(MINT_DARK["field-start"], light_only)
+        self.assertIn(MINT["field-start"], light_only)
+        for label, page in (("dark", self.page), ("light", light_only)):
+            with tempfile.TemporaryDirectory() as tmp:
+                applied = run("apply", "style:airy-glass", "--root", tmp, "--palette", "mint")
+                self.assertEqual(applied.returncode, 0, applied.stderr)
+                (Path(tmp) / "index.html").write_text(page, encoding="utf-8", newline="\n")
+                result = subprocess.run(
+                    ["node", str(SLOP_CHECK), tmp, "--json"],
+                    capture_output=True, text=True, encoding="utf-8",
+                )
+                self.assertEqual(result.returncode, 0, f"{label}: {result.stdout}{result.stderr}")
+                report = json.loads(result.stdout)
+                self.assertEqual(report["summary"]["files"], 1, label)
+                # Nothing failed, and nothing had to be waived or noted either.
+                self.assertEqual(report["findings"], [], label)
 
 
 def make_project(root: Path, *, css: str | None = None, readme: str | None = None) -> None:
