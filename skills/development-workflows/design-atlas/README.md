@@ -71,7 +71,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 ```
 
 - `apply` 写入 `<root>/DESIGN.md`（UTF-8、LF），并在 frontmatter 后加一行来源注释。根目录已有任何大小写形式的 `design.md` 时拒绝写入（退出码 3）；加 `--force` 会先把旧文件改名为 `design.md.bak-<时间戳>`。
-- `palette` 只读：打印某个项目会得到的色板、选择理由和对比度表（`--format json` 输出 JSON）。目前只有 `style:airy-glass` 有色板拨盘；对其他条目使用 `palette`、`--palette` 或 `apply --prompt` 以退出码 2 结束，不写文件。
+- `palette` 只读：打印某个项目会得到的色板、选择理由，以及浅色和深色两组的色值和对比度表（`--format json` 输出 JSON，深色组在 `dark` 字段里）。目前只有 `style:airy-glass` 有色板拨盘；对其他条目使用 `palette`、`--palette` 或 `apply --prompt` 以退出码 2 结束，不写文件。
 - `route` 结果确定可复现：同一需求、同一项目得到同一结果；`--reroll 1` 换下一组。中英文需求都能路由；brand 条目只在点名或 `--include-brands` 时参与。
 - `slop_check.mjs` 退出码 0 表示没有未处理的 FAIL/REFLEX，1 表示有，2 表示参数错误，或路径下没有脚本会读的文件（见「限制」）。豁免写在 `DESIGN.md` 的 `## Anti-slop Waivers` 章节。
 
@@ -81,7 +81,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 
 ## 轻盈毛玻璃的色板拨盘
 
-`style:airy-glass`（轻盈毛玻璃）的配色不是固定的浅绿。材质规则（底场上有三个色斑；纸不模糊，靠白描边、顶部内高光和一条柔影；至少两张纸直接落在底场上；只有下方有内容滚过的浮层才模糊，每屏最多 6 个；减少透明度时纸和浮层改为不透明）和 WCAG 2.2 AA 对比度门禁不变，底场两端、三个色斑和两个语义色由项目决定。参考画面在 `assets/reference/airy-glass/index.html`。`apply` 默认按 `auto` 选择：
+`style:airy-glass`（轻盈毛玻璃）的配色不是固定的浅绿。材质规则（底场上有三个色斑；纸不模糊，靠白描边、顶部内高光和一条柔影；至少两张纸直接落在底场上；只有下方有内容滚过的浮层才模糊，每屏最多 6 个；减少透明度时纸和浮层改为不透明）和 WCAG 2.2 AA 对比度门禁不变，底场两端、三个色斑和两个语义色由项目决定。每套色板有浅色和深色两组，`apply` 总是同时写出两组。参考画面在 `assets/reference/airy-glass/index.html`，带浅色和深色：它跟随系统外观，也可以在页面上手动切换。`apply` 默认按 `auto` 选择：
 
 1. 项目 CSS token 层有带彩度的 `primary` / `brand` / `accent`：色相离某套预设 20° 以内就用那套，否则按这个色相推导一整套颜色。灰色或近灰的 accent 不算，接近黑色的也不算（OKLCH 亮度低于 0.25，例如 shadcn 默认的 `--primary` `#0F172A`）；有多个这类变量时，按变量名顺序取第一个带彩度且不接近黑色的（例如 shadcn 的 `--accent` 是近白色时会跳过它，改用 `--primary`）。
 2. 没有可用 accent：用 `--prompt` 里的用户原话和项目内容（README、package / pyproject / Cargo 的描述与关键词）匹配预设关键词。关键词只收行业和产品领域的词；任何项目的 README 都会出现的词（community、security、enterprise、cloud、社区、安全、企业）不在表里。
@@ -94,7 +94,16 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 | `apricot` | 杏色 → 青绿 | 55° | 餐饮、教育、亲子、food、education |
 | `slate` | 石板蓝灰 → 雾紫 | 215° | 合规、审计、政务、compliance、insurance |
 
-`--palette <预设名>` 或 `--palette hue:<0-359>` 覆盖自动选择。input 跟随项目主色，output 取拉开色相的对比色（至少相隔 90°），并避开错误红（340°–40°，跨过 0°）和警告琥珀（60°–100°）的色相带。每套预设和每个推导结果都按最差背景过门禁：背景是两个场端，加上每个色斑按其透明度叠在每个场端上；文字在纸上和 `ink` 在底场上不低于 4.5:1，输入框、复选框、单选、开关的边界在纸上不低于 3:1。`muted` 在底场上只报告，能不能落由实测值决定。过不了门禁的色板会被拒绝，不会把纸调得更实。写出的 `DESIGN.md` 带这套配色的实测对比度表，来源注释下一行记录色板和选择理由。换色板用 `apply --force --palette ...`，不要手改 hex。正文和次要文字的颜色固定，不随色板变化。
+`--palette <预设名>` 或 `--palette hue:<0-359>` 覆盖自动选择。input 跟随项目主色，output 取拉开色相的对比色（至少相隔 90°），并避开错误红（340°–40°，跨过 0°）和警告琥珀（60°–100°）的色相带。每套预设和每个推导结果的浅色和深色两组都按最差背景过门禁：背景是两个场端，加上每个色斑按其透明度叠在每个场端上；文字在纸上和 `ink` 在底场上不低于 4.5:1，输入框、复选框、单选、开关的边界在纸上不低于 3:1。`muted` 在底场上只报告，能不能落由实测值决定。任何一组过不了门禁，色板都会被拒绝，不会把纸调得更实。写出的 `DESIGN.md` 带这套配色浅色和深色各一张实测对比度表，来源注释下一行记录色板和选择理由。换色板用 `apply --force --palette ...`，它会同时重写两组，不要手改 hex。正文和次要文字的颜色在每一组里固定，不随色板变化。
+
+深色组和浅色组的角色相同，色相相同，明度反过来：底场和纸是深色，文字是浅色。纸和底场的明度仍然几乎相同，层次靠色斑、描边、高光和阴影。
+
+- 深色的纸是 `#1C2530` 0.60，不是白色加透明度。减少透明度或系统高对比度时，纸和浮层改用这个颜色的 0.96；没有模糊能力时，浮层也改用它。
+- 深色的 token 在 `DESIGN.md` 里以 `-dark` 结尾，规则和配方在 `## Dark Group` 一节，实测表在 `### Dark group contrast`。字体、圆角、间距、`material` 和动效两组共用。
+- 深色的浮层比纸亮，对浅色文字来说是更差的表面。所以深色的门禁比浅色多 5 行：在最差的浮层上再量一遍正文、次要文字、两个语义色和控件边界。
+- 深色的 input 和 output 是浅色调，可以直接当文字。input 填充上的字、勾和开关滑块用纸的颜色（`on-input-dark`），不用白色。
+- 深色组过不了门禁时，错误信息里的行带 `dark ` 前缀，`apply` 不写文件。
+- 没有高对比度专用色板。系统高对比度下只把纸和浮层改为不透明。
 
 ## Anti-AI-slop
 

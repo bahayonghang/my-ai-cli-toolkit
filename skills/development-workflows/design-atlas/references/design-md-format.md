@@ -93,9 +93,10 @@ Edit `DESIGN.md` itself. Then change code. Do not let code drift from the file.
 
 1. Keep the provenance comment that `apply` wrote under the frontmatter. Add one line under it: `<!-- customized: <what changed> -->`.
 2. Brand color change: replace the `primary` family (`primary`, `primary-active`, `on-primary`, related tints). Recheck contrast for every pair that uses them.
-   - Exception, an entry with a colourway dial (`style:airy-glass`): do not edit its hex values. Rerun `apply --force --palette <preset|hue:N>`. It rewrites the nine colourway colors (two field ends, three blobs, two semantic colors and their washes), the CSS example, and the measured contrast table together, and records the choice in the `<!-- palette: ... -->` line under the provenance comment. The text between `<!-- palette:begin ... -->` and `<!-- palette:end ... -->` is generated; leave it as written.
+   - Exception, an entry with a colourway dial (`style:airy-glass`): do not edit its hex values. Rerun `apply --force --palette <preset|hue:N>`. It rewrites the nine colourway colors (two field ends, three blobs, two semantic colors and their washes) of the light group and of the dark group, both CSS examples, and both measured contrast tables together, and records the choice in the `<!-- palette: ... -->` line under the provenance comment. The text between `<!-- palette:begin ... -->` and `<!-- palette:end ... -->` is generated; leave it as written.
 3. Font change: change `fontFamily` in every typography token of the same role. Record the substitution in `Known Gaps` when the original font is licensed.
 4. Dark mode: add `-dark` surface and text tokens or a second color group, and state the switch rule in `Overview`. Recheck contrast in both themes.
+   - Exception, `style:airy-glass`: `apply` already wrote the dark group, as `-dark` tokens with their rules in `## Dark Group` and their measured table under `## Accessibility`. Do not add a second one. Implement both groups from the file.
 5. Combining two entries: start from the entry that matches the layout and component model. Take only color or typography tokens from the second entry. Record both entry ids in the customization comment.
 6. Add rules to `Do's and Don'ts` and `Iteration Guide` when the change creates a new constraint.
 

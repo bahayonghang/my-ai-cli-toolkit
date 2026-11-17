@@ -184,7 +184,7 @@ Text:
 
 ## Dark Group
 
-The dark group is the same material with the lightness order turned over. The field is the darkest layer, paper is a little lighter, and an overlay is lighter than paper. Every rule in this file holds for it unless this section changes it.
+The dark group is the same material with the lightness turned over: a dark field, dark paper, and light text. Paper and the field still have almost the same lightness, and the layers still separate through the blobs, the edge, the highlight, and the shadow. Every rule in this file holds for the dark group unless this section changes it.
 
 Use the dark group when the system appearance is dark (`prefers-color-scheme: dark`). An explicit choice by the user wins over the system appearance, in both directions. Typography, radii, spacing, `material`, and motion have no dark twin: both groups use the same values.
 

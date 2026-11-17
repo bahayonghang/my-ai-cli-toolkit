@@ -371,13 +371,14 @@
     {
       "id": 31,
       "prompt": "现有轻盈毛玻璃设置页在关闭 blur 的设备上字看不清，保留色板拨盘和深浅主题做精修。",
-      "expected_output": "Keeps the material and palette contracts of the existing DESIGN.md and adds only applicable readable surface fallbacks.",
+      "expected_output": "Keeps the material and palette contracts of the existing DESIGN.md in the light group and in the dark group, and adds only applicable readable surface fallbacks.",
       "files": [],
       "assertions": [
         "Preserves the material contract in the project's existing DESIGN.md (its colourway dial, which surfaces may blur, its opaque fallback and layer limits) and does not rewrite it to another material model; does not hand-edit palette hex values",
-        "Uses existing surface/on-surface/border roles and an opaque baseline when backdrop-filter is unavailable or unsuitable",
+        "Keeps the light group and the dark group of the colourway together: the dark theme is built from the -dark tokens that DESIGN.md already carries, and no second dark palette is invented or derived by hand",
+        "Uses existing surface/on-surface/border roles and an opaque baseline when backdrop-filter is unavailable or unsuitable; each theme takes its own opaque fallback from DESIGN.md, so dark paper and dark overlays do not fall back to white",
         "Does not add liquid refraction, Halo, blend-mode text, mock browser chrome or animation dependencies",
-        "Checks actual worst-case text/boundary contrast, both supported themes, focus/disabled states and fallback",
+        "Checks actual worst-case text/boundary contrast in both themes (in the dark group on overlays as well as on paper), focus/disabled states and fallback",
         "Makes no minimum browser-version or performance claim without evidence"
       ]
     },

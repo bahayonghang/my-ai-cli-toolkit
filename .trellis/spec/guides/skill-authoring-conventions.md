@@ -258,8 +258,18 @@ not delete `first-party/` or `LICENSES/`.
   tags and segmented items with a text label and a fill get no outline.
 - `assets/reference/airy-glass/index.html` is the target picture for stacks
   without CSS. Its `:root` values equal the mint preset and the `fixed`
-  values; change them together. It has no dark group yet
-  (`bahayonghang/my-ai-cli-toolkit#51`).
+  values, and its two dark token blocks equal `presets.mint.dark` and
+  `fixed.dark`; change them together.
+- Dark group (0.7.0, `bahayonghang/my-ai-cli-toolkit#51`): a colourway is a
+  light group and a dark group with the same nine roles, and `apply` always
+  writes both. Dark paper is its own colour at an alpha (`fixed.dark.sheet`),
+  never white at an alpha. The entry carries the dark values as `-dark` keys
+  in `colors:` and `elevation:` and states the rules in `## Dark Group`.
+  There is no high-contrast palette: under high contrast only paper and
+  overlays turn opaque.
+- `render` swaps hex for hex across both groups. Keep the 18 default values
+  distinct, and keep every preset and derived colourway from using a default
+  hex in another role (`tests/test_palette.py` checks all 360 hues).
 - Command contract, selection order, and required tests:
   `.trellis/spec/backend/skill-helper-command-contracts.md`.
 

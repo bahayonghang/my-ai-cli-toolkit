@@ -95,7 +95,8 @@ Picks
 - "换个色板" / "make it blue" on `style:airy-glass`:
   `apply style:airy-glass --root <project-root> --force --palette <preset|hue:N>`.
   Presets: `mint`, `sky`, `apricot`, `slate`. `palette style:airy-glass --root
-  <project-root>` previews the choice and its contrast table without writing.
+  <project-root>` previews the choice and the contrast tables of its light and
+  dark groups without writing.
 
 ## How scores are built
 
