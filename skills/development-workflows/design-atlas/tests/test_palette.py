@@ -1769,7 +1769,7 @@ class ReferencePageTests(unittest.TestCase):
         head = template()[: template().index("\n---\n", 4)]
         for token, key in (
             ("--color-sheet-solid", "sheet-solid"), ("--color-sheet-edge", "sheet-edge"),
-            ("--color-control-fill", "control-fill"),
+            ("--color-control-fill", "control-fill"), ("--color-on-input", "on-input"),
         ):
             self.assertIn(f'  {key}: "{self.tokens[token]}"', head, token)
         sheet = f"{self.tokens['--highlight-sheet']}, {self.tokens['--shadow-sheet']}"
@@ -1941,6 +1941,43 @@ console.log(JSON.stringify({
                 self.assertEqual(report["summary"]["files"], 1, label)
                 # Nothing failed, and nothing had to be waived or noted either.
                 self.assertEqual(report["findings"], [], label)
+
+    @unittest.skipUnless(shutil.which("node"), "node is not installed")
+    def test_a_dark_field_is_waived_because_its_colours_are_declared(self) -> None:
+        # The dark output hue of apricot is teal (#003430). On a dark page slop_check gate 2a
+        # reads the field gradient as cyan-on-dark, and waives it only when every stop is a
+        # colour under `colors:` in DESIGN.md. That is why the dark group lives there.
+        mint, apricot = (palette.choose(SPEC, override=name) for name in ("mint", "apricot"))
+        mapping = {
+            mint[group][role]: apricot[group][role]
+            for group in ("colors", "dark") for role in palette.ROLES
+        }
+        page = re.sub("|".join(map(re.escape, mapping)), lambda m: mapping[m.group(0)], self.page)
+        self.assertIn("--color-blob-end: #003430;", page)
+
+        def check(design_edit) -> tuple[int, list[tuple[str, str]]]:
+            with tempfile.TemporaryDirectory() as tmp:
+                applied = run("apply", "style:airy-glass", "--root", tmp, "--palette", "apricot")
+                self.assertEqual(applied.returncode, 0, applied.stderr)
+                design = Path(tmp) / "DESIGN.md"
+                text = design_edit(design.read_text(encoding="utf-8"))
+                design.write_text(text, encoding="utf-8", newline="\n")
+                (Path(tmp) / "index.html").write_text(page, encoding="utf-8", newline="\n")
+                result = subprocess.run(
+                    ["node", str(SLOP_CHECK), tmp, "--json"],
+                    capture_output=True, text=True, encoding="utf-8",
+                )
+            found = json.loads(result.stdout)["findings"]
+            return result.returncode, [(f["gate"], f["grade"]) for f in found]
+
+        self.assertEqual(check(lambda text: text), (0, [("2a", "WAIVED")]))
+
+        def undeclare(text: str) -> str:
+            stripped = re.sub(r'^  [a-z-]+-dark: "#[0-9A-F]{6}"\n', "", text, flags=re.M)
+            self.assertEqual(text.count("\n") - stripped.count("\n"), 12)
+            return stripped
+
+        self.assertEqual(check(undeclare), (1, [("2a", "FAIL")]))
 
 
 def make_project(root: Path, *, css: str | None = None, readme: str | None = None) -> None:
