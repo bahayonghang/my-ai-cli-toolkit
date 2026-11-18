@@ -42,17 +42,17 @@ The "at `322cd509`" column is the result on the commit that devsweep pins (`zed-
 | Inner shadow | `pub inset: bool` in `pub struct BoxShadow` | Found, with `color`, `offset`, `blur_radius`, `spread_radius`. | Draw the top highlight as a 1px child, and the focus ring as a border. 未验证. | Last verified: 2026-11-18 against [style.rs][g-style] |
 | Explicit shadow list | `fn shadow(mut self, shadows` | Found in `gpui_macros/src/styles.rs`. | Use the named presets (`shadow_sm` and so on); they cannot express a negative spread. 未验证. | Last verified: 2026-11-18 against [styles.rs][g-macros] |
 | Embedded fonts | `pub fn add_fonts` | Found in `text_system.rs`; returns `Result`. | Use the system UI font and record it in `Known Gaps`. | Last verified: 2026-11-18 against [text_system.rs][g-text] |
-| Font features | `pub struct FontFeatures`, `fn font_features` | Found. | Drop tabular figures and record it. | Last verified: 2026-11-18 against [styled.rs][g-styled] |
+| Font features | `pub struct FontFeatures`, `fn font_features` | Found. | Drop tabular figures and record it. | Last verified: 2026-11-18 against [styled.rs][g-styled] and [font_features.rs][g-fontfeatures] |
 | Animation | `fn with_animation` | Found in `elements/animation.rs` (trait `AnimationExt`). | Change state without animation. | Last verified: 2026-11-18 against [animation.rs][g-anim] |
 | Reduced motion | `pub fn reduce_motion`, `pub fn set_reduce_motion` | Found in `app.rs`. The flag starts `false`. No `gpui*` crate at this commit sets it from the system; only the Zed application does, from its own settings. | Branch on your own flag before every `with_animation`. | Last verified: 2026-11-18 against [app.rs][g-app] |
 | Window background | `pub enum WindowBackgroundAppearance` | `Opaque` (default), `Transparent`, `Blurred`, `MicaBackdrop`, `MicaAltBackdrop`. | Keep the window opaque (section 8). | Last verified: 2026-11-18 against [platform.rs][g-platform] |
 | Switch window background | `pub window_background`, `fn set_background_appearance` | Found: a `WindowOptions` field and a `Window` method. Neither returns a result. | Keep the window opaque. | Last verified: 2026-11-18 against [window.rs][g-window] |
 | Minimum window size | `pub window_min_size` | Found in `WindowOptions`. | Handle a narrow window in layout only. | Last verified: 2026-11-18 against [platform.rs][g-platform] |
 | State styles | `fn hover`, `fn active`, `fn focus_visible`, `fn track_focus`, `fn tab_index` | Found in `elements/div.rs`. `active` is on `StatefulInteractiveElement`, so the element needs `.id(...)`. | Compute the style from your own state with `.when(...)`. | Last verified: 2026-11-18 against [div.rs][g-div] |
-| Images and icons | `pub fn img(`, `pub fn svg()`, `Svg,` in `pub enum ImageFormat`, `pub fn from_bytes` | Found (`img` in `elements/img.rs`, `svg` in `elements/svg.rs`, `Image::from_bytes` in `platform.rs`). | Blobs fall back to PNG files; icons to glyphs from an icon font. 未验证. | Last verified: 2026-11-18 against [img.rs][g-img] |
+| Images and icons | `pub fn img(`, `pub fn svg()`, `Svg,` in `pub enum ImageFormat`, `pub fn from_bytes` | Found (`img` in `elements/img.rs`, `svg` in `elements/svg.rs`, `Image::from_bytes` in `platform.rs`). | Blobs fall back to PNG files; icons to glyphs from an icon font. 未验证. | Last verified: 2026-11-18 against [img.rs][g-img], [svg.rs][g-svg] and [platform.rs][g-platform] |
 | System appearance | `pub enum WindowAppearance`, `fn observe_window_appearance` | Found: `Light`, `VibrantLight`, `Dark`, `VibrantDark`. | Offer a manual theme switch only. | Last verified: 2026-11-18 against [platform.rs][g-platform] |
 | High contrast, transparency setting | `high_contrast`, `reduce_transparency` | Not found in `gpui/src`. | Query the operating system yourself (section 8). | Last verified: 2026-11-18 against [platform.rs][g-platform] |
-| Deferred and anchored overlays | `pub fn deferred`, `pub fn anchored` | Found. The spike drew its overlay as an absolutely positioned child instead, so these two are 未验证. | Use an absolutely positioned child. | Last verified: 2026-11-18 against [deferred.rs][g-deferred] |
+| Deferred and anchored overlays | `pub fn deferred`, `pub fn anchored` | Found. The spike drew its overlay as an absolutely positioned child instead, so these two are 未验证. | Use an absolutely positioned child. | Last verified: 2026-11-18 against [deferred.rs][g-deferred] and [anchored.rs][g-anchored] |
 
 Record the probe in the final report: the GPUI package name, version or commit, and each row as found or missing.
 
@@ -67,13 +67,13 @@ Record the probe in the final report: the GPUI package name, version or commit, 
 Check that no colour literal lives outside the token module:
 
 ```bash
-grep -rnE '0x[0-9A-Fa-f]{6,8}\b|#[0-9A-Fa-f]{6,8}\b|hsla\( *[0-9]|\b(white|black|red|green|blue|yellow)\(\)' src --include='*.rs' \
+grep -rnE '0x[0-9A-Fa-f]{6,8}\b|#[0-9A-Fa-f]{6,8}\b|hsla\( *[0-9]|\b(white|black|red|green|blue|yellow|transparent_black|transparent_white)\(\)|\bopaque_grey\(' src --include='*.rs' \
   | grep -v 'src/theme.rs'
 ```
 
 It finds hex literals, `hsla(` with numeric arguments, and GPUI's named colour functions. Every remaining line is a defect or a hex constant that is not a colour. Explain each one that stays. This grep is a manual check; it is not a mechanical gate (section 9). The command was run on the devsweep `desktop-gpui/src` tree, where it lists the files that hold colour literals.
 
-Last verified: 2026-11-18 against [color.rs][g-color] (`rgb(hex: u32)`, `rgba(hex: u32)`, `hsla(h, s, l, a)`, and `white()`, `black()`, `red()`, `green()`, `blue()`, `yellow()` are the colour constructors; **source**).
+Last verified: 2026-11-18 against [color.rs][g-color] (`rgb(hex: u32)`, `rgba(hex: u32)`, `hsla(h, s, l, a)`, and `white()`, `black()`, `red()`, `green()`, `blue()`, `yellow()`, `transparent_black()`, `transparent_white()`, `opaque_grey(lightness, opacity)` are the colour constructors; **source**).
 
 ## 4. Material translation
 
@@ -90,7 +90,7 @@ The four layers are defined by the entry (`style:airy-glass`: field, paper, well
 | Wells | A flat `bg()` with the token fill and `rounded(px(well))`. No border. Compositing is per-channel sRGB source-over, within 1/255 of the computed value, so the contrast table from `palette` holds. Text contrast is computed on the composited colour. | C | run |
 | Overlay, no blur | The default. Fill `sheet-solid` (the entry's rule for a stack without backdrop blur), `border_1()` with `sheet_edge`, the overlay highlight, and the overlay shadow through `ground_shadow` with `0 24px 64px -24px`. The shadow recipe is B. The spike drew its overlay with the `overlay` token at 0.82 and 0.84, not with `sheet-solid`; the composited colour of a `sheet-solid` overlay was not sampled. | B (shadow), C (compositing) | Shadow and compositing: run. `sheet-solid` fill on an overlay: 未验证 |
 | Overlay, with blur | Only when section 2 finds `backdrop_blur`, and only for an overlay that content scrolls beneath: fill `overlay`, then the blur call that the probed source defines. Write the call from that source; this file gives none. At most `backdrop-max` such overlays per window. | "没有验证的项": gpui-ce `backdrop_blur` | 未验证 |
-| Radius | `rounded(px(token))`: 20 for paper, 16 for wells and menus, 12 for controls, `rounded_full()` for pills. The radius of an outer shadow does not follow `spread_radius`. | B, notes | run for 20, 16, 12 and the pill; `rounded.check` (4) 未验证 |
+| Radius | `rounded(px(token))`: 20 for paper, 16 for wells and menus, 12 for controls, `rounded_full()` for pills. The radius of an outer shadow does not follow `spread_radius`. | B, notes (shadow radius only) | 未验证. The spike draws 20, 16, 12 and the pill, but no radius was measured; `rounded.check` (4) was not drawn |
 | Focus ring | An inset ring, so nothing paints outside the control: `BoxShadow { inset: true, spread_radius: px(2.), blur_radius: px(0.), offset: point(px(0.), px(0.)), color: input }` plus `border_color(input)`. The spike drew it on the input from its own `is_focused` state. The inset primitive is B row 3; the ring itself was not sampled. The entry's 2px offset is not reproduced: the ring sits inside the control. | B, row 3 (primitive only) | 未验证 |
 
 Last verified: 2026-11-18 against [devsweep#5][spike] (every row above).
@@ -281,7 +281,7 @@ When `frameworks` also contains `gpui-kit` (the `gpui-component` or `gpui-kit` c
 - Find the theme type by grepping the resolved `gpui-component` source (section 2), and write the mapping as a table in the token module: `DESIGN.md` role → library token.
 - A role with no matching library token stays in your own module, under the role name.
 - The library's own default look does not override `DESIGN.md`. Where its components cannot express the entry's material, draw that surface with the recipes in section 4.
-- The backdrop-blur port in that library covers Metal and wgpu, not DirectX, according to `longbridge/gpui-kit#3598` (read on 2026-11-15, not rechecked). Probe before use.
+- The backdrop-blur port in that library covers Metal and wgpu, not DirectX, according to `longbridge/gpui-kit#3598` (not rechecked since that date). Probe before use. Last verified: 2026-11-15 against [gpui-kit#3598][kit-blur]
 
 Nothing in this section was run, and no gpui-kit symbol name was checked: 未验证.
 
@@ -298,7 +298,7 @@ Not run on any platform: gpui-ce `backdrop_blur`; a continuous window-edge drag;
 Sources. The GPUI links point at the pinned commit. They were checked on 2026-11-18 by reading the local Cargo checkout of that commit and by confirming that each file exists upstream at that commit.
 
 - [devsweep#5][spike]: the conclusions table (A–F), its recipes, and its list of items not verified.
-- GPUI source at `322cd509`: [color.rs][g-color], [style.rs][g-style], [styled.rs][g-styled], [styles.rs][g-macros] (`gpui_macros`), [div.rs][g-div], [animation.rs][g-anim], [img.rs][g-img], [svg.rs][g-svg], [deferred.rs][g-deferred], [app.rs][g-app], [window.rs][g-window], [platform.rs][g-platform], [text_system.rs][g-text], [direct_write.rs][g-dwrite] (`gpui_windows`).
+- GPUI source at `322cd509`: [color.rs][g-color], [style.rs][g-style], [styled.rs][g-styled], [styles.rs][g-macros] (`gpui_macros`), [div.rs][g-div], [animation.rs][g-anim], [img.rs][g-img], [svg.rs][g-svg], [deferred.rs][g-deferred], [anchored.rs][g-anchored], [font_features.rs][g-fontfeatures], [app.rs][g-app], [window.rs][g-window], [platform.rs][g-platform], [text_system.rs][g-text], [direct_write.rs][g-dwrite] (`gpui_windows`).
 
 No text in this file comes from the `longbridge/gpui-kit` skills.
 
@@ -312,6 +312,9 @@ No text in this file comes from the `longbridge/gpui-kit` skills.
 [g-img]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/elements/img.rs
 [g-svg]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/elements/svg.rs
 [g-deferred]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/elements/deferred.rs
+[g-anchored]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/elements/anchored.rs
+[g-fontfeatures]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/text_system/font_features.rs
+[kit-blur]: https://github.com/longbridge/gpui-kit/issues/3598
 [g-app]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/app.rs
 [g-window]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/window.rs
 [g-platform]: https://github.com/zed-industries/zed/blob/322cd509dcccaee1f6bc44725d270598ae8171ad/crates/gpui/src/platform.rs

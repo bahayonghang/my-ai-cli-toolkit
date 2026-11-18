@@ -129,6 +129,16 @@ class GpuiReferenceTests(unittest.TestCase):
                 self.assertEqual(len(row), 4, row)
                 cites_spike = re.match(r"[A-F]\b", row[2]) is not None
                 self.assertTrue(cites_spike or "未验证" in row[3], row)
+                self.assertTrue(row[3].lower().startswith(("run", "shadow")) or "未验证" in row[3], row)
+
+    def test_rows_the_spike_did_not_measure_are_marked_unverified(self) -> None:
+        section = spec_text().split("## 4. Material translation", 1)[1].split("## 5. ", 1)[0]
+        for item in ("Radius", "Focus ring", "Overlay, with blur"):
+            rows = [line for line in section.splitlines() if line.startswith(f"| {item} |")]
+            with self.subTest(item=item):
+                self.assertEqual(len(rows), 1)
+                status = rows[0].rstrip().rstrip("|").rsplit("|", 1)[1].strip()
+                self.assertTrue(status.startswith("未验证"), rows[0])
 
     def test_signals_note_names_an_existing_file(self) -> None:
         notes = signals(GPUI_MANIFEST)["notes"]
