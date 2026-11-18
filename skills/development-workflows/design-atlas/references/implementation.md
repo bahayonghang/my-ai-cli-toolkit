@@ -13,9 +13,12 @@ Read the project before you write code:
 | CSS Modules, plain CSS, Sass                                     | `:root { --… }` custom properties in one global file                                   |
 | CSS-in-JS (styled-components, Emotion, MUI, Chakra)              | the library's theme object                                                             |
 | Component library with its own tokens (shadcn/ui, Ant Design)    | map DESIGN.md roles onto the library's token names; do not run two parallel token sets |
-| Native or other UI frameworks                                    | the platform's theme or style resource file                                            |
+| GPUI (`signals` reports `gpui` in `frameworks`)                  | one Rust token module; follow [implementation-gpui.md](implementation-gpui.md)         |
+| Other native or UI frameworks                                    | the platform's theme or style resource file                                            |
 
 If the project already has a token layer, extend or replace it. Do not add a second one.
+
+A GPUI project reads [implementation-gpui.md](implementation-gpui.md) in place of sections 2 and 5 of this file. Its project root is the crate directory that declares the GPUI dependency. No other stack reads that file.
 
 ## 2. Build the token layer
 
@@ -86,7 +89,7 @@ Build to `anti-slop.md` from the first line, not only at the end. The rules most
 
 ## 5. Verify at runtime
 
-Compile success is not visual verification. Do these checks in a running page:
+Compile success is not visual verification. A GPUI project has no browser page: follow the Verify section of [implementation-gpui.md](implementation-gpui.md) (section 9) in place of the steps below, then continue with section 6. Every other project does these checks in a running page:
 
 1. Start the dev server or open the HTML file in a browser.
 2. Take screenshots at a desktop width (about 1440px) and a mobile width (about 390px).
@@ -113,7 +116,7 @@ The script finds `DESIGN.md` by walking up from the first path; pass `--design <
 3. Walk the judged checklist in `anti-slop.md` section 6 against the screenshots from section 5. Fix what fails.
 4. Run the fresh-context review in `review-prompt.md`. On `fix`, apply the fixes and repeat from step 1; on `rebuild`, return to section 4.
 
-WARN lines are worth a look but do not block. The mechanical gates do not run in two cases: Node 20 or later is not available, or the script exits 2 with `no scannable files`. In either case, write in the report that the mechanical gates did not run and why, then walk every gate in `anti-slop.md` section 3 by hand.
+WARN lines are worth a look but do not block. The mechanical gates do not run in two cases: Node 20 or later is not available, or the script exits 2 with `no scannable files`. In either case, write in the report that the mechanical gates did not run and why, then walk every gate in `anti-slop.md` section 3 by hand. A Rust-only GPUI source directory is the second case. Its fresh-context review uses the native-window variant in `review-prompt.md`.
 
 ## 7. Final report
 

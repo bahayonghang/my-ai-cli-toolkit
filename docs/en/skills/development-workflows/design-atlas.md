@@ -4,7 +4,7 @@
 
 ## Purpose overview
 
-UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates.
+UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates.
 
 ## Trigger scenarios
 
@@ -34,9 +34,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | `skills/development-workflows/design-atlas/assets` | directory | 215 | Assets |
 | `skills/development-workflows/design-atlas/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/design-atlas/README.md` | file | 1 | Top-level file |
-| `skills/development-workflows/design-atlas/references` | directory | 10 | Reference material |
+| `skills/development-workflows/design-atlas/references` | directory | 11 | Reference material |
 | `skills/development-workflows/design-atlas/scripts` | directory | 4 | Executable scripts |
-| `skills/development-workflows/design-atlas/tests` | directory | 37 | Automated tests |
+| `skills/development-workflows/design-atlas/tests` | directory | 38 | Automated tests |
 
 ## Scripts, references, and test resources
 

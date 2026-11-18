@@ -4,7 +4,7 @@
 
 ## 用途概览
 
-UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates.
+UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates.
 
 ## 触发场景
 
@@ -34,9 +34,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | `skills/development-workflows/design-atlas/assets` | 目录 | 215 | 素材资源 |
 | `skills/development-workflows/design-atlas/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/design-atlas/README.md` | 文件 | 1 | 顶层文件 |
-| `skills/development-workflows/design-atlas/references` | 目录 | 10 | 引用资料 |
+| `skills/development-workflows/design-atlas/references` | 目录 | 11 | 引用资料 |
 | `skills/development-workflows/design-atlas/scripts` | 目录 | 4 | 可执行脚本 |
-| `skills/development-workflows/design-atlas/tests` | 目录 | 37 | 自动化测试 |
+| `skills/development-workflows/design-atlas/tests` | 目录 | 38 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 

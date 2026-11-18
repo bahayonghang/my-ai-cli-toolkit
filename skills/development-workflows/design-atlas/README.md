@@ -18,6 +18,7 @@ A complete UI design skill: pick a design language from an offline catalog (auto
 - 给项目创建、定制或更换 `DESIGN.md`，按已有 `DESIGN.md` 实施或改造页面
 - 改已有页面或组件：保留当前外观并去掉模板感，或换成另一种设计语言，同时保留业务逻辑和必要信息
 - 审查已有页面的“AI 模板味”（只出报告，不改文件）
+- 在 GPUI 原生应用里按 `DESIGN.md` 实施界面：`signals` 报出 `gpui` 时改走 `references/implementation-gpui.md`，项目根是声明 GPUI 依赖的 crate 目录，成品在原生窗口里验证
 
 不适用：文案或段落的去 AI 味改写（用 `write`）；HTML 报告、计划、幻灯片式产出物（用 `html-artifact`）；截图或设计稿的忠实复刻（用 `image-to-ui-skill`；只借鉴点名的网格、字号比例等属性仍用本技能）；3D 场景建模与灯光、独立 SVG 资产优化、代码动画或视频；非 UI 任务。
 
@@ -153,7 +154,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - 项目根目录的 `DESIGN.md`（必要时附旧文件备份）
 - 一个 token 层（CSS 变量、Tailwind theme 或项目现有主题文件）
 - 按 `DESIGN.md` 实现的组件与页面
-- 运行时核对结果：桌面与移动端截图、键盘焦点、对比度、组件状态
+- 运行时核对结果：桌面与移动端截图、键盘焦点、对比度、组件状态；GPUI 项目是默认窗口尺寸和最小宽度下的原生截图，浅色深色各一组
 - anti-slop 结果：`slop_check` 汇总行、生效的豁免、复核结论
 - 有精修改动时：适用项与 n/a 原因、状态/回退检查及证据路径；未运行项逐项列明
 
@@ -164,6 +165,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - 主题是“材质”，不规定页面结构；hallmark 的页面构成库、图片库、截图采集与渲染层检查没有引入。
 - `slop_check.mjs` 只做静态检查，不启动浏览器。
 - `slop_check.mjs` 只读 `.css`、`.html`、`.jsx`、`.tsx`、`.vue`、`.svelte`、`.astro` 和 `tailwind.config.*`。路径下没有这些文件时（例如只有 `.rs` 的原生源码目录），脚本从 0.7.0 起以退出码 2 结束，stderr 写明 `no scannable files`，stdout 为空；此前是输出 `files 0` 并以 0 退出。这表示机械门禁没有运行，不是通过；此时按 `references/anti-slop.md` 第 3 节手动走每个 gate。
+- GPUI 实施规范（`references/implementation-gpui.md`）只在 Windows 上验证过一部分写法（GPUI `gpui` 0.2.2，zed `322cd509`，2026-11-16 的 spike）；macOS 和 Linux 未验证，其余写法在文件里标着「未验证」。Rust 源码没有机械门禁，其他原生框架没有对应规范。
 - 精修参考及确定性测试不证明生成效果更好；行为 eval 的 schema 检查不执行模型，人工审美比较未运行时仍为缺失证据。
 - 3D 场景建模与灯光、独立 SVG 资产优化、代码动画与视频不在本技能范围内。页面里嵌着画布、视频或插画时，仍可改外围界面，不改嵌入物自身的建模、灯光或绘制。
 - `DA1`–`DA8` 不改变 `slop_check` 退出码。gate 19 的中文套话命中会使退出码从 0 变为 1。
