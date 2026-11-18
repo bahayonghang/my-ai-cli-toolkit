@@ -288,6 +288,53 @@ not delete `first-party/` or `LICENSES/`.
   baseline/candidate model outputs and human blind review. Pending output or
   runtime cases remain `missing evidence` with no inferred winner.
 
+### GPUI implementation reference (design-atlas 0.7.0)
+
+Source: `bahayonghang/my-ai-cli-toolkit#52`, parent `#47` (D3, D4, D10).
+
+- Separate file. GPUI guidance lives only in
+  `references/implementation-gpui.md`. It is read only when `signals` reports
+  `gpui`. `references/implementation.md` routes to it from the stack table and
+  from section 5 and does not copy its recipes. There is no generic native
+  stack layer, and no other native framework has a reference.
+- Capabilities are probed. The file tells the agent to find the GPUI source
+  the project resolves to (`cargo metadata`) and grep it for each symbol. A
+  symbol that was not found in source is written as 「未验证」, never as a
+  remembered API name.
+- External facts are dated. Each statement about GPUI behaviour carries
+  `Last verified: <date> against <URL>`. A material recipe names the row of
+  the `bahayonghang/devsweep#5` conclusions table it comes from, or is marked
+  「未验证」.
+- Platform status is stated. Windows is verified for the rows that were run,
+  with the date and the GPUI version; macOS and Linux are 「未验证」.
+- Do not copy text from the `longbridge/gpui-kit` skills (licence shown as
+  `NOASSERTION`).
+- When `collect_signals` reports `gpui` for the root, `notes` carries one line
+  that names `references/implementation-gpui.md` (`GPUI_SPEC` in
+  `scripts/design_catalog.py`). A GPUI crate one directory down gets the
+  `--root` hint only.
+- `tests/test_gpui_contract.py` checks reachability from `SKILL.md`,
+  `references/implementation.md` and `references/review-prompt.md`, local
+  links, a dated source line, and that the path in the `signals` note exists.
+  It does not check that a recipe renders.
+- Rust source has no mechanical gate. On Rust-only source `slop_check.mjs`
+  exits 2, and the report says the mechanical gates did not run.
+
+Choices the ticket did not confirm (inference):
+
+- The file is written in English like the other references, with eleven
+  numbered sections; the test locks their titles and order.
+- `Last verified` lines link the source through reference-style links defined
+  at the end of the file, and the test requires each label to be defined.
+- The three status labels are **run**, **source**, and 「未验证」.
+- An overlay without backdrop blur takes `sheet-solid`, following the entry's
+  Responsive Behavior table, although the spike drew its overlay with the
+  `overlay` token.
+- The note is added whenever `gpui` is in `frameworks`, including when a CSS
+  token layer is also present.
+- The native review is a variant section in `references/review-prompt.md`
+  that lists replacements for the web prompt, not a second full prompt.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

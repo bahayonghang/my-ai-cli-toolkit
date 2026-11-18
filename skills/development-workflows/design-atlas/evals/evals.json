@@ -413,6 +413,47 @@
         "Distinguishes source/screenshot findings from runtime scroll, interruption, keyboard/touch and reduced-motion checks",
         "Lists each unrun check as unverified and does not claim aesthetic improvement from schema validation"
       ]
+    },
+    {
+      "id": 35,
+      "prompt": "desktop-gpui/ 是一个 GPUI 应用（Cargo.toml 里依赖 gpui），目录里已经有 DESIGN.md。按它把 Clean 页做出来。",
+      "expected_output": "Implements the page from the existing DESIGN.md in the GPUI crate by references/implementation-gpui.md, verifies in the native window, and reports honestly which checks did not run.",
+      "files": [],
+      "assertions": [
+        "Uses the crate directory that declares the GPUI dependency as the project root, implements from the DESIGN.md there, and does not run route or apply or replace it",
+        "Reads references/implementation-gpui.md after signals reports gpui, and finds the resolved GPUI source with cargo metadata and greps it before writing a style or window call",
+        "Puts every token in one Rust module with a light group and a dark group named after the DESIGN.md roles, and leaves no colour literal in other source files",
+        "Verifies with native screenshots at the default window size and at the minimum width in light and in dark, not with 1440px and 390px browser screenshots",
+        "Reports that the mechanical gates did not run because slop_check.mjs exits 2 with no scannable files on Rust-only source, walks the anti-slop gates by hand, and does not call that a pass",
+        "Marks each verification step as run or not run with the reason, and makes no claim about macOS or Linux"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "给这个 GPUI 桌面应用用轻盈毛玻璃做一个新的设置界面，现在还没有 DESIGN.md。",
+      "expected_output": "Applies style:airy-glass to the GPUI crate root, writes both colour groups, and builds the four-layer material with GPUI primitives without depending on blur.",
+      "files": [],
+      "assertions": [
+        "Runs apply style:airy-glass with --root set to the GPUI crate directory, and chooses the colourway with --prompt or --palette because signals cannot read Rust tokens",
+        "Draws the field as a two-stop linear gradient with blobs that fade radially (an in-memory SVG radial gradient drawn as an image), not as blurred elements and not as four linear gradients",
+        "Draws paper with a translucent fill, a 1px edge, an inset top highlight, and a negative-spread shadow kept outside the paper, with at least two papers on a visible field and no paper nested in paper",
+        "Uses backdrop blur only for an overlay and only when the capability probe finds it in the resolved GPUI source; otherwise the overlay takes the opaque fallback fill from DESIGN.md",
+        "Keeps the window background opaque by default, and does not vendor or patch a platform crate or rely on Mica or a system backdrop for the glass look",
+        "Compares native screenshots with the bundled airy-glass reference page at the same sizes in light and in dark, and checks the token values against palette --format json",
+        "Labels recipes that implementation-gpui.md marks 未验证 as unverified in the report instead of presenting them as proven"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "这是一个 Tauri 应用，前端是 React 加 Tailwind。用轻盈毛玻璃重做设置页。",
+      "expected_output": "Routing-negative for the GPUI reference. A Tauri project renders in a webview, so the web token layer and the browser verification steps apply.",
+      "files": [],
+      "assertions": [
+        "Does not read or follow references/implementation-gpui.md, because signals does not report gpui for this project",
+        "Builds the token layer in the project's CSS or Tailwind theme and follows references/implementation.md sections 2 and 5",
+        "Verifies in a running page with desktop and narrow screenshots and runs slop_check.mjs on the web source",
+        "Does not run cargo metadata to probe GPUI capabilities and does not create a Rust token module"
+      ]
     }
   ]
 }

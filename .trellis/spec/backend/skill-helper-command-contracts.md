@@ -420,6 +420,11 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
     `no CSS token layer found` is replaced by one saying the tokens are in
     Rust source, which the script does not read, and that the colourway comes
     from `--palette` or `--prompt`.
+  - With `gpui` reported, `notes` also carries one line that names
+    `references/implementation-gpui.md` (`GPUI_SPEC`), with or without a CSS
+    token layer (`bahayonghang/my-ai-cli-toolkit#52`). The path is relative
+    to the skill directory and must exist; `tests/test_gpui_contract.py`
+    checks it. The child-crate hint below does not carry this line.
   - With no GPUI dependency in the root manifest, `<child>/Cargo.toml` one
     level down is checked, skipping `SKIP_DIRS`. A hit adds a note with that
     relative path and the `--root` to rerun with; `frameworks` does not change.
