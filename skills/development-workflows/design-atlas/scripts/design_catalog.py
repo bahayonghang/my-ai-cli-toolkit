@@ -41,7 +41,8 @@ README head, CSS token blocks, Tailwind config, DESIGN.md) and prints JSON. It
 never writes. Unreadable sources are listed in "notes". "frameworks" lists the
 npm frameworks, then "gpui" (and "gpui-kit") when the root Cargo.toml depends
 on GPUI. A GPUI crate one directory down is not a framework of this root; it
-is a note that names the --root to rerun with.
+is a note that names the --root to rerun with. When "gpui" is reported, a note
+names references/implementation-gpui.md, the file to implement and verify by.
 
 route scores every routable entry (non-superseded style, theme, scene; brands
 only with --include-brands) against the prompt and, with --root, the project
@@ -374,6 +375,8 @@ FRAMEWORKS = (
     "next", "vite", "astro", "nuxt", "@sveltejs/kit", "svelte", "@remix-run/react",
     "gatsby", "react", "vue", "solid-js", "angular", "@angular/core",
 )
+# Named in a signals note when the root is a GPUI project. Relative to the skill directory.
+GPUI_SPEC = "references/implementation-gpui.md"
 # Cargo package name (as published on crates.io) -> the frameworks it implies.
 # gpui-pre is the Zed snapshot that gpui-kit pins, gpui-fast its optional
 # renderer, gpui-ce the community fork.
@@ -894,6 +897,11 @@ def collect_signals(root: Path) -> dict:
         )
     else:
         notes.append("no CSS token layer found")
+    if "gpui" in cargo:
+        notes.append(
+            f"GPUI project: implement and verify by {GPUI_SPEC} in the skill directory, "
+            "not by the browser steps"
+        )
 
     design = [p for p in root.iterdir() if p.is_file() and p.name.lower() == "design.md"] if root.is_dir() else []
     out["design_md"] = str(design[0]) if design else None

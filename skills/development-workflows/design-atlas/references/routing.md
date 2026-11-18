@@ -29,7 +29,9 @@ python "<skill-dir>/scripts/design_catalog.py" route --prompt "<the user's reque
   `package`), plus `gpui-kit` for `gpui-component` or `gpui-kit`. A GPUI
   project has no CSS token layer: `notes` says the tokens are in Rust source,
   which the script does not read, so name the colourway with `--palette` or
-  `--prompt`. When GPUI is only in a `Cargo.toml` one directory down,
+  `--prompt`. A second note names `references/implementation-gpui.md`
+  ([implementation-gpui.md](implementation-gpui.md)), the file a GPUI project
+  is implemented and verified by. When GPUI is only in a `Cargo.toml` one directory down,
   `frameworks` stays as it is and `notes` names that file and the `--root` to
   rerun with.
 - `route` prints the top 3 with a score breakdown

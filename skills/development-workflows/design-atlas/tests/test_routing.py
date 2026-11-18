@@ -463,6 +463,31 @@ class CargoSignalTests(unittest.TestCase):
                 self.assertIn("--palette", hint[0])
                 self.assertIn("--prompt", hint[0])
 
+    def test_gpui_project_is_pointed_at_the_gpui_reference(self) -> None:
+        for manifest in (GPUI_GIT, GPUI_WORKSPACE_PATH, GPUI_TARGET, GPUI_RENAMED, GPUI_COMPONENT):
+            with self.subTest(manifest=manifest):
+                notes = self.signals(manifest)["notes"]
+                hint = [n for n in notes if "references/implementation-gpui.md" in n]
+                self.assertEqual(len(hint), 1, notes)
+
+    def test_gpui_reference_note_does_not_depend_on_a_missing_css_layer(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_cargo_project(root, GPUI_GIT)
+            (root / "tokens.css").write_text(
+                ":root { --background: #ffffff; --primary: #0e5caf; }", encoding="utf-8"
+            )
+            data = dc.collect_signals(root)
+        self.assertIsNotNone(data["palette"])
+        self.assertFalse([n for n in data["notes"] if "Rust source" in n], data["notes"])
+        self.assertEqual(
+            len([n for n in data["notes"] if "implementation-gpui.md" in n]), 1, data["notes"]
+        )
+
+    def test_child_crate_hint_does_not_name_the_gpui_reference(self) -> None:
+        data = self.signals(WORKSPACE_WITHOUT_GPUI, children={"desktop": GPUI_GIT})
+        self.assertFalse([n for n in data["notes"] if "implementation-gpui.md" in n], data["notes"])
+
     def test_gpui_in_a_child_crate_is_a_note_not_a_framework(self) -> None:
         data = self.signals(
             WORKSPACE_WITHOUT_GPUI,
