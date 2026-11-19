@@ -363,3 +363,125 @@ Implemented style-preserving craft guidance, evals and contract tests; committed
 ### Next Steps
 
 - Runtime replay, actual model A/B output comparison and human aesthetic review remain missing evidence; archival does not turn these into passed checks.
+
+
+## Session 77: design-atlas GPUI spec and tickets published
+<!-- trellis-session: v=2 fp=980c3d090f9d5485 -->
+
+**Date**: 2026-11-16
+**Task**: design-atlas GPUI spec and tickets published
+**Branch**: `dev`
+
+### Summary
+
+Diagnosed why the GPUI airy-glass result (DevSweep) trails the Tauri one (SkillPort), settled 11 decisions with the user in two grilling rounds, and published the spec plus 7 tickets as GitHub issues. No skill file changed. The spec issue is the single source of truth; the research topic keeps only what is outside it.
+Topics: [.trellis/research/design-atlas-gpui-material.md](../../research/design-atlas-gpui-material.md)
+
+### Main Changes
+
+- Published spec bahayonghang/my-ai-cli-toolkit#47 with sub-issues #48-#52 and bahayonghang/devsweep#5, #6; native parent and blocked-by links, including cross-repo.
+- Created the four missing triage labels in bahayonghang/devsweep, as its AGENTS.md declares them.
+- Added research topic design-atlas-gpui-material.md: confirmed decisions (summary), measured seed contrast, source-read GPUI facts, unverified items.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] All 8 issues read back: titles and bodies match the drafts, labels set, 7 sub-issues under #47, open blockers 1 (#51), 5 (#52), 1 (devsweep#6).
+- [--] No code or skill file changed, so just ci was not run.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Start with the unblocked tickets: #48, #49, #50 and bahayonghang/devsweep#5. GPUI recipes stay unverified until devsweep#5 reports.
+
+
+## Session 78: design-atlas GPUI 并排验收与测试隔离记录
+<!-- trellis-session: v=2 fp=524c2a871a22db24 -->
+
+**Date**: 2026-11-19
+**Task**: design-atlas GPUI 并排验收与测试隔离记录
+**Branch**: `dev`
+
+### Summary
+
+toolkit 集成分支已推送，五张实施工单关闭。DevSweep 已存同尺寸并排图、焦点修复和原生状态记录；安全软件隔离产品测试程序，最终门禁和人工签收待完成。
+Topics: [.trellis/research/design-atlas-gpui-material.md](../../research/design-atlas-gpui-material.md)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 79: DevSweep #6 完整门禁复验通过
+<!-- trellis-session: v=2 fp=25016d520492c28d -->
+
+**Date**: 2026-11-19
+**Task**: DevSweep #6 完整门禁复验通过
+**Branch**: `dev`
+
+### Summary
+
+加入火绒信任区后，默认并发 just gpui 连续两次全过。已更新本地报告和 #6 评论，等待并排图人工签收。
+Topics: [.trellis/research/design-atlas-gpui-material.md](../../research/design-atlas-gpui-material.md)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 80: DevSweep Clean 并排图签收，关闭 #6
+<!-- trellis-session: v=2 fp=f8fb3d2a89a8e1fb -->
+
+**Date**: 2026-11-19
+**Task**: DevSweep Clean 并排图签收，关闭 #6
+**Branch**: `dev`
+
+### Summary
+
+维护者签收四组原生对照，DevSweep #6 已按完成关闭，签收进度已同步到 toolkit #47。DevSweep 的签收提交 4b9062e 再次通过 just gpui。
+Topics: [.trellis/research/design-atlas-gpui-material.md](../../research/design-atlas-gpui-material.md)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 81: design-atlas 0.7.0 与 DevSweep 双仓合并、八张工单关闭
+<!-- trellis-session: v=2 fp=fe19cbb2386e9acc -->
+
+**Date**: 2026-11-19
+**Task**: design-atlas 0.7.0 与 DevSweep 双仓合并、八张工单关闭
+**Branch**: `dev`
+
+### Summary
+
+toolkit PR #53（a98d1791）与 DevSweep PR #7（324e72b）均合并到 dev。已从 GitHub 核实父工单 toolkit #47 及七个子工单全部按完成关闭。DevSweep 九项远端检查通过。
+Topics: [.trellis/research/design-atlas-gpui-material.md](../../research/design-atlas-gpui-material.md)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a98d1791` | Merge pull request #53 from bahayonghang/feat/design-atlas-gpui |
+
+### Status
+
+[OK] **Completed**
