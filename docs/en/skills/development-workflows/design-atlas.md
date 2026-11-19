@@ -4,7 +4,7 @@
 
 ## Purpose overview
 
-UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates.
+UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates.
 
 ## Trigger scenarios
 
@@ -17,7 +17,7 @@ UI design skill with an offline catalog of 202 design languages (84 brands, 67 s
 | --- | --- |
 | Name | `design-atlas` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.6.0` |
+| Version | `0.7.0` |
 | Tags | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility`, `anti-ai-slop` |
 
 ## Install command
@@ -31,12 +31,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | directory | 1 | Companion agents |
-| `skills/development-workflows/design-atlas/assets` | directory | 214 | Assets |
+| `skills/development-workflows/design-atlas/assets` | directory | 215 | Assets |
 | `skills/development-workflows/design-atlas/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/design-atlas/README.md` | file | 1 | Top-level file |
-| `skills/development-workflows/design-atlas/references` | directory | 10 | Reference material |
+| `skills/development-workflows/design-atlas/references` | directory | 11 | Reference material |
 | `skills/development-workflows/design-atlas/scripts` | directory | 4 | Executable scripts |
-| `skills/development-workflows/design-atlas/tests` | directory | 37 | Automated tests |
+| `skills/development-workflows/design-atlas/tests` | directory | 38 | Automated tests |
 
 ## Scripts, references, and test resources
 

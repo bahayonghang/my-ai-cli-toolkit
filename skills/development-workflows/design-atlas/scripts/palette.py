@@ -6,8 +6,15 @@ This module is pure: colour math, WCAG contrast gates, preset choice, hue
 derivation, and DESIGN.md rendering. It never reads or writes project files;
 design_catalog.py passes in the project signals and does the I/O.
 
-Contrast method: white paper at alpha 0.78 is mixed over a field colour per
-sRGB channel with 8-bit rounding, then WCAG 2.x relative luminance is used.
+A colourway has two groups, light and dark, with the same nine roles. Both are
+chosen, gated, and rendered together.
+
+Contrast method: every layer is mixed over the one below per sRGB channel with
+8-bit rounding, then WCAG 2.x relative luminance is used. The field has eight
+backgrounds: its two ends, and each of the three blobs at blob-alpha over each
+end. Light paper is white at sheet-alpha over one of them. Dark paper is its
+own colour at its own alpha, and the dark group is measured on overlays as
+well. A "worst" row reports the background with the lowest ratio for that pair.
 """
 
 from __future__ import annotations
@@ -20,8 +27,10 @@ from pathlib import Path
 CATALOG = Path(__file__).resolve().parents[1] / "assets" / "catalog"
 PALETTES = CATALOG / "overlays" / "palettes.json"
 WHITE = "#FFFFFF"
-ROLES = ("field-start", "field-end", "input", "input-wash", "output", "output-wash")
+BLOBS = ("blob-start", "blob-end", "blob-mid")
+ROLES = ("field-start", "field-end", *BLOBS, "input", "input-wash", "output", "output-wash")
 TEXT_MIN = 4.5
+EDGE_MIN = 3.0
 PROJECT_WEIGHT = 0.5
 MAX_SKIP_NOTES = 3
 
@@ -29,12 +38,26 @@ MAX_SKIP_NOTES = 3
 FIELD_START = (0.96, 0.020)
 FIELD_END = (0.94, 0.025)
 FIELD_MAX_C = 0.03
+BLOB_START = (0.92, 0.038)
+BLOB_END = (0.895, 0.041)
+BLOB_MID = (0.93, 0.025)
 WASH = (0.965, 0.020)
 ACCENT = (0.52, 0.12)
 ACCENT_MIN_L = 0.30
 ACCENT_MIN_C = 0.04
 STEP_L = 0.005
 STEP_C = 0.02
+
+# Dark derivation template (OKLCH lightness, chroma), modelled on the dark group of
+# the mint preset. The lightness order is reversed: the field is the darkest layer,
+# a blob is a little lighter than it, and an accent is light enough to be text.
+DARK_FIELD_START = (0.213, 0.019)
+DARK_FIELD_END = (0.217, 0.039)
+DARK_BLOB_START = (0.284, 0.038)
+DARK_BLOB_END = (0.294, 0.076)
+DARK_BLOB_MID = (0.258, 0.039)
+DARK_WASH = (0.31, 0.035)
+DARK_ACCENT = (0.79, 0.125)
 
 
 def load_palettes(path: Path | None = None) -> dict:
@@ -158,33 +181,177 @@ def in_reserved(hue: float, reserved: list[list[float]]) -> bool:
 # --- gates -------------------------------------------------------------------
 
 
-def gates(colors: dict, fixed: dict) -> list[dict]:
-    """The contrast pairs for one colourway. edge-field is reported, not gated."""
-    alpha = float(fixed["sheet-alpha"])
-    ink, muted = fixed["ink"], fixed["muted"]
-    start, end = colors["field-start"], colors["field-end"]
-    sheet_start, sheet_end = over(WHITE, start, alpha), over(WHITE, end, alpha)
-    rows = [
-        ("ink-white", ink, WHITE, WHITE, TEXT_MIN, "正文,不透明回退"),
-        ("ink-sheet-start", ink, sheet_start, f"白 {alpha:g} 叠 `{start}`", TEXT_MIN, "正文,字段起点"),
-        ("ink-sheet-end", ink, sheet_end, f"白 {alpha:g} 叠 `{end}`", TEXT_MIN, "正文,字段终点"),
-        ("muted-sheet-start", muted, sheet_start, f"白 {alpha:g} 叠 `{start}`", TEXT_MIN, "次要文字,字段起点"),
-        ("muted-sheet-end", muted, sheet_end, f"白 {alpha:g} 叠 `{end}`", TEXT_MIN, "次要文字,字段终点"),
-        ("input-wash", colors["input"], colors["input-wash"], colors["input-wash"], TEXT_MIN, "输入或完成,正文与大号数字"),
-        ("input-white", colors["input"], WHITE, WHITE, TEXT_MIN, "链接与焦点环"),
-        ("output-wash", colors["output"], colors["output-wash"], colors["output-wash"], TEXT_MIN, "输出,正文与大号数字"),
-        ("output-white", colors["output"], WHITE, WHITE, TEXT_MIN, "输出色在白纸上"),
-        ("edge-field", WHITE, start, start, None, "白描边,不能当控件边界"),
+def backgrounds(colors: dict, fixed: dict) -> list[tuple[str, str]]:
+    """Every field colour that paper or text can meet, as (hex, label).
+
+    The two bare field ends come first, then each blob at blob-alpha over each end.
+    """
+    alpha = float(fixed["blob-alpha"])
+    ends = (colors["field-start"], colors["field-end"])
+    out = [(end, f"`{end}`") for end in ends]
+    for role in BLOBS:
+        out.extend(
+            (over(colors[role], end, alpha), f"`{colors[role]}` {alpha:.2f} 叠 `{end}`")
+            for end in ends
+        )
+    return out
+
+
+def _on(label: str) -> str:
+    """A background label as the lower layer of another mix."""
+    return f"({label})" if " 叠 " in label else label
+
+
+def _worst(fg: str, surfaces: list[tuple[str, str]]) -> tuple[str, str]:
+    """The (hex, label) surface on which fg has the lowest contrast."""
+    return min(surfaces, key=lambda surface: contrast(fg, surface[0]))
+
+
+def _layer(value: dict) -> tuple[str, float]:
+    return value["color"], float(value["alpha"])
+
+
+def _material(fixed: dict, theme: str) -> dict:
+    """The fixed values of one group in one shape: a surface is a (colour, alpha) pair.
+
+    Light paper is white at an alpha. Dark paper and overlays are their own colour
+    at their own alpha; white at any alpha would be lighter than the text on it.
+    """
+    if theme == "light":
+        return {
+            "ink": fixed["ink"],
+            "muted": fixed["muted"],
+            "sheet": (WHITE, float(fixed["sheet-alpha"])),
+            "control-edge": _layer(fixed["control-edge"]),
+        }
+    if theme == "dark":
+        dark = fixed["dark"]
+        return {
+            "ink": dark["ink"],
+            "muted": dark["muted"],
+            "sheet": _layer(dark["sheet"]),
+            "overlay": _layer(dark["overlay"]),
+            "sheet-edge": _layer(dark["sheet-edge"]),
+            "control-edge": _layer(dark["control-edge"]),
+        }
+    raise ValueError(f"theme must be light or dark; got {theme!r}")
+
+
+def _name(color: str) -> str:
+    """A colour as the upper layer of a mix. White is spelled out, the rest are hex."""
+    return "白" if color.upper() == WHITE else f"`{color}`"
+
+
+def gates(colors: dict, fixed: dict, theme: str = "light") -> list[dict]:
+    """The contrast pairs for one group of a colourway. Rows with min None are reported, not gated.
+
+    The dark group measures the same pairs on its own paper, with the paper colour
+    as the opaque fallback, then repeats the text and control-edge pairs on
+    overlays. A dark overlay is lighter than dark paper, so it is the weaker
+    surface for light text. A light overlay is whiter than light paper, so text
+    that passes on paper passes on it and the light group has no overlay rows.
+    """
+    material = _material(fixed, theme)
+    dark = theme == "dark"
+    sheet_color = material["sheet"][0]
+    well_alpha = float(fixed["well-alpha"])
+    edge_color, edge_alpha = material["control-edge"]
+    ink, muted = material["ink"], material["muted"]
+    start = colors["field-start"]
+
+    def tick(value: str) -> str:
+        return f"`{value}`"
+
+    fields = backgrounds(colors, fixed)
+
+    def laid(layer: tuple[str, float]) -> list[tuple[str, str]]:
+        """One translucent layer over every field background, as (hex, label)."""
+        color, alpha = layer
+        return [
+            (over(color, bg, alpha), f"{_name(color)} {alpha:.2f} 叠 {_on(label)}")
+            for bg, label in fields
+        ]
+
+    def weakest_edge(surfaces: list[tuple[str, str]]) -> tuple[str, tuple[str, str]]:
+        """The control edge and the surface under it, where the two are closest."""
+        return min(
+            ((over(edge_color, surface, edge_alpha), (surface, label)) for surface, label in surfaces),
+            key=lambda pair: contrast(pair[0], pair[1][0]),
+        )
+
+    papers = laid(material["sheet"])
+    wells = [
+        (over(ink, paper, well_alpha), f"{tick(ink)} {well_alpha:.2f} 叠 {label}")
+        for paper, label in papers
     ]
+    sheet_start, sheet_end = papers[0], papers[1]
+    edge, edge_paper = weakest_edge(papers)
+    flat_paper, flat_field = min(
+        zip(papers, fields), key=lambda pair: contrast(pair[0][0], pair[1][0])
+    )
+    muted_field = _worst(muted, fields)
+    verdict = "可以" if contrast(muted, muted_field[0]) >= TEXT_MIN else "不可"
+    solid = (sheet_color, tick(sheet_color))
+    input_wash = (colors["input-wash"], tick(colors["input-wash"]))
+    output_wash = (colors["output-wash"], tick(colors["output-wash"]))
+    fg_labels = {
+        "control-edge-sheet": f"{_name(edge_color)} {edge_alpha:.2f} 叠纸",
+        "sheet-field": flat_paper[1],
+    }
+    if dark:
+        ink_solid, input_solid, output_solid = "ink-solid", "input-solid", "output-solid"
+        on_input = "深色字"
+        line_color, line_alpha = material["sheet-edge"]
+        paper_edge = over(line_color, sheet_start[0], line_alpha)
+        paper_edge_use = "纸的描边,不能当控件边界"
+        fg_labels["edge-field"] = f"{_name(line_color)} {line_alpha:.2f} 叠纸"
+    else:
+        ink_solid, input_solid, output_solid = "ink-white", "input-white", "output-white"
+        on_input = "白字"
+        paper_edge = WHITE
+        paper_edge_use = "白描边,不能当控件边界"
+    rows = [
+        (ink_solid, ink, solid, TEXT_MIN, "正文,不透明回退"),
+        ("ink-sheet-start", ink, sheet_start, TEXT_MIN, "正文,纸在底场起点上"),
+        ("ink-sheet-end", ink, sheet_end, TEXT_MIN, "正文,纸在底场终点上"),
+        ("muted-sheet-start", muted, sheet_start, TEXT_MIN, "次要文字,纸在底场起点上"),
+        ("muted-sheet-end", muted, sheet_end, TEXT_MIN, "次要文字,纸在底场终点上"),
+        ("ink-sheet-worst", ink, _worst(ink, papers), TEXT_MIN, "正文,最差的纸"),
+        ("muted-sheet-worst", muted, _worst(muted, papers), TEXT_MIN, "次要文字,最差的纸"),
+        ("muted-well-worst", muted, _worst(muted, wells), TEXT_MIN, "次要文字,最差的纸上的中性内容块"),
+        ("ink-field-worst", ink, _worst(ink, fields), TEXT_MIN, "正文直接落在底场上,最差的色斑"),
+        ("muted-field-worst", muted, muted_field, None, f"次要文字落在底场上,只报告,本色板{verdict}"),
+        ("control-edge-sheet", edge, edge_paper, EDGE_MIN, "输入框、复选框、单选、开关的边界,最差的纸"),
+        ("input-wash", colors["input"], input_wash, TEXT_MIN, "输入或完成,正文与大号数字"),
+        ("input-sheet-worst", colors["input"], _worst(colors["input"], papers), TEXT_MIN, "链接,最差的纸"),
+        (input_solid, colors["input"], solid, TEXT_MIN, f"主要按钮上的{on_input},不透明回退上的链接"),
+        ("output-wash", colors["output"], output_wash, TEXT_MIN, "输出,正文与大号数字"),
+        ("output-sheet-worst", colors["output"], _worst(colors["output"], papers), TEXT_MIN, "输出色的文字,最差的纸"),
+        (output_solid, colors["output"], solid, TEXT_MIN, "输出色,不透明回退"),
+        ("edge-field", paper_edge, (start, tick(start)), None, paper_edge_use),
+        ("sheet-field", flat_paper[0], flat_field, None, "纸与底场的明度比,只报告,层次不靠它"),
+    ]
+    if dark:
+        overlays = laid(material["overlay"])
+        overlay_edge, edge_overlay = weakest_edge(overlays)
+        rows += [
+            ("ink-overlay-worst", ink, _worst(ink, overlays), TEXT_MIN, "正文,最差的浮层"),
+            ("muted-overlay-worst", muted, _worst(muted, overlays), TEXT_MIN, "次要文字,最差的浮层"),
+            ("control-edge-overlay", overlay_edge, edge_overlay, EDGE_MIN, "输入框、复选框、单选、开关的边界,最差的浮层"),
+            ("input-overlay-worst", colors["input"], _worst(colors["input"], overlays), TEXT_MIN, "链接,最差的浮层"),
+            ("output-overlay-worst", colors["output"], _worst(colors["output"], overlays), TEXT_MIN, "输出色的文字,最差的浮层"),
+        ]
+        fg_labels["control-edge-overlay"] = f"{_name(edge_color)} {edge_alpha:.2f} 叠浮层"
     out = []
-    for gate_id, fg, bg, label, minimum, use in rows:
+    for gate_id, fg, (bg, bg_label), minimum, use in rows:
         ratio = contrast(fg, bg)
         out.append(
             {
                 "id": gate_id,
                 "fg": fg,
                 "bg": bg,
-                "bg_label": label,
+                "fg_label": fg_labels.get(gate_id, tick(fg)),
+                "bg_label": bg_label,
                 "ratio": round(ratio, 2),
                 "min": minimum,
                 "pass": None if minimum is None else ratio >= minimum,
@@ -196,6 +363,13 @@ def gates(colors: dict, fixed: dict) -> list[dict]:
 
 def failures(rows: list[dict]) -> list[str]:
     return [row["id"] for row in rows if row["pass"] is False]
+
+
+def failed_gates(colors: dict, dark: dict, fixed: dict) -> list[str]:
+    """Failed gate ids of both groups of one colourway. A dark id is prefixed with 'dark '."""
+    return failures(gates(colors, fixed)) + [
+        f"dark {gate_id}" for gate_id in failures(gates(dark, fixed, "dark"))
+    ]
 
 
 # --- derivation --------------------------------------------------------------
@@ -233,8 +407,38 @@ def _field(hue: float, template: tuple[float, float], fixed: dict) -> str:
     raise ValueError(f"no field at hue {hue} keeps text at {TEXT_MIN}:1")
 
 
+def mid_hue(a: float, b: float) -> float:
+    """The hue halfway from a to b along the shorter arc."""
+    return (a + (((b - a + 180) % 360) - 180) / 2) % 360
+
+
+def _dark(hue: int, out_hue: int) -> dict:
+    """The dark group at the same two hues: every role is the dark template at one hue."""
+
+    def at(template: tuple[float, float], h: float) -> str:
+        return oklch_to_hex(template[0], template[1], h)
+
+    return {
+        "field-start": at(DARK_FIELD_START, hue),
+        "field-end": at(DARK_FIELD_END, out_hue),
+        "blob-start": at(DARK_BLOB_START, hue),
+        "blob-end": at(DARK_BLOB_END, out_hue),
+        "blob-mid": at(DARK_BLOB_MID, mid_hue(hue, out_hue)),
+        "input": at(DARK_ACCENT, hue),
+        "input-wash": at(DARK_WASH, hue),
+        "output": at(DARK_ACCENT, out_hue),
+        "output-wash": at(DARK_WASH, out_hue),
+    }
+
+
 def derive(hue: int, spec: dict) -> dict:
-    """A full colourway for one input hue. Every gate passes or ValueError."""
+    """A full colourway for one input hue, light and dark. Every gate passes or ValueError.
+
+    Blobs are tints of the field: one at the input hue, one at the output hue,
+    one halfway between. The dark group uses the same three hues. A colourway
+    that fails a gate in either group is refused; paper is never made more
+    opaque to rescue it.
+    """
     hue = int(hue) % 360
     out_hue = output_hue(hue, spec)
     fixed = spec["fixed"]
@@ -243,15 +447,19 @@ def derive(hue: int, spec: dict) -> dict:
     colors = {
         "field-start": _field(hue, FIELD_START, fixed),
         "field-end": _field(out_hue, FIELD_END, fixed),
+        "blob-start": oklch_to_hex(BLOB_START[0], BLOB_START[1], hue),
+        "blob-end": oklch_to_hex(BLOB_END[0], BLOB_END[1], out_hue),
+        "blob-mid": oklch_to_hex(BLOB_MID[0], BLOB_MID[1], mid_hue(hue, out_hue)),
         "input": _accent(hue, input_wash),
         "input-wash": input_wash,
         "output": _accent(out_hue, output_wash),
         "output-wash": output_wash,
     }
-    failed = failures(gates(colors, fixed))
+    dark = _dark(hue, out_hue)
+    failed = failed_gates(colors, dark, fixed)
     if failed:
         raise ValueError(f"derived hue {hue} fails {', '.join(failed)}")
-    return {"hue": hue, "output_hue": out_hue, "colors": colors}
+    return {"hue": hue, "output_hue": out_hue, "colors": colors, "dark": dark}
 
 
 # --- choice ------------------------------------------------------------------
@@ -310,6 +518,11 @@ def _preset(name: str, spec: dict) -> dict:
     return {role: preset[role] for role in ROLES}
 
 
+def _preset_dark(name: str, spec: dict) -> dict:
+    dark = spec["presets"][name]["dark"]
+    return {role: dark[role] for role in ROLES}
+
+
 def choose(
     spec: dict,
     *,
@@ -322,25 +535,28 @@ def choose(
 
     Order: explicit override, the first accent token with enough chroma and
     lightness, preset keywords in the prompt and project text, then the default.
-    Returns {palette, kind, hue, reason, colors, notes}. Deterministic.
+    Returns {palette, kind, hue, reason, colors, dark, notes}: colors is the light
+    group and dark the dark one. The project's paper band picks neither; it only
+    adds a note. Deterministic.
     """
     notes: list[str] = []
     signal = signal or {}
     if signal.get("band") == "dark":
         notes.append(
-            "the project paper is dark; this entry has a light colourway only, "
-            "so DESIGN.md is still written in light"
+            "the project paper is dark; DESIGN.md carries a light and a dark group, "
+            "and this project starts from the dark one"
         )
 
     def preset_result(name: str, reason: str) -> dict:
         return {"palette": name, "kind": "preset", "hue": spec["presets"][name]["anchor"],
-                "reason": reason, "colors": _preset(name, spec), "notes": notes}
+                "reason": reason, "colors": _preset(name, spec),
+                "dark": _preset_dark(name, spec), "notes": notes}
 
     def derived_result(hue: int, reason: str) -> dict:
         derived = derive(hue, spec)
         return {"palette": f"hue:{derived['hue']}", "kind": "derived", "hue": derived["hue"],
                 "output_hue": derived["output_hue"], "reason": reason,
-                "colors": derived["colors"], "notes": notes}
+                "colors": derived["colors"], "dark": derived["dark"], "notes": notes}
 
     parsed = parse_override(override, spec)
     if parsed and parsed[0] == "preset":
@@ -406,12 +622,20 @@ def choose(
 
 # --- rendering ---------------------------------------------------------------
 
-BLOCK = re.compile(r"(<!-- palette:begin (?P<name>[a-z]+) -->\n)(?P<body>.*?)(\n<!-- palette:end (?P=name) -->)", re.S)
+# A block name is lowercase words joined by single hyphens: colourway, colourway-dark.
+BLOCK = re.compile(
+    r"(<!-- palette:begin (?P<name>[a-z]+(?:-[a-z]+)*) -->\n)(?P<body>.*?)(\n<!-- palette:end (?P=name) -->)",
+    re.S,
+)
 
 
-def colourway_block(choice: dict, spec: dict) -> str:
-    c = choice["colors"]
-    if choice["kind"] == "preset":
+def colourway_block(choice: dict, spec: dict, theme: str = "light") -> str:
+    """The nine hex values of one group of the chosen colourway."""
+    dark = theme == "dark"
+    c = choice["dark"] if dark else choice["colors"]
+    if dark:
+        head = f"Dark group of `{choice['palette']}`."
+    elif choice["kind"] == "preset":
         label = spec["presets"][choice["palette"]]["label"]
         head = f"Colourway: `{choice['palette']}` ({label['zh']} / {label['en']})."
     else:
@@ -419,45 +643,92 @@ def colourway_block(choice: dict, spec: dict) -> str:
             f"Colourway: `{choice['palette']}` (derived: input hue {choice['hue']}, "
             f"output hue {choice['output_hue']})."
         )
-    presets = ", ".join(f"`{name}`" for name in spec["presets"])
-    return "\n".join(
-        [
-            head,
-            "",
-            f"- Field: `{c['field-start']}` to `{c['field-end']}`.",
-            f"- Input: `{c['input']}` on `{c['input-wash']}`.",
-            f"- Output: `{c['output']}` on `{c['output-wash']}`.",
-            f"- Other colourways: {presets}, or `hue:<0-359>`.",
-        ]
-    )
-
-
-def contrast_block(choice: dict, spec: dict) -> str:
-    rows = gates(choice["colors"], spec["fixed"])
-    by_id = {row["id"]: row for row in rows}
-    ring, edge = by_id["input-white"], by_id["edge-field"]
+    blobs = ", ".join(f"`{c[role]}`" for role in BLOBS)
     lines = [
-        f"Controls show their boundary by fill, plus a 2px focus ring in `{{colors.input}}` "
-        f"(`{choice['colors']['input']}`). On white that ring is {ring['ratio']:.2f}:1. "
-        f"The white edge on the field start is {edge['ratio']:.2f}:1, which is below the 3:1 "
-        "non-text boundary, so the edge cannot be the control boundary.",
+        head,
         "",
-        "| 前景 | 背景 | 比值 | 用途 |",
-        "| --- | --- | --- | --- |",
+        f"- Field: `{c['field-start']}` to `{c['field-end']}`.",
+        f"- Blobs: {blobs}, each at opacity {float(spec['fixed']['blob-alpha']):.2f}.",
+        f"- Input: `{c['input']}` on `{c['input-wash']}`.",
+        f"- Output: `{c['output']}` on `{c['output-wash']}`.",
+    ]
+    if not dark:
+        presets = ", ".join(f"`{name}`" for name in spec["presets"])
+        lines.append(f"- Other colourways: {presets}, or `hue:<0-359>`.")
+    return "\n".join(lines)
+
+
+def contrast_block(choice: dict, spec: dict, theme: str = "light") -> str:
+    """The lead numbers and the measured table of one group."""
+    dark = theme == "dark"
+    colors = choice["dark"] if dark else choice["colors"]
+    rows = gates(colors, spec["fixed"], theme)
+    by_id = {row["id"]: row for row in rows}
+    ring_paper = by_id["input-sheet-worst"]
+    edge, control = by_id["edge-field"], by_id["control-edge-sheet"]
+    ink_field, muted_field = by_id["ink-field-worst"], by_id["muted-field-worst"]
+    if muted_field["ratio"] >= TEXT_MIN:
+        muted_verdict = "so 12px secondary text may sit on the field in this colourway."
+    else:
+        muted_verdict = (
+            f"below {TEXT_MIN:g}:1, so secondary text stays on paper or a well in this colourway."
+        )
+    if dark:
+        ring_overlay, control_overlay = by_id["input-overlay-worst"], by_id["control-edge-overlay"]
+        lead = (
+            "In the dark group, inputs, checkboxes, radios, and switches draw their boundary in "
+            f"`{{colors.control-edge-dark}}`. That edge is {control['ratio']:.2f}:1 on the worst "
+            f"paper and {control_overlay['ratio']:.2f}:1 on the worst overlay; the non-text "
+            f"minimum is {EDGE_MIN:g}:1. The 2px focus ring is `{{colors.input-dark}}` "
+            f"(`{colors['input']}`): {ring_paper['ratio']:.2f}:1 on the worst paper and "
+            f"{ring_overlay['ratio']:.2f}:1 on the worst overlay. The paper edge on the field "
+            f"start is {edge['ratio']:.2f}:1, so it cannot be a control boundary."
+        )
+        ink_token, muted_token = "{colors.ink-dark}", "{colors.muted-dark}"
+    else:
+        ring = by_id["input-white"]
+        lead = (
+            "Inputs, checkboxes, radios, and switches draw their boundary in `{colors.control-edge}`. "
+            f"On the worst paper that edge is {control['ratio']:.2f}:1; the non-text minimum is "
+            f"{EDGE_MIN:g}:1. The 2px focus ring is `{{colors.input}}` (`{colors['input']}`): "
+            f"{ring['ratio']:.2f}:1 on white and {ring_paper['ratio']:.2f}:1 on the worst paper. "
+            f"The white paper edge on the field start is {edge['ratio']:.2f}:1, so it cannot be a "
+            "control boundary."
+        )
+        ink_token, muted_token = "{colors.ink}", "{colors.muted}"
+    lines = [
+        lead,
+        "",
+        f"`{ink_token}` may sit directly on the field: {ink_field['ratio']:.2f}:1 on the worst "
+        f"blob. `{muted_token}` on the field is {muted_field['ratio']:.2f}:1 at worst, "
+        f"{muted_verdict}",
+        "",
+        "| 前景 | 背景 | 比值 | 门槛 | 用途 |",
+        "| --- | --- | --- | --- | --- |",
     ]
     for row in rows:
-        bg = row["bg_label"] if row["bg_label"].startswith("白 ") else f"`{row['bg_label']}`"
-        lines.append(f"| `{row['fg']}` | {bg} | {row['ratio']:.2f} | {row['use']} |")
+        minimum = "只报告" if row["min"] is None else f"{row['min']:g}"
+        lines.append(
+            f"| {row['fg_label']} | {row['bg_label']} | {row['ratio']:.2f} | {minimum} | {row['use']} |"
+        )
     return "\n".join(lines)
 
 
 def render(template: str, choice: dict, spec: dict) -> str:
-    """Swap the default colourway hex values and regenerate the palette blocks."""
-    default = _preset(spec["default"], spec)
-    mapping = {default[role]: choice["colors"][role] for role in ROLES}
+    """Swap the default hex values of both groups and regenerate the four palette blocks."""
+    default = spec["default"]
+    mapping = {
+        **{_preset(default, spec)[role]: choice["colors"][role] for role in ROLES},
+        **{_preset_dark(default, spec)[role]: choice["dark"][role] for role in ROLES},
+    }
     pattern = re.compile("|".join(re.escape(h) for h in mapping))
     text = pattern.sub(lambda m: mapping[m.group(0)], template)
-    blocks = {"colourway": colourway_block(choice, spec), "contrast": contrast_block(choice, spec)}
+    blocks = {
+        "colourway": colourway_block(choice, spec),
+        "colourway-dark": colourway_block(choice, spec, "dark"),
+        "contrast": contrast_block(choice, spec),
+        "contrast-dark": contrast_block(choice, spec, "dark"),
+    }
     seen: set[str] = set()
 
     def fill(m: re.Match) -> str:
@@ -468,7 +739,7 @@ def render(template: str, choice: dict, spec: dict) -> str:
         return f"{m.group(1)}{blocks[name]}{m.group(4)}"
 
     text = BLOCK.sub(fill, text)
-    missing = sorted(set(blocks) - seen)
+    missing = [name for name in blocks if name not in seen]
     if missing:
         raise ValueError(f"template has no palette block {', '.join(missing)}")
     return text
@@ -481,29 +752,40 @@ def comment(choice: dict) -> str:
 
 
 def format_text(entry_id: str, choice: dict, spec: dict) -> str:
+    """The choice, then the nine colours and the measured rows of each group, light first."""
     lines = [f"entry: {entry_id}", f"palette: {choice['palette']} ({choice['reason']})"]
     lines.extend(f"note: {note}" for note in choice["notes"])
-    lines.append("colors:")
-    lines.extend(f"  {role:<12} {choice['colors'][role]}" for role in ROLES)
-    lines.append("contrast:")
-    for row in gates(choice["colors"], spec["fixed"]):
-        verdict = "report" if row["pass"] is None else ("pass" if row["pass"] else "FAIL")
-        minimum = f">= {row['min']:g}" if row["min"] is not None else "      "
-        lines.append(
-            f"  {row['id']:<18} {row['fg']} on {row['bg']}  {row['ratio']:>5.2f}  {minimum}  {verdict}"
-        )
+    for prefix, colors, theme in (("", choice["colors"], "light"), ("dark ", choice["dark"], "dark")):
+        lines.append(f"{prefix}colors:")
+        lines.extend(f"  {role:<12} {colors[role]}" for role in ROLES)
+        lines.append(f"{prefix}contrast:")
+        rows = gates(colors, spec["fixed"], theme)
+        width = max(len(row["id"]) for row in rows)
+        for row in rows:
+            verdict = "report" if row["pass"] is None else ("pass" if row["pass"] else "FAIL")
+            minimum = f">= {row['min']:g}" if row["min"] is not None else ""
+            lines.append(
+                f"  {row['id']:<{width}} {row['fg']} on {row['bg']}  {row['ratio']:>5.2f}  "
+                f"{minimum:<6}  {verdict}"
+            )
     return "\n".join(lines)
 
 
 def as_json(entry_id: str, choice: dict, spec: dict) -> dict:
+    """The choice and both measured tables. The top-level colors and contrast are the light group."""
+
+    def table(colors: dict, theme: str) -> list[dict]:
+        return [
+            {k: row[k] for k in ("id", "fg", "bg", "ratio", "min", "pass")}
+            for row in gates(colors, spec["fixed"], theme)
+        ]
+
     return {
         "entry": entry_id,
         "palette": choice["palette"],
         "reason": choice["reason"],
         "notes": choice["notes"],
         "colors": choice["colors"],
-        "contrast": [
-            {k: row[k] for k in ("id", "fg", "bg", "ratio", "min", "pass")}
-            for row in gates(choice["colors"], spec["fixed"])
-        ],
+        "contrast": table(choice["colors"], "light"),
+        "dark": {"colors": choice["dark"], "contrast": table(choice["dark"], "dark")},
     }

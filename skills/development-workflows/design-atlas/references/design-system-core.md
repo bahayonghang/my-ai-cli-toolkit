@@ -22,7 +22,8 @@ Use this file when you write, extend, or check design rules: a new `DESIGN.md`, 
 ## 3. Token rules
 
 - Code must reference tokens. A raw hex value or pixel value outside the token layer is a defect, except in the token layer itself.
-- Every text/background pair that a token set allows must meet WCAG 2.2 AA contrast: 4.5:1 for body text, 3:1 for text at 24px or 18.66px bold and above, 3:1 for UI component boundaries and focus indicators.
+- Every text/background pair that a token set allows must meet WCAG 2.2 AA contrast: 4.5:1 for body text, and 3:1 for text at 24px or 18.66px bold and above.
+- Non-text contrast (WCAG 1.4.11): the visual information needed to identify a control and its state must reach 3:1 against adjacent colors. Focus indicators also need 3:1. A button, tag, or segmented item that has a text label and a fill is identified by them. It does not need a 3:1 outline, so do not add one to meet this rule. An input, checkbox, radio, or switch whose boundary is its only identifier needs that boundary at 3:1.
 - Spacing uses the entry's scale only. Do not add an off-scale value to fix one layout; change the layout.
 - When the entry names a proprietary font, use the substitute that the entry or `brand-boundary.md` names. Keep the same role (display, body, mono) and similar metrics.
 

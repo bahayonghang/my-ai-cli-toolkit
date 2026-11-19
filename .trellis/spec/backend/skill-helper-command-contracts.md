@@ -362,9 +362,13 @@ design_catalog.py apply <id> [--root DIR] [--force] [--palette auto|<preset>|hue
 design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--format text|json]
 ```
 
-- `scripts/palette.py`: `load_palettes()`, `gates(colors, fixed)`,
+- `scripts/palette.py`: `load_palettes()`, `gates(colors, fixed, theme="light")`
+  (`theme` is `light` or `dark`), `failed_gates(colors, dark, fixed)`,
   `derive(hue, spec)`, `choose(spec, *, signal, prompt, project, override)`,
   `render(template, choice, spec)`. Pure functions; no project writes.
+- A colourway is two groups with the same nine roles (design-atlas 0.7.0,
+  `bahayonghang/my-ai-cli-toolkit#51`). `derive` and `choose` return the light
+  group as `colors` and the dark group as `dark`. `apply` always writes both.
 - Data: `assets/catalog/overlays/palettes.json`, keyed by entry id. Only
   `style:airy-glass` has a dial today.
 
@@ -372,9 +376,30 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
 
 - `palettes.json` per entry: `default`, `match_degrees`, `min_accent_chroma`,
   `min_accent_lightness`, `output_offsets`, `reserved_hues` (a band with
-  lo > hi wraps through 0), `fixed` (`ink`, `muted`, `sheet-alpha`), and
-  `presets.<name>` with `anchor`, `label.{zh,en}`, six role hex values, and
-  `keywords_en` / `keywords_zh`.
+  lo > hi wraps through 0), `fixed`, and `presets.<name>` with `anchor`,
+  `label.{zh,en}`, nine role hex values (`field-start`, `field-end`,
+  `blob-start`, `blob-end`, `blob-mid`, `input`, `input-wash`, `output`,
+  `output-wash`), `dark` with the same nine roles, and `keywords_en` /
+  `keywords_zh`.
+- `fixed` (design-atlas 0.7.0): `ink`, `muted`, `sheet-alpha` (0.62),
+  `overlay-alpha` (0.82), `blob-alpha` (0.7), `well-alpha` (0.04), and
+  `control-edge` as `{color, alpha}` (`#24303A`, 0.54). The entry frontmatter
+  repeats these as `rgba()` tokens; `tests/test_palette.py` keeps them equal.
+- `fixed.dark`: `ink` (`#E7EDF3`), `muted` (`#A3AFBD`), and six
+  `{color, alpha}` layers: `sheet` (`#1C2530`, 0.6), `overlay` (`#1E2834`,
+  0.84), `sheet-edge` (white, 0.08), `sheet-highlight` (white, 0.06),
+  `overlay-highlight` (white, 0.08), `control-edge` (white, 0.36). Dark paper
+  is its own colour at an alpha, never white at an alpha. `blob-alpha` and
+  `well-alpha` are shared by both groups. The entry repeats the dark values as
+  `-dark` keys in `colors:` and `elevation:`.
+- `derive` adds the three blobs at fixed OKLCH lightness and chroma: the input
+  hue, the output hue, and the hue halfway between on the shorter arc. The six
+  colours derived before 0.7.0 do not change. A colourway that fails a gate is
+  refused; lower the blob chroma or `blob-alpha`, never raise `sheet-alpha`.
+- `derive` builds the dark group from the same three hues, each role at a
+  fixed OKLCH lightness and chroma. A hue whose light or dark group fails a
+  gate is refused with `ValueError`; a failed dark gate is named
+  `dark <id>`.
 - Selection order for `auto`: explicit `--palette`; first accent-named CSS
   token that clears both chroma and lightness floors (nearest preset within
   `match_degrees`, else derived from its hue); preset keywords in prompt
@@ -383,16 +408,91 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
   `accent_hue`, and adds `accent_C`, `accent_hex`, `accents[]`. When an accent
   exists and no paper token does, it is an object whose `band`, `paper_var`,
   and `L` are null. Consumers test `band` for truthiness.
-- The entry file is the render template. Hex values are replaced in one regex
-  pass; the `<!-- palette:begin NAME -->` / `<!-- palette:end NAME -->` blocks
-  (`colourway`, `contrast`) are rewritten whole. `apply` appends
-  `<!-- palette: <name>; reason: ... -->` under the provenance comment and
-  prints `palette: <name> (<reason>)` after `wrote:`.
+- `signals.frameworks` (design-atlas 0.7.0) lists npm frameworks in
+  `FRAMEWORKS` order, then Cargo frameworks read from the root `Cargo.toml`
+  only: `[dependencies]`, `[workspace.dependencies]`, and every
+  `[target.<cfg>.dependencies]`. A dependency whose key or `package` field is
+  `gpui` adds `gpui`; `gpui-component` or `gpui-kit` adds `gpui` and
+  `gpui-kit`. Other published names of the same crates go in the same
+  `CARGO_FRAMEWORKS` table and in the test (`gpui-pre`, `gpui-ce`: checked
+  against crates.io and `gpui-ce/gpui-ce` on 2026-11-16).
+  - With `gpui` reported and no CSS token layer, the note
+    `no CSS token layer found` is replaced by one saying the tokens are in
+    Rust source, which the script does not read, and that the colourway comes
+    from `--palette` or `--prompt`.
+  - With `gpui` reported, `notes` also carries one line that names
+    `references/implementation-gpui.md` (`GPUI_SPEC`), with or without a CSS
+    token layer (`bahayonghang/my-ai-cli-toolkit#52`). The path is relative
+    to the skill directory and must exist; `tests/test_gpui_contract.py`
+    checks it. The child-crate hint below does not carry this line.
+  - With no GPUI dependency in the root manifest, `<child>/Cargo.toml` one
+    level down is checked, skipping `SKIP_DIRS`. A hit adds a note with that
+    relative path and the `--root` to rerun with; `frameworks` does not change.
+  - The keys of the `signals` object do not change, `signals` stays
+    read-only, and `route` scoring does not read Cargo dependencies.
+  - Inference, not confirmed by the ticket: `gpui-fast` is in the table;
+    `[dev-dependencies]` and `[build-dependencies]` are not read; the child
+    check also runs when the root has no `Cargo.toml`.
+- The entry file is the render template. The default hex values of both
+  groups are replaced in one regex pass; the `<!-- palette:begin NAME -->` /
+  `<!-- palette:end NAME -->` blocks are rewritten whole. There are four:
+  `colourway`, `colourway-dark`, `contrast`, `contrast-dark`. A block name is
+  lowercase words joined by single hyphens (`[a-z]+(?:-[a-z]+)*`); a
+  well-formed name outside the four, or a missing one, is `ValueError`.
+  `apply` appends `<!-- palette: <name>; reason: ... -->` under the provenance
+  comment and prints `palette: <name> (<reason>)` after `wrote:`.
+- The swap is hex for hex. The 18 default values are distinct, and no preset
+  or derived colourway may use a default hex in a different role, or a second
+  render of the same file swaps the wrong role.
 - `palette --format json`: `entry`, `palette`, `reason`, `notes`, `colors`,
-  `contrast[]` of `{id, fg, bg, ratio, min, pass}`.
-- Contrast: white at `sheet-alpha` over each field end, mixed per sRGB channel
-  and rounded to 8 bits, then WCAG 2.x luminance. Ink and muted are gated on
-  both field ends.
+  `contrast[]` of `{id, fg, bg, ratio, min, pass}`, and `dark`. A reported row
+  has `min: null` and `pass: null`. The six keys before `dark` are the light
+  group and keep the meaning they had before the dark group.
+  - `dark` (0.7.0) is `{colors, contrast[]}`: `colors` holds the nine dark
+    role hex values, and `contrast[]` rows have the same six keys, in the dark
+    gate order below.
+- `palette` text output: `colors:` and `contrast:` for the light group, then
+  `dark colors:` and `dark contrast:`. The light lines are the ones printed
+  before the dark group existed.
+- Contrast: each layer is mixed over the one below per sRGB channel and
+  rounded to 8 bits, then WCAG 2.x luminance. The field has eight backgrounds:
+  the two ends, and each blob at `blob-alpha` over each end. Paper is white at
+  `sheet-alpha` over one of them; the neutral well is `ink` at `well-alpha`
+  over that paper. A `-worst` row uses the background with the lowest ratio
+  for that pair.
+- Dark contrast uses the same eight-background rule with the dark values:
+  paper is `fixed.dark.sheet` over one of them, an overlay is
+  `fixed.dark.overlay` over one of them, and the neutral well is the dark
+  `ink` at `well-alpha` over that paper. The paper-to-field ratio stays
+  reported only.
+- Gate rows, in order. Minimum 4.5 unless stated: `ink-white`,
+  `ink-sheet-start`, `ink-sheet-end`, `muted-sheet-start`, `muted-sheet-end`,
+  `ink-sheet-worst`, `muted-sheet-worst`, `muted-well-worst`,
+  `ink-field-worst`, `muted-field-worst` (reported), `control-edge-sheet`
+  (3.0), `input-wash`, `input-sheet-worst`, `input-white`, `output-wash`,
+  `output-sheet-worst`, `output-white`, `edge-field` (reported), `sheet-field`
+  (reported; the smallest paper-to-field ratio, which is about 1.07 by design).
+- Dark gate rows, in order: the 19 rows above with `ink-solid`,
+  `input-solid` and `output-solid` in place of the three `-white` rows, then
+  `ink-overlay-worst`, `muted-overlay-worst`, `control-edge-overlay` (3.0),
+  `input-overlay-worst`, `output-overlay-worst`. 24 rows, 21 gated.
+- Inference, not confirmed by the ticket: the rows `muted-well-worst`,
+  `input-sheet-worst`, `output-sheet-worst` and `sheet-field`, the
+  `well-alpha` of 0.04, and the blob lightness and chroma template.
+- Inference, not confirmed by `bahayonghang/my-ai-cli-toolkit#51`:
+  - the five dark overlay rows. A dark overlay is lighter than dark paper, so
+    it is the weaker surface for light text; a light overlay is whiter than
+    light paper, so the light group has no overlay rows;
+  - the `-solid` rows measure the opaque paper colour (`#1C2530`), which is
+    also the dark opaque fallback for overlays and the label on an input fill
+    (`on-input-dark`);
+  - the dark `edge-field` row is `sheet-edge` over paper against the field
+    start;
+  - the block names, the key name `dark` and its shape, and the text section
+    names;
+  - the dark derivation template, the dark accents of `mint`, and the two
+    `mint` dark washes, which are hand values chosen so that no derived hue
+    reuses them in another role.
 
 ### 4. Validation & Error Matrix
 
@@ -400,7 +500,8 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
 | --- | --- |
 | `--palette` not `auto`, a preset name, or `hue:0`–`hue:359` | exit 2, nothing written |
 | `--palette` or `--prompt` on an entry with no dial | exit 2, nothing written |
-| Chosen colourway fails a gate, or a `palette:` marker is missing | exit 1, nothing written |
+| Chosen colourway fails a gate in either group, or a `palette:` marker is missing | exit 1, nothing written. stderr names each failed gate; a dark one as `dark <id>` |
+| `palette` on a colourway that fails a gate in either group | The report is still printed; exit 1, with the same names on stderr |
 | Any failure together with `--force` | Existing `DESIGN.md` is not renamed |
 | Accent below `min_accent_chroma` or `min_accent_lightness` | Skipped with a note; next candidate tried |
 | Entry without a dial, no palette flags | Output byte-identical to before |
@@ -417,15 +518,46 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
 
 `tests/test_palette.py` must keep asserting:
 
-- the mint table reproduces 13.47 / 13.16 / 5.37 / 4.79 / 5.31 / 5.08 / 5.79 / 1.11;
+- the mint rows that do not depend on paper reproduce 13.47 / 4.79 / 5.31 /
+  5.08 / 5.79 / 1.11; paper over the bare field ends gives 12.97 / 12.56
+  (ink) and 5.29 / 5.13 (muted);
+- the mint worst-background rows are 12.16 (`ink-sheet-worst`), 4.96
+  (`muted-sheet-worst`), 10.19 (`ink-field-worst`), 4.16
+  (`muted-field-worst`), 3.17 (`control-edge-sheet`) and 1.07 (`sheet-field`).
+  3.17 is this entry's ink; 3.29 in the parent issue needs SkillPort's ink
+  `#1F2A37`, and the test asserts both;
 - every preset and all 360 derived hues pass every gate, field chroma stays
   at or below 0.03, and the output hue is outside the reserved bands;
+- the mint dark worst-background rows are 13.04 (`ink-sheet-worst`), 6.90
+  (`muted-sheet-worst`), 12.86 (`ink-field-worst`), 6.81
+  (`muted-field-worst`), 3.24 (`control-edge-sheet`) and 1.01 (`sheet-field`),
+  the dark column of the parent issue's table; the other 18 mint dark rows are
+  fixed as literals too;
+- the dark group of every preset and of all 360 derived hues passes every dark
+  gate, and a colourway whose dark group alone fails is refused by `derive`,
+  `apply` and `palette`;
+- no preset or derived colourway uses a default hex of either group in a
+  different role;
+- `hue:202` still derives the six colours it derived at 0.6.0;
+- the entry names `backdrop-filter` only in overlay rules and overlay CSS, and
+  `styles/airy-glass.md` equals `first-party/airy-glass.md` byte for byte;
+- `assets/reference/airy-glass/index.html` has the mint `:root` values, blurs
+  only `.overlay`, makes no external request, and passes `slop_check` next to
+  the `apply` output. Its two dark token blocks (system appearance, and
+  `data-theme="dark"`) are equal to each other, to `presets.mint.dark` and to
+  `fixed.dark`. `slop_check` reads one value per token, last declaration
+  wins, so the test runs it on the page as shipped (dark values) and on the
+  page without the dark blocks (light values);
 - rendering a rendered file again with the same choice changes nothing, and
   no default hex that the chosen colourway does not use is left in the output;
 - every exit-2 and exit-1 path leaves the project directory unchanged;
 - for every other entry, `show` prints the catalog file and `apply` writes it
   plus provenance only, with or without project signals;
 - `tests/fixtures/slop/airy-glass-field/DESIGN.md` equals current `apply` output.
+
+`tests/test_routing.py` (`CargoSignalTests`) must keep one fixture for each
+`signals.frameworks` case above, and `SignalTests` must keep
+`frameworks == ["next"]` for the npm fixture.
 
 ### 7. Wrong vs Correct
 
@@ -446,8 +578,8 @@ user's `DESIGN.md` name.
 ```python
 for candidate in accents:     # skip gray and near-black, note each skip
     ...
-colors = choose(...)          # validate and gate first
-if any(not g["pass"] for g in gates(colors, fixed)):
+choice = choose(...)          # validate and gate first
+if failed_gates(choice["colors"], choice["dark"], fixed):   # both groups
     return 1
 backup_existing(root)         # only after every check passed
 ```

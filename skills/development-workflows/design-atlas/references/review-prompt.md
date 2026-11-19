@@ -4,7 +4,7 @@ Use this prompt after `slop_check` reports no open FAIL and every REFLEX is fixe
 
 ## How to run it
 
-1. Take screenshots: the first screen at about 1440px wide, the same at about 390px, and one full-page capture at desktop width. Note the file paths.
+1. Take screenshots: the first screen at about 1440px wide, the same at about 390px, and one full-page capture at desktop width. Note the file paths. For a native window, use the inputs in "Native window variant" below.
 2. Start a subagent with no history from the build. Give it the prompt below with the three inputs filled in. Do not paste your build notes, your reasoning, or the `slop_check` output; the reviewer should see what a visitor sees, plus the contract.
 3. If the host has no subagent, run the prompt yourself in a clean pass: read only the inputs, answer in the format, and mark the result `自检，非独立复核` in the final report.
 4. `fix` means: apply the listed fixes, rerun `slop_check`, and review once more. `rebuild` means: return to the composition step. Stop after three review rounds and report what is still open.
@@ -52,6 +52,22 @@ Answer format (nothing before the first word)
   <where: section or selector> · <what is wrong, concretely> · <the change to make>
 - No praise, no summary, no issue you cannot point to on a screenshot or in the source.
 ```
+
+## Native window variant
+
+Use this variant when the product is a native window, for example a GPUI application ([implementation-gpui.md](implementation-gpui.md)). A native window has no 390px phone layout and no full-page capture.
+
+1. Inputs are two native screenshots: the window at its default size and the window at its minimum width. Take them in the theme the user will see first. Do not make a 390px screenshot.
+2. Run the prompt above with these changes, and leave the rest as it is:
+   - First line: `You are reviewing a native application window you did not build. Judge it as its first user would, then as a designer checking it against its written contract.`
+   - Screenshots line: `- Screenshots: <paths: window at default size, window at minimum width>`
+   - Source line: `- Source: <paths to the view and token source files>`
+   - Heading of questions 1–4: `First screen (look at the default-size window)`
+   - Heading of questions 5–10: `Whole window (both screenshots and the source)`
+   - In questions 1, 4 and 10, read "visitor" as "user". In question 5, read "section" as "pane or panel".
+   - Add question 11: `At the minimum width, is anything clipped, overlapped, or pushed out of the window?`
+   - In the answer format, `<where>` is a pane, a control, or a source location.
+3. The steps in "How to run it" and the meaning of `ship`, `fix`, and `rebuild` do not change. When `slop_check` exited 2 with `no scannable files`, the review runs after the manual walk of `anti-slop.md` section 3, and "rerun `slop_check`" means repeat that walk.
 
 ## Recording the result
 
