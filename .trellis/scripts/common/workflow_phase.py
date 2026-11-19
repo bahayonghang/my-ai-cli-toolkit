@@ -22,12 +22,11 @@ from __future__ import annotations
 
 import re
 
-from . import workflow_selection
-from .paths import get_repo_root
+from .paths import DIR_WORKFLOW, get_repo_root
 
 
 def _workflow_md_path():
-    return workflow_selection.resolve_workflow_md(get_repo_root())
+    return get_repo_root() / DIR_WORKFLOW / "workflow.md"
 
 # Match a line that *is* a platform marker: "[A, B, C]" or "[/A, B, C]"
 _MARKER_RE = re.compile(r"^\[(/?)([A-Za-z][^\[\]]*)\]\s*$")

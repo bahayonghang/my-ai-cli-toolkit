@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>轻盈毛玻璃参考页（占位内容）</title>
+<style>
+/* Reference picture for style:airy-glass, colourway mint, light and dark.
+   The token values equal assets/catalog/overlays/palettes.json (mint, mint.dark, fixed,
+   fixed.dark); tests/test_palette.py keeps them equal. All content is placeholder. */
+:root {
+  color-scheme: light;
+  --color-field-start: #E7F6F1;
+  --color-field-end: #EDE7F8;
+  --color-blob-start: #CDEEE2;
+  --color-blob-end: #DCD8F6;
+  --color-blob-mid: #D8EBF6;
+  --color-sheet: rgba(255,255,255,0.62);
+  --color-sheet-solid: rgba(255,255,255,0.96);
+  --color-sheet-edge: rgba(255,255,255,0.70);
+  --color-overlay: rgba(255,255,255,0.82);
+  --color-well: rgba(36,48,58,0.04);
+  --color-control-fill: rgba(36,48,58,0.08);
+  --color-control-edge: rgba(36,48,58,0.54);
+  --color-ink: #24303A;
+  --color-muted: #5C6B76;
+  --color-input: #187A56;
+  --color-input-wash: #E7F7F0;
+  --color-output: #6D4BD6;
+  --color-output-wash: #F3EEFC;
+  --color-on-input: #FFFFFF;
+  --blob-opacity: 70%;
+  --highlight-sheet: inset 0 1px 0 rgba(255,255,255,0.55);
+  --shadow-sheet: 0 12px 40px -16px rgba(30,60,90,0.14);
+  --highlight-overlay: inset 0 1px 0 rgba(255,255,255,0.65);
+  --shadow-overlay: 0 24px 64px -24px rgba(30,60,90,0.22);
+  --font-display: Figtree, "PingFang SC", "Noto Sans SC", sans-serif;
+  --font-body: Figtree, "PingFang SC", "Noto Sans SC", sans-serif;
+  --radius-check: 4px;
+  --radius-control: 12px;
+  --radius-well: 16px;
+  --radius-sheet: 20px;
+  --radius-pill: 999px;
+  --space-min: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+}
+/* Dark group. It follows the system appearance. data-theme on the root element is the
+   reader's own choice and wins in both directions. The two blocks hold the same values. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-field-start: #0F1B1F;
+    --color-field-end: #18172B;
+    --color-blob-start: #12302A;
+    --color-blob-end: #2A2550;
+    --color-blob-mid: #142536;
+    --color-sheet: rgba(28,37,48,0.60);
+    --color-sheet-solid: rgba(28,37,48,0.96);
+    --color-sheet-edge: rgba(255,255,255,0.08);
+    --color-overlay: rgba(30,40,52,0.84);
+    --color-well: rgba(231,237,243,0.04);
+    --color-control-fill: rgba(231,237,243,0.08);
+    --color-control-edge: rgba(255,255,255,0.36);
+    --color-ink: #E7EDF3;
+    --color-muted: #A3AFBD;
+    --color-input: #5FD6A8;
+    --color-input-wash: #243B31;
+    --color-output: #B3A8FF;
+    --color-output-wash: #353346;
+    --color-on-input: #1C2530;
+    --highlight-sheet: inset 0 1px 0 rgba(255,255,255,0.06);
+    --shadow-sheet: 0 12px 40px -16px rgba(0,0,0,0.45);
+    --highlight-overlay: inset 0 1px 0 rgba(255,255,255,0.08);
+    --shadow-overlay: 0 24px 64px -24px rgba(0,0,0,0.60);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-field-start: #0F1B1F;
+  --color-field-end: #18172B;
+  --color-blob-start: #12302A;
+  --color-blob-end: #2A2550;
+  --color-blob-mid: #142536;
+  --color-sheet: rgba(28,37,48,0.60);
+  --color-sheet-solid: rgba(28,37,48,0.96);
+  --color-sheet-edge: rgba(255,255,255,0.08);
+  --color-overlay: rgba(30,40,52,0.84);
+  --color-well: rgba(231,237,243,0.04);
+  --color-control-fill: rgba(231,237,243,0.08);
+  --color-control-edge: rgba(255,255,255,0.36);
+  --color-ink: #E7EDF3;
+  --color-muted: #A3AFBD;
+  --color-input: #5FD6A8;
+  --color-input-wash: #243B31;
+  --color-output: #B3A8FF;
+  --color-output-wash: #353346;
+  --color-on-input: #1C2530;
+  --highlight-sheet: inset 0 1px 0 rgba(255,255,255,0.06);
+  --shadow-sheet: 0 12px 40px -16px rgba(0,0,0,0.45);
+  --highlight-overlay: inset 0 1px 0 rgba(255,255,255,0.08);
+  --shadow-overlay: 0 24px 64px -24px rgba(0,0,0,0.60);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--color-field-start);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.7;
+}
+h1, h2, p { margin: 0; }
+h1 { font-family: var(--font-display); font-size: 16px; font-weight: 650; }
+h2 { font-family: var(--font-display); font-size: 16px; font-weight: 650; margin-bottom: var(--space-sm); }
+.meta { color: var(--color-muted); font-size: 12px; }
+
+/* L1 field: linear gradient plus three radial falloffs. No blur filter. */
+.field {
+  position: relative;
+  min-height: 100vh;
+  padding: var(--space-lg);
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+  background:
+    radial-gradient(42rem 32rem at 12% 6%, color-mix(in srgb, var(--color-blob-start) var(--blob-opacity), transparent), transparent 70%),
+    radial-gradient(40rem 32rem at 92% 96%, color-mix(in srgb, var(--color-blob-end) var(--blob-opacity), transparent), transparent 70%),
+    radial-gradient(30rem 24rem at 82% 10%, color-mix(in srgb, var(--color-blob-mid) var(--blob-opacity), transparent), transparent 70%),
+    linear-gradient(160deg, var(--color-field-start), var(--color-field-end));
+}
+
+/* L2 paper: fill, edge, top highlight, one soft shadow. Never blurred. */
+.sheet {
+  padding: var(--space-md);
+  background: var(--color-sheet);
+  border: 1px solid var(--color-sheet-edge);
+  border-radius: var(--radius-sheet);
+  box-shadow: var(--highlight-sheet), var(--shadow-sheet);
+}
+.sidebar { display: grid; gap: var(--space-min); align-self: stretch; align-content: start; }
+.sidebar ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.nav-item {
+  display: block;
+  padding: 6px var(--space-sm);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--color-well); }
+.nav-item:active { background: var(--color-control-fill); }
+.nav-item[aria-current="page"] { background: var(--color-input-wash); color: var(--color-input); font-weight: 600; }
+.theme { display: grid; gap: 4px; justify-items: start; margin-top: var(--space-md); }
+.sidebar > .meta { margin-top: var(--space-md); }
+
+.main { display: grid; gap: var(--space-md); min-width: 0; position: relative; }
+.page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); padding: 4px var(--space-min); }
+.actions { display: flex; gap: var(--space-min); }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); align-items: start; }
+
+/* L3 wells: flat fills, no outline, no blur. */
+.well { padding: var(--space-sm) var(--space-md); border-radius: var(--radius-well); background: var(--color-well); }
+.well + .well { margin-top: var(--space-min); }
+.well-input { background: var(--color-input-wash); color: var(--color-input); }
+.well-output { background: var(--color-output-wash); color: var(--color-output); }
+.num { display: block; font-family: var(--font-display); font-size: 32px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-min); }
+
+/* Controls. Buttons, tags and segments are identified by fill and label: no outline. */
+.btn {
+  min-height: 36px;
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms;
+}
+.btn-primary { background: var(--color-input); color: var(--color-on-input); }
+.btn-secondary { background: var(--color-control-fill); color: var(--color-ink); }
+.btn:hover { box-shadow: inset 0 0 0 999px var(--color-well); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
+
+.tag { display: inline-block; padding: 2px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; }
+.tag-input { background: var(--color-input-wash); color: var(--color-input); }
+.tag-output { background: var(--color-output-wash); color: var(--color-output); }
+.tag-neutral { background: var(--color-control-fill); color: var(--color-ink); }
+.tags { display: flex; flex-wrap: wrap; gap: var(--space-min); margin-top: var(--space-sm); }
+
+.segmented { display: inline-flex; padding: 3px; gap: 2px; border-radius: var(--radius-pill); background: var(--color-control-fill); }
+.segment { min-height: 30px; padding: 0 var(--space-sm); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-ink); font: inherit; cursor: pointer; }
+.segment:hover { background: var(--color-well); }
+.segment:active { background: var(--color-control-fill); }
+.segment[aria-pressed="true"] { background: var(--color-input-wash); color: var(--color-input); font-weight: 600; }
+
+/* Inputs, checkboxes and switches carry the 3:1 boundary in control-edge. */
+.form { display: grid; gap: var(--space-sm); }
+.label { display: grid; gap: 4px; font-size: 12px; color: var(--color-muted); }
+.text-input {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--color-control-edge);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+}
+.text-input::placeholder { color: var(--color-muted); }
+.text-input:hover { border-color: var(--color-ink); }
+.text-input:disabled { opacity: 0.5; cursor: not-allowed; }
+.check { display: flex; align-items: center; gap: var(--space-min); cursor: pointer; }
+.check input {
+  appearance: none;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--color-control-edge);
+  border-radius: var(--radius-check);
+  background: transparent;
+  cursor: pointer;
+}
+.check input:hover { border-color: var(--color-ink); }
+.check input:checked { border-color: var(--color-input); background: var(--color-input); }
+.check input:not(.switch):checked::before {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 9px;
+  margin: 1px 0 0 4px;
+  border: solid var(--color-on-input);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.check input:disabled { opacity: 0.5; cursor: not-allowed; }
+.check .switch {
+  width: 32px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  background: radial-gradient(circle at 9px 50%, var(--color-muted) 0 5px, transparent 5.5px);
+}
+.check .switch:checked {
+  background: radial-gradient(circle at 23px 50%, var(--color-on-input) 0 6px, transparent 6.5px), var(--color-input);
+}
+
+/* L4 overlay: a more solid fill and one heavier shadow. Blur only with content beneath. */
+.overlay {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  z-index: 2;
+  width: 232px;
+  padding: var(--space-min);
+  background: var(--color-overlay);
+  border: 1px solid var(--color-sheet-edge);
+  border-radius: var(--radius-well);
+  box-shadow: var(--highlight-overlay), var(--shadow-overlay);
+}
+.overlay.is-scrolled-under { backdrop-filter: blur(20px) saturate(1.15); }
+.overlay ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.menu-item { display: block; width: 100%; min-height: 32px; padding: 0 var(--space-sm); border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-ink); font: inherit; text-align: left; cursor: pointer; }
+.menu-item:hover { background: var(--color-well); }
+.menu-item:active { background: var(--color-control-fill); }
+.menu-item:disabled { opacity: 0.5; cursor: not-allowed; }
+.overlay .meta { padding: 4px var(--space-sm) 0; }
+
+:focus-visible { outline: 2px solid var(--color-input); outline-offset: 2px; }
+
+@supports not (backdrop-filter: blur(1px)) {
+  .overlay { background: var(--color-sheet-solid); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .sheet, .overlay { background: var(--color-sheet-solid); }
+  .overlay.is-scrolled-under { backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn:active { transform: none; }
+}
+@media (max-width: 860px) {
+  .field { grid-template-columns: minmax(0, 1fr); padding: var(--space-md); }
+  .cards { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+  <div class="field">
+    <aside class="sheet sidebar">
+      <h2>占位工作台</h2>
+      <nav aria-label="占位导航">
+        <ul>
+          <li><a class="nav-item" href="#overview" aria-current="page">占位：总览</a></li>
+          <li><a class="nav-item" href="#items">占位：条目</a></li>
+          <li><a class="nav-item" href="#settings">占位：设置</a></li>
+        </ul>
+      </nav>
+      <div class="theme">
+        <span class="meta" id="theme-label">外观</span>
+        <div class="segmented" role="group" aria-labelledby="theme-label">
+          <button class="segment" type="button" data-theme-choice="system" aria-pressed="true">系统</button>
+          <button class="segment" type="button" data-theme-choice="light" aria-pressed="false">浅色</button>
+          <button class="segment" type="button" data-theme-choice="dark" aria-pressed="false">深色</button>
+        </div>
+      </div>
+      <p class="meta">除「外观」切换外，本页的文字和数字都是占位内容，不代表真实产品或数据。</p>
+    </aside>
+
+    <main class="main" id="overview">
+      <header class="page-head">
+        <h1>占位：页面标题落在底场上</h1>
+        <div class="actions">
+          <button class="btn btn-secondary" type="button" aria-haspopup="menu" aria-expanded="true" aria-controls="more-menu">次要操作</button>
+          <button class="btn btn-primary" type="button">主要操作</button>
+        </div>
+      </header>
+
+      <div class="overlay is-scrolled-under" id="more-menu" role="menu" aria-label="占位菜单">
+        <ul>
+          <li role="none"><button class="menu-item" type="button" role="menuitem">占位：菜单项一</button></li>
+          <li role="none"><button class="menu-item" type="button" role="menuitem">占位：菜单项二</button></li>
+          <li role="none"><button class="menu-item" type="button" role="menuitem" disabled>占位：不可用项</button></li>
+        </ul>
+        <p class="meta">浮层：下方有内容时才模糊。</p>
+      </div>
+
+      <div class="cards">
+        <section class="sheet" aria-labelledby="card-status">
+          <h2 id="card-status">占位：状态</h2>
+          <div class="well well-input"><span class="num">00</span>占位数字，输入或完成</div>
+          <div class="well well-output"><span class="num">00</span>占位数字，输出</div>
+          <div class="tags">
+            <span class="tag tag-input">占位：已完成</span>
+            <span class="tag tag-output">占位：已输出</span>
+            <span class="tag tag-neutral">占位：中性</span>
+          </div>
+        </section>
+
+        <section class="sheet" id="settings" aria-labelledby="card-form">
+          <h2 id="card-form">占位：表单</h2>
+          <div class="form">
+            <div class="segmented" role="group" aria-label="占位分段">
+              <button class="segment" type="button" aria-pressed="true">占位甲</button>
+              <button class="segment" type="button" aria-pressed="false">占位乙</button>
+              <button class="segment" type="button" aria-pressed="false">占位丙</button>
+            </div>
+            <label class="label">占位：输入框标签
+              <input type="text" class="text-input" placeholder="占位文字">
+            </label>
+            <label class="check"><input type="checkbox" checked>占位：已勾选</label>
+            <label class="check"><input type="checkbox">占位：未勾选</label>
+            <label class="check"><input type="checkbox" class="switch" role="switch" checked>占位：开关开</label>
+            <label class="check"><input type="checkbox" class="switch" role="switch">占位：开关关</label>
+          </div>
+        </section>
+
+        <section class="sheet" id="items" aria-labelledby="card-list">
+          <h2 id="card-list">占位：条目</h2>
+          <div class="well"><div class="row"><span>占位条目一</span><span class="meta">占位说明</span></div></div>
+          <div class="well"><div class="row"><span>占位条目二</span><span class="meta">占位说明</span></div></div>
+          <div class="well"><div class="row"><span>占位条目三</span><span class="meta">占位说明</span></div></div>
+          <div class="well"><div class="row"><span>占位条目四</span><span class="meta">占位说明</span></div></div>
+        </section>
+      </div>
+    </main>
+  </div>
+<script>
+/* Manual theme switch. "system" removes the explicit choice, so the page follows
+   prefers-color-scheme again. The choice is not stored. */
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll("[data-theme-choice]");
+  function choose(value) {
+    if (value === "system") {
+      root.removeAttribute("data-theme");
+    } else {
+      root.setAttribute("data-theme", value);
+    }
+    buttons.forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-theme-choice") === value));
+    });
+  }
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      choose(button.getAttribute("data-theme-choice"));
+    });
+  });
+  choose(root.getAttribute("data-theme") || "system");
+})();
+</script>
+</body>
+</html>

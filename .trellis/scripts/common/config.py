@@ -19,7 +19,7 @@ from .trellis_config import parse_simple_yaml
 
 
 # Defaults
-DEFAULT_SESSION_COMMIT_MESSAGE = "chore: record journal"
+DEFAULT_SESSION_COMMIT_MESSAGE = "[mini-trellis] journal"
 DEFAULT_MAX_JOURNAL_LINES = 2000
 DEFAULT_SESSION_AUTO_COMMIT = True
 DEFAULT_CODEX_DISPATCH_MODE = "auto"
@@ -118,10 +118,10 @@ def get_max_journal_lines(repo_root: Path | None = None) -> int:
 def get_session_auto_commit(repo_root: Path | None = None) -> bool:
     """Whether scripts should auto-stage + auto-commit session/task changes.
 
-    Governs both ``add_session.py:_auto_commit_workspace`` and
-    ``task_store.py:_auto_commit_archive``.
+    Governs ``add_session.py:_auto_commit_workspace``.
 
-    Default: ``True`` (existing behavior — auto-stage + auto-commit).
+    Missing-key fallback: ``True`` for existing projects. New installations
+    explicitly set ``session_auto_commit: false`` in their config template.
     Set ``session_auto_commit: false`` in ``.trellis/config.yaml`` to skip
     auto-staging entirely; the journal/archive files are still written to
     disk, but the user manages ``git add`` / ``git commit`` themselves.
@@ -171,24 +171,6 @@ def get_codex_dispatch_mode(repo_root: Path | None = None) -> str:
         file=sys.stderr,
     )
     return "inline"
-
-
-def get_default_workflow(repo_root: Path | None = None) -> str | None:
-    """Return the team-shared default workflow id from config.yaml.
-
-    Reads the top-level ``default_workflow`` key — a slug naming a variant in
-    ``.trellis/workflows/<id>.md``. Returns None when unset or blank. This is
-    the git-tracked, team-shared default; a per-developer override lives in the
-    gitignored ``.developer`` file (``workflow=<id>``, see
-    ``paths.get_developer_workflow``) and outranks it. Fail-open: a missing or
-    non-string value simply means "no team default" — no warning (this is read
-    on every turn by hooks and must not add per-turn noise).
-    """
-    config = _load_config(repo_root)
-    raw = config.get("default_workflow")
-    if not isinstance(raw, str):
-        return None
-    return raw.strip() or None
 
 
 DEFAULT_CONTEXT_INJECTION_MAX_FILE_BYTES = 32768
@@ -331,7 +313,7 @@ def get_packages(repo_root: Path | None = None) -> dict[str, dict] | None:
         or None if not configured (single-repo mode).
 
     Example return:
-        {"cli": {"path": "packages/cli"}, "docs-site": {"path": "docs-site", "type": "submodule"}}
+        {"cli": {"path": "packages/cli"}, "docs": {"path": "docs", "type": "submodule"}}
     """
     config = _load_config(repo_root)
     packages = config.get("packages")
@@ -363,7 +345,7 @@ def get_submodule_packages(repo_root: Path | None = None) -> dict[str, str]:
         Empty dict if none configured.
 
     Example return:
-        {"docs-site": "docs-site"}
+        {"docs": "docs"}
     """
     packages = get_packages(repo_root)
     if packages is None:

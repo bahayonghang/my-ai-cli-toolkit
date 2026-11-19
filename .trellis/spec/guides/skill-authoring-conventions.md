@@ -212,6 +212,15 @@ not delete `first-party/` or `LICENSES/`.
   `--space-*`). Port single gates with token-name-agnostic detection instead.
 - Running `slop_check.mjs` on the whole skill directory exits 1 by design,
   because `tests/fixtures/slop/` holds deliberately failing pages.
+- `slop_check.mjs` exit codes: 0 no open FAIL or REFLEX, 1 open findings,
+  2 bad input. When the paths resolve and `collectFiles` returns no file
+  (it keeps `.css`, `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.astro` and
+  `tailwind.config.*`), `run()` returns 2 through `fail()`: stderr carries
+  `no scannable files`, the input paths, the file types read, and that the
+  mechanical gates did not run; stdout is empty, with or without `--json`.
+  A run that read nothing must not exit 0. Do not add a flag that allows an
+  empty scan. Paths that hold at least one scannable file behave as before.
+  (design-atlas 0.7.0)
 
 ### Restyle branch and judged DA gates (design-atlas 0.4.0)
 
@@ -239,6 +248,28 @@ not delete `first-party/` or `LICENSES/`.
 - Preset hex values are fixed by hand and proven by tests; derivation is the
   fallback for a brand hue far from every preset. Do not regenerate presets
   from `derive` in a rebuild.
+- Material model (0.7.0): `style:airy-glass` holds with no blur. Field, paper
+  and wells never blur; `backdrop-filter` appears only in overlay rules and
+  overlay CSS. Each preset carries three blob hex values, and `fixed` carries
+  the alphas and `control-edge`. Gates use the worst background (each blob
+  over each field end, then paper). When a colourway fails, lower the blob
+  chroma or opacity; do not make paper more opaque.
+- The 3:1 boundary applies to inputs, checkboxes, radios and switches. Buttons,
+  tags and segmented items with a text label and a fill get no outline.
+- `assets/reference/airy-glass/index.html` is the target picture for stacks
+  without CSS. Its `:root` values equal the mint preset and the `fixed`
+  values, and its two dark token blocks equal `presets.mint.dark` and
+  `fixed.dark`; change them together.
+- Dark group (0.7.0, `bahayonghang/my-ai-cli-toolkit#51`): a colourway is a
+  light group and a dark group with the same nine roles, and `apply` always
+  writes both. Dark paper is its own colour at an alpha (`fixed.dark.sheet`),
+  never white at an alpha. The entry carries the dark values as `-dark` keys
+  in `colors:` and `elevation:` and states the rules in `## Dark Group`.
+  There is no high-contrast palette: under high contrast only paper and
+  overlays turn opaque.
+- `render` swaps hex for hex across both groups. Keep the 18 default values
+  distinct, and keep every preset and derived colourway from using a default
+  hex in another role (`tests/test_palette.py` checks all 360 hues).
 - Command contract, selection order, and required tests:
   `.trellis/spec/backend/skill-helper-command-contracts.md`.
 
@@ -256,6 +287,53 @@ not delete `first-party/` or `LICENSES/`.
 - Distinguish schema/static checks, hand-authored fixture runtime, actual
   baseline/candidate model outputs and human blind review. Pending output or
   runtime cases remain `missing evidence` with no inferred winner.
+
+### GPUI implementation reference (design-atlas 0.7.0)
+
+Source: `bahayonghang/my-ai-cli-toolkit#52`, parent `#47` (D3, D4, D10).
+
+- Separate file. GPUI guidance lives only in
+  `references/implementation-gpui.md`. It is read only when `signals` reports
+  `gpui`. `references/implementation.md` routes to it from the stack table and
+  from section 5 and does not copy its recipes. There is no generic native
+  stack layer, and no other native framework has a reference.
+- Capabilities are probed. The file tells the agent to find the GPUI source
+  the project resolves to (`cargo metadata`) and grep it for each symbol. A
+  symbol that was not found in source is written as 「未验证」, never as a
+  remembered API name.
+- External facts are dated. Each statement about GPUI behaviour carries
+  `Last verified: <date> against <URL>`. A material recipe names the row of
+  the `bahayonghang/devsweep#5` conclusions table it comes from, or is marked
+  「未验证」.
+- Platform status is stated. Windows is verified for the rows that were run,
+  with the date and the GPUI version; macOS and Linux are 「未验证」.
+- Do not copy text from the `longbridge/gpui-kit` skills (licence shown as
+  `NOASSERTION`).
+- When `collect_signals` reports `gpui` for the root, `notes` carries one line
+  that names `references/implementation-gpui.md` (`GPUI_SPEC` in
+  `scripts/design_catalog.py`). A GPUI crate one directory down gets the
+  `--root` hint only.
+- `tests/test_gpui_contract.py` checks reachability from `SKILL.md`,
+  `references/implementation.md` and `references/review-prompt.md`, local
+  links, a dated source line, and that the path in the `signals` note exists.
+  It does not check that a recipe renders.
+- Rust source has no mechanical gate. On Rust-only source `slop_check.mjs`
+  exits 2, and the report says the mechanical gates did not run.
+
+Choices the ticket did not confirm (inference):
+
+- The file is written in English like the other references, with eleven
+  numbered sections; the test locks their titles and order.
+- `Last verified` lines link the source through reference-style links defined
+  at the end of the file, and the test requires each label to be defined.
+- The three status labels are **run**, **source**, and 「未验证」.
+- An overlay without backdrop blur takes `sheet-solid`, following the entry's
+  Responsive Behavior table, although the spike drew its overlay with the
+  `overlay` token.
+- The note is added whenever `gpui` is in `frameworks`, including when a CSS
+  token layer is also present.
+- The native review is a variant section in `references/review-prompt.md`
+  that lists replacements for the web prompt, not a second full prompt.
 
 ### 6. Tests Required
 

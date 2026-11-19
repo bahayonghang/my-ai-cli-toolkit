@@ -262,7 +262,7 @@
         "The colourway follows the project's blue accent: DESIGN.md does not contain the mint defaults #E7F6F1, #187A56, or #6D4BD6",
         "Reports the palette line from apply, with --color-primary #2563EB as the reason",
         "DESIGN.md carries the measured contrast table for the chosen colourway, every text pair at 4.5:1 or above",
-        "Keeps the airy-glass material rules: one blur on paper only, opaque fallback, solid wells"
+        "Keeps the airy-glass material model: at least two papers directly on the field with the field showing between them, paper with no backdrop-filter (fill, white edge, top highlight, one soft shadow), flat wells without a gray outline, and blur only on an overlay that has content scrolling beneath it"
       ]
     },
     {
@@ -371,13 +371,14 @@
     {
       "id": 31,
       "prompt": "现有轻盈毛玻璃设置页在关闭 blur 的设备上字看不清，保留色板拨盘和深浅主题做精修。",
-      "expected_output": "Keeps airy-glass material/palette contracts and adds only applicable readable surface fallbacks.",
+      "expected_output": "Keeps the material and palette contracts of the existing DESIGN.md in the light group and in the dark group, and adds only applicable readable surface fallbacks.",
       "files": [],
       "assertions": [
-        "Preserves the existing colourway dial, paper-only blur, opaque fallback and layer limits; does not hand-edit palette hex values",
-        "Uses existing surface/on-surface/border roles and an opaque baseline when backdrop-filter is unavailable or unsuitable",
+        "Preserves the material contract in the project's existing DESIGN.md (its colourway dial, which surfaces may blur, its opaque fallback and layer limits) and does not rewrite it to another material model; does not hand-edit palette hex values",
+        "Keeps the light group and the dark group of the colourway together: the dark theme is built from the -dark tokens that DESIGN.md already carries, and no second dark palette is invented or derived by hand",
+        "Uses existing surface/on-surface/border roles and an opaque baseline when backdrop-filter is unavailable or unsuitable; each theme takes its own opaque fallback from DESIGN.md, so dark paper and dark overlays do not fall back to white",
         "Does not add liquid refraction, Halo, blend-mode text, mock browser chrome or animation dependencies",
-        "Checks actual worst-case text/boundary contrast, both supported themes, focus/disabled states and fallback",
+        "Checks actual worst-case text/boundary contrast in both themes (in the dark group on overlays as well as on paper), focus/disabled states and fallback",
         "Makes no minimum browser-version or performance claim without evidence"
       ]
     },
@@ -411,6 +412,47 @@
         "Reports concrete selectors/states and keeps protected information and existing design choices in the Keep section",
         "Distinguishes source/screenshot findings from runtime scroll, interruption, keyboard/touch and reduced-motion checks",
         "Lists each unrun check as unverified and does not claim aesthetic improvement from schema validation"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "desktop-gpui/ 是一个 GPUI 应用（Cargo.toml 里依赖 gpui），目录里已经有 DESIGN.md。按它把 Clean 页做出来。",
+      "expected_output": "Implements the page from the existing DESIGN.md in the GPUI crate by references/implementation-gpui.md, verifies in the native window, and reports honestly which checks did not run.",
+      "files": [],
+      "assertions": [
+        "Uses the crate directory that declares the GPUI dependency as the project root, implements from the DESIGN.md there, and does not run route or apply or replace it",
+        "Reads references/implementation-gpui.md after signals reports gpui, and finds the resolved GPUI source with cargo metadata and greps it before writing a style or window call",
+        "Puts every token in one Rust module with a light group and a dark group named after the DESIGN.md roles, and leaves no colour literal in other source files",
+        "Verifies with native screenshots at the default window size and at the minimum width in light and in dark, not with 1440px and 390px browser screenshots",
+        "Reports that the mechanical gates did not run because slop_check.mjs exits 2 with no scannable files on Rust-only source, walks the anti-slop gates by hand, and does not call that a pass",
+        "Marks each verification step as run or not run with the reason, and makes no claim about macOS or Linux"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "给这个 GPUI 桌面应用用轻盈毛玻璃做一个新的设置界面，现在还没有 DESIGN.md。",
+      "expected_output": "Applies style:airy-glass to the GPUI crate root, writes both colour groups, and builds the four-layer material with GPUI primitives without depending on blur.",
+      "files": [],
+      "assertions": [
+        "Runs apply style:airy-glass with --root set to the GPUI crate directory, and chooses the colourway with --prompt or --palette because signals cannot read Rust tokens",
+        "Draws the field as a two-stop linear gradient with blobs that fade radially (an in-memory SVG radial gradient drawn as an image), not as blurred elements and not as four linear gradients",
+        "Draws paper with a translucent fill, a 1px edge, an inset top highlight, and a negative-spread shadow kept outside the paper, with at least two papers on a visible field and no paper nested in paper",
+        "Uses backdrop blur only for an overlay and only when the capability probe finds it in the resolved GPUI source; otherwise the overlay takes the opaque fallback fill from DESIGN.md",
+        "Keeps the window background opaque by default, and does not vendor or patch a platform crate or rely on Mica or a system backdrop for the glass look",
+        "Compares native screenshots with the bundled airy-glass reference page at the same sizes in light and in dark, and checks the token values against palette --format json",
+        "Labels recipes that implementation-gpui.md marks 未验证 as unverified in the report instead of presenting them as proven"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "这是一个 Tauri 应用，前端是 React 加 Tailwind。用轻盈毛玻璃重做设置页。",
+      "expected_output": "Routing-negative for the GPUI reference. A Tauri project renders in a webview, so the web token layer and the browser verification steps apply.",
+      "files": [],
+      "assertions": [
+        "Does not read or follow references/implementation-gpui.md, because signals does not report gpui for this project",
+        "Builds the token layer in the project's CSS or Tailwind theme and follows references/implementation.md sections 2 and 5",
+        "Verifies in a running page with desktop and narrow screenshots and runs slop_check.mjs on the web source",
+        "Does not run cargo metadata to probe GPUI capabilities and does not create a Rust token module"
       ]
     }
   ]

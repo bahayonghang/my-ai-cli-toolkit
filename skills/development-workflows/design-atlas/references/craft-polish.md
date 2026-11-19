@@ -80,7 +80,7 @@ Use only adapters that address the observed problem and fit the selected materia
 ### Surface layers and themes
 
 - **Use / exclude:** Use only when a style already calls for surface depth and actual controls lack separation. Keep flat/terminal surfaces flat. Do not add liquid refraction, background sampling, blend-mode text, Halo, or invented product/browser illustrations; gates 29, 47a, 47c and 84 still apply.
-- **Tokens / states:** Reuse canvas, raised surface, border, contact/ambient shadow and on-surface roles for light/dark and disabled/focus states. Keep text on a predictable readable surface. In airy-glass, retain the existing colourway dial, paper-only blur, opaque fallback and layer limits; do not hand-edit palette hex values.
+- **Tokens / states:** Reuse canvas, raised surface, border, contact/ambient shadow and on-surface roles for light/dark and disabled/focus states. Keep text on a predictable readable surface. In airy-glass, retain the material contract of the project's `DESIGN.md` (its colourway dial, which surfaces may blur, its opaque fallback and layer limits); do not hand-edit palette hex values.
 - **Interruption / access:** Theme switches keep focus, selection and readable text immediately. Crossfade decorative layers with opacity only if useful; reduced motion switches immediately. Pointer, keyboard and touch retain the same control hit targets.
 - **Fallback / verify:** Use the design's opaque surface when `backdrop-filter` is unsupported or unsuitable. A parsed CSS feature does not establish performance or contrast over an unknown background. Check text/boundary contrast on actual worst-case surfaces in both supported themes, disabled/focus states, fallback and reduced motion. Measure before claiming smoothness or speed.
 

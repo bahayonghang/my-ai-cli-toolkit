@@ -27,3 +27,7 @@ skills/development-workflows/design-atlas/assets/catalog/** text eol=lf
 # picking either side (task state lives in task.json, not index.md). See
 # .trellis/spec/cli/backend/directory-structure.md for details.
 .trellis/workspace/*/journal-*.md merge=union
+
+# design-atlas reference pages are compared with palettes.json and screenshots.
+# Pin LF so core.autocrlf=true checkouts keep the committed bytes.
+skills/development-workflows/design-atlas/assets/reference/** text eol=lf
