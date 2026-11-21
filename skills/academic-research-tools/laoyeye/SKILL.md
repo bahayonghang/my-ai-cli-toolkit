@@ -1,7 +1,7 @@
 ---
 name: laoyeye
 description: "整合式思考与学习伙伴：理清问题、追问设计、讲透概念、拆解范例、横纵深度研究、核查说法、多视角解题、比较两项选择、设计最小实验；明确请求时做持续教学、agent 任务书、知识收尾、天赋探索与人生设计。支持 Socratic questioning, grilling, critical thinking, first principles, steelman, fact check；可点名原方法。排除普通润色翻译、学术论文精读综述、生产 UI 实施、专业 diff 或 Trellis 规划审查、原生 Goal 管理；代码诊断与治理仅在明确选择本包或其流程内执行。"
-category: research-learning-knowledge
+category: academic-research-tools
 tags: [thinking, learning, questioning, decision-making, evidence]
 version: "0.1.0"
 ---

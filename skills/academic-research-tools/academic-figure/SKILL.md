@@ -79,7 +79,7 @@ The selected row is authoritative.
 
 | Request                                                  | Route to                                                                       |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Deep-read or summarize one paper                         | **literature-mentor** (`skills/research-learning-knowledge/literature-mentor`) |
+| Deep-read or summarize one paper                         | **literature-mentor** (`skills/academic-research-tools/literature-mentor`) |
 | Intake, compare, or synthesize multiple papers           | Outside this skill. A synthesis table is not a plotted figure. **idea-bib-review** applies only when the user already supplies an argument and BibTeX. |
 | Build a BI dashboard or linked operational charts        | Dashboard or BI tooling                                                        |
 | Generate an AI graphical abstract or illustration        | Image-generation tooling                                                       |

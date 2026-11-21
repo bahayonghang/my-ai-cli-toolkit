@@ -1,7 +1,7 @@
 ---
 name: literature-mentor
 description: 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇综合、对比、找研究空白和批量规范化不在本技能范围内。
-category: research-learning-knowledge
+category: academic-research-tools
 tags:
   - literature
   - research
