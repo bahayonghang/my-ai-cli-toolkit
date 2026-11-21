@@ -15,7 +15,7 @@
 | 字段 | 值 |
 | --- | --- |
 | 名称 | `laoyeye` |
-| 分类 | `research-learning-knowledge` (研究、学习与知识) |
+| 分类 | `academic-research-tools` (学术研究工具) |
 | 版本 | `0.1.0` |
 | 标签 | `thinking`, `learning`, `questioning`, `decision-making`, `evidence` |
 
@@ -29,25 +29,25 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill laoyeye
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/research-learning-knowledge/laoyeye/agents` | 目录 | 1 | 配套 agent |
-| `skills/research-learning-knowledge/laoyeye/assets` | 目录 | 3 | 素材资源 |
-| `skills/research-learning-knowledge/laoyeye/evals` | 目录 | 3 | 评测样例 |
-| `skills/research-learning-knowledge/laoyeye/README.md` | 文件 | 1 | 顶层文件 |
-| `skills/research-learning-knowledge/laoyeye/references` | 目录 | 26 | 引用资料 |
-| `skills/research-learning-knowledge/laoyeye/reports` | 目录 | 6 | 顶层目录 |
-| `skills/research-learning-knowledge/laoyeye/scripts` | 目录 | 1 | 可执行脚本 |
-| `skills/research-learning-knowledge/laoyeye/tests` | 目录 | 1 | 自动化测试 |
+| `skills/academic-research-tools/laoyeye/agents` | 目录 | 1 | 配套 agent |
+| `skills/academic-research-tools/laoyeye/assets` | 目录 | 3 | 素材资源 |
+| `skills/academic-research-tools/laoyeye/evals` | 目录 | 3 | 评测样例 |
+| `skills/academic-research-tools/laoyeye/README.md` | 文件 | 1 | 顶层文件 |
+| `skills/academic-research-tools/laoyeye/references` | 目录 | 26 | 引用资料 |
+| `skills/academic-research-tools/laoyeye/reports` | 目录 | 6 | 顶层目录 |
+| `skills/academic-research-tools/laoyeye/scripts` | 目录 | 1 | 可执行脚本 |
+| `skills/academic-research-tools/laoyeye/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| agents | `skills/research-learning-knowledge/laoyeye/agents` | 配套 agent |
-| assets | `skills/research-learning-knowledge/laoyeye/assets` | 素材资源 |
-| evals | `skills/research-learning-knowledge/laoyeye/evals` | 评测样例 |
-| references | `skills/research-learning-knowledge/laoyeye/references` | 引用资料 |
-| scripts | `skills/research-learning-knowledge/laoyeye/scripts` | 可执行脚本 |
-| tests | `skills/research-learning-knowledge/laoyeye/tests` | 自动化测试 |
+| agents | `skills/academic-research-tools/laoyeye/agents` | 配套 agent |
+| assets | `skills/academic-research-tools/laoyeye/assets` | 素材资源 |
+| evals | `skills/academic-research-tools/laoyeye/evals` | 评测样例 |
+| references | `skills/academic-research-tools/laoyeye/references` | 引用资料 |
+| scripts | `skills/academic-research-tools/laoyeye/scripts` | 可执行脚本 |
+| tests | `skills/academic-research-tools/laoyeye/tests` | 自动化测试 |
 
 ## 验证方式
 
@@ -61,5 +61,5 @@ just ci
 
 ## 源码路径
 
-- `skills/research-learning-knowledge/laoyeye/SKILL.md`
-- `skills/research-learning-knowledge/laoyeye`
+- `skills/academic-research-tools/laoyeye/SKILL.md`
+- `skills/academic-research-tools/laoyeye`

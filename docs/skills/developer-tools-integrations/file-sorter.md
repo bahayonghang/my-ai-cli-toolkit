@@ -34,7 +34,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill file-sorter
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/file-sorter/agents` | 目录 | 1 | 配套 agent |
 | `skills/developer-tools-integrations/file-sorter/evals` | 目录 | 2 | 评测样例 |
-| `skills/developer-tools-integrations/file-sorter/LICENSE` | 文件 | 1 | 顶层目录 |
 | `skills/developer-tools-integrations/file-sorter/manifest.json` | 文件 | 1 | 顶层文件 |
 | `skills/developer-tools-integrations/file-sorter/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/developer-tools-integrations/file-sorter/references` | 目录 | 4 | 引用资料 |
@@ -42,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill file-sorter
 | `skills/developer-tools-integrations/file-sorter/scripts` | 目录 | 1 | 可执行脚本 |
 | `skills/developer-tools-integrations/file-sorter/security` | 目录 | 1 | 顶层目录 |
 | `skills/developer-tools-integrations/file-sorter/tests` | 目录 | 1 | 自动化测试 |
-| `skills/developer-tools-integrations/file-sorter/THIRD_PARTY_NOTICES.md` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 

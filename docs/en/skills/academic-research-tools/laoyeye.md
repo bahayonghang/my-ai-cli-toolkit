@@ -15,7 +15,7 @@
 | Field | Value |
 | --- | --- |
 | Name | `laoyeye` |
-| Category | `research-learning-knowledge` (Research, Learning & Knowledge) |
+| Category | `academic-research-tools` (Academic Research Tools) |
 | Version | `0.1.0` |
 | Tags | `thinking`, `learning`, `questioning`, `decision-making`, `evidence` |
 
@@ -29,25 +29,25 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill laoyeye
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/research-learning-knowledge/laoyeye/agents` | directory | 1 | Companion agents |
-| `skills/research-learning-knowledge/laoyeye/assets` | directory | 3 | Assets |
-| `skills/research-learning-knowledge/laoyeye/evals` | directory | 3 | Evaluation samples |
-| `skills/research-learning-knowledge/laoyeye/README.md` | file | 1 | Top-level file |
-| `skills/research-learning-knowledge/laoyeye/references` | directory | 26 | Reference material |
-| `skills/research-learning-knowledge/laoyeye/reports` | directory | 6 | Top-level directory |
-| `skills/research-learning-knowledge/laoyeye/scripts` | directory | 1 | Executable scripts |
-| `skills/research-learning-knowledge/laoyeye/tests` | directory | 1 | Automated tests |
+| `skills/academic-research-tools/laoyeye/agents` | directory | 1 | Companion agents |
+| `skills/academic-research-tools/laoyeye/assets` | directory | 3 | Assets |
+| `skills/academic-research-tools/laoyeye/evals` | directory | 3 | Evaluation samples |
+| `skills/academic-research-tools/laoyeye/README.md` | file | 1 | Top-level file |
+| `skills/academic-research-tools/laoyeye/references` | directory | 26 | Reference material |
+| `skills/academic-research-tools/laoyeye/reports` | directory | 6 | Top-level directory |
+| `skills/academic-research-tools/laoyeye/scripts` | directory | 1 | Executable scripts |
+| `skills/academic-research-tools/laoyeye/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| agents | `skills/research-learning-knowledge/laoyeye/agents` | Companion agents |
-| assets | `skills/research-learning-knowledge/laoyeye/assets` | Assets |
-| evals | `skills/research-learning-knowledge/laoyeye/evals` | Evaluation samples |
-| references | `skills/research-learning-knowledge/laoyeye/references` | Reference material |
-| scripts | `skills/research-learning-knowledge/laoyeye/scripts` | Executable scripts |
-| tests | `skills/research-learning-knowledge/laoyeye/tests` | Automated tests |
+| agents | `skills/academic-research-tools/laoyeye/agents` | Companion agents |
+| assets | `skills/academic-research-tools/laoyeye/assets` | Assets |
+| evals | `skills/academic-research-tools/laoyeye/evals` | Evaluation samples |
+| references | `skills/academic-research-tools/laoyeye/references` | Reference material |
+| scripts | `skills/academic-research-tools/laoyeye/scripts` | Executable scripts |
+| tests | `skills/academic-research-tools/laoyeye/tests` | Automated tests |
 
 ## Validation
 
@@ -61,5 +61,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `skills/research-learning-knowledge/laoyeye/SKILL.md`
-- `skills/research-learning-knowledge/laoyeye`
+- `skills/academic-research-tools/laoyeye/SKILL.md`
+- `skills/academic-research-tools/laoyeye`

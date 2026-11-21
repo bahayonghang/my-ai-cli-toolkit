@@ -15,7 +15,7 @@
 | 字段 | 值 |
 | --- | --- |
 | 名称 | `literature-mentor` |
-| 分类 | `research-learning-knowledge` (研究、学习与知识) |
+| 分类 | `academic-research-tools` (学术研究工具) |
 | 版本 | `1.1.0` |
 | 标签 | `literature`, `research`, `zotero`, `paper-reading`, `academic`, `deep-learning` |
 
@@ -29,17 +29,17 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill literature-me
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/research-learning-knowledge/literature-mentor/evals` | 目录 | 1 | 评测样例 |
-| `skills/research-learning-knowledge/literature-mentor/references` | 目录 | 4 | 引用资料 |
-| `skills/research-learning-knowledge/literature-mentor/tests` | 目录 | 1 | 自动化测试 |
+| `skills/academic-research-tools/literature-mentor/evals` | 目录 | 1 | 评测样例 |
+| `skills/academic-research-tools/literature-mentor/references` | 目录 | 4 | 引用资料 |
+| `skills/academic-research-tools/literature-mentor/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| evals | `skills/research-learning-knowledge/literature-mentor/evals` | 评测样例 |
-| references | `skills/research-learning-knowledge/literature-mentor/references` | 引用资料 |
-| tests | `skills/research-learning-knowledge/literature-mentor/tests` | 自动化测试 |
+| evals | `skills/academic-research-tools/literature-mentor/evals` | 评测样例 |
+| references | `skills/academic-research-tools/literature-mentor/references` | 引用资料 |
+| tests | `skills/academic-research-tools/literature-mentor/tests` | 自动化测试 |
 
 ## 验证方式
 
@@ -51,5 +51,5 @@ just ci
 
 ## 源码路径
 
-- `skills/research-learning-knowledge/literature-mentor/SKILL.md`
-- `skills/research-learning-knowledge/literature-mentor`
+- `skills/academic-research-tools/literature-mentor/SKILL.md`
+- `skills/academic-research-tools/literature-mentor`

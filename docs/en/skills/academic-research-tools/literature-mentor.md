@@ -15,7 +15,7 @@
 | Field | Value |
 | --- | --- |
 | Name | `literature-mentor` |
-| Category | `research-learning-knowledge` (Research, Learning & Knowledge) |
+| Category | `academic-research-tools` (Academic Research Tools) |
 | Version | `1.1.0` |
 | Tags | `literature`, `research`, `zotero`, `paper-reading`, `academic`, `deep-learning` |
 
@@ -29,17 +29,17 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill literature-me
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/research-learning-knowledge/literature-mentor/evals` | directory | 1 | Evaluation samples |
-| `skills/research-learning-knowledge/literature-mentor/references` | directory | 4 | Reference material |
-| `skills/research-learning-knowledge/literature-mentor/tests` | directory | 1 | Automated tests |
+| `skills/academic-research-tools/literature-mentor/evals` | directory | 1 | Evaluation samples |
+| `skills/academic-research-tools/literature-mentor/references` | directory | 4 | Reference material |
+| `skills/academic-research-tools/literature-mentor/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| evals | `skills/research-learning-knowledge/literature-mentor/evals` | Evaluation samples |
-| references | `skills/research-learning-knowledge/literature-mentor/references` | Reference material |
-| tests | `skills/research-learning-knowledge/literature-mentor/tests` | Automated tests |
+| evals | `skills/academic-research-tools/literature-mentor/evals` | Evaluation samples |
+| references | `skills/academic-research-tools/literature-mentor/references` | Reference material |
+| tests | `skills/academic-research-tools/literature-mentor/tests` | Automated tests |
 
 ## Validation
 
@@ -51,5 +51,5 @@ just ci
 
 ## Source path
 
-- `skills/research-learning-knowledge/literature-mentor/SKILL.md`
-- `skills/research-learning-knowledge/literature-mentor`
+- `skills/academic-research-tools/literature-mentor/SKILL.md`
+- `skills/academic-research-tools/literature-mentor`

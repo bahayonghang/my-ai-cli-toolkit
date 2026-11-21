@@ -34,7 +34,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill file-sorter
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/file-sorter/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/file-sorter/evals` | directory | 2 | Evaluation samples |
-| `skills/developer-tools-integrations/file-sorter/LICENSE` | file | 1 | Top-level directory |
 | `skills/developer-tools-integrations/file-sorter/manifest.json` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/file-sorter/README.md` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/file-sorter/references` | directory | 4 | Reference material |
@@ -42,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill file-sorter
 | `skills/developer-tools-integrations/file-sorter/scripts` | directory | 1 | Executable scripts |
 | `skills/developer-tools-integrations/file-sorter/security` | directory | 1 | Top-level directory |
 | `skills/developer-tools-integrations/file-sorter/tests` | directory | 1 | Automated tests |
-| `skills/developer-tools-integrations/file-sorter/THIRD_PARTY_NOTICES.md` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
