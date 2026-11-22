@@ -77,7 +77,7 @@ not add, commit, push, ignore, or delete the contract.
   request should route elsewhere (e.g. ast-grep → `rg` for exact strings or LSP
   for rename/type-resolution).
 - `just evals-check` checks this schema only. Model scoring is not in CI.
-  `scripts/check.py` still validates only SKILL.md frontmatter, and `node-test` runs `tests/*.mjs`.
+  `scripts/check_skill_frontmatter.py` still validates only SKILL.md frontmatter, and `node-test` runs `tests/*.mjs`.
 
 ## Interface contract
 
@@ -90,7 +90,7 @@ not add, commit, push, ignore, or delete the contract.
 
 ## Frontmatter
 
-- Required top-level keys (enforced by `scripts/check.py`): `name`, `description`,
+- Required top-level keys (enforced by `scripts/check_skill_frontmatter.py`): `name`, `description`,
   `category` (`developer-tools-integrations`), `tags`, `version`. Optional but
   encouraged: `allowed-tools`, `argument-hint` for skills that take an argument.
 - `description` is the always-loaded routing contract: ≤1024 chars, no angle
@@ -98,7 +98,7 @@ not add, commit, push, ignore, or delete the contract.
 - `version` numbers reflect real maturity (0.1.0 vs 1.0.0); do not homogenize
   them. Leave `version` unquoted.
 - Governance metadata (`owner`, review cadence) is optional; if added, nest it
-  under a `metadata:` block — top-level unknown keys trigger a `check.py` warning.
+  under a `metadata:` block — top-level unknown keys trigger a `check_skill_frontmatter.py` warning.
 
 ## After structural changes
 

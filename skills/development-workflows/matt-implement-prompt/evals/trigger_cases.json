@@ -1,5 +1,5 @@
 {
-  "note": "matt-implement-prompt 0.1.0 trigger boundary. Domain concept table tests natural Chinese/English phrasing including colloquial 'promt' and excludes /to-spec, /to-tickets, direct /implement, goal-meta-skill, and trellis-plan-review.",
+  "note": "matt-implement-prompt 0.2.0 trigger boundary. Domain concept table tests natural Chinese/English phrasing including colloquial 'promt' and base-branch delivery prompts, while excluding /to-spec, /to-tickets, direct /implement, goal-meta-skill, trellis-plan-review, git-commit, and gh-pr-release.",
   "recommended_threshold": 0.34,
   "description_required_concepts": [
     "matt_flow",
@@ -84,6 +84,14 @@
     {
       "text": "把这批 ticket 的实施提示词编排好，跑完测试和评审后再关闭 github issue",
       "family": "zh-verify-then-close"
+    },
+    {
+      "text": "基于 main 分支和 spec #55 编排新会话实施提示词，要求拆分提交、关联 commit SHA、开 PR 合并并同步本地和远端",
+      "family": "zh-main-pr-sync"
+    },
+    {
+      "text": "基于 dev 分支和子票 #56-#58（当前工作树有未提交改动）编排新对话实施 prompt，选用 worktree 拆分提交并关联 SHA 关单后合并回 dev 清理",
+      "family": "zh-dev-merge-worktree"
     }
   ],
   "should_not_trigger": [
@@ -120,6 +128,10 @@
     {
       "text": "把当前暂存区的代码拆分成三个中文 Conventional Commit 提交",
       "family": "git-commit"
+    },
+    {
+      "text": "把已经推到远端的分支创建 PR 合并到 main 并清理远端分支",
+      "family": "gh-pr-release"
     }
   ]
 }

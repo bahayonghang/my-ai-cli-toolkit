@@ -25,7 +25,7 @@ research tools belong here and should follow the same conventions.
 
 - Keep top-level `name`, `description`, `category`, `tags`, `version` aligned
   with the directory category. `category` **must** equal `academic-research-tools`
-  and match the parent directory. `scripts/check.py` enforces these (and the
+  and match the parent directory. `scripts/check_skill_frontmatter.py` enforces these (and the
   canonical category set), and warns on unknown top-level keys.
 - `description` must not contain angle brackets and stays under 1024 characters;
   the checker rejects both.
@@ -50,7 +50,7 @@ research tools belong here and should follow the same conventions.
   That synthesis job is `idea-bib-review` only when the user already supplied
   an argument and BibTeX.
 - `just evals-check` checks this schema. It does not call a model.
-  `scripts/check.py` still validates only `SKILL.md` frontmatter, and
+  `scripts/check_skill_frontmatter.py` still validates only `SKILL.md` frontmatter, and
   `node-test` runs `tests/*.mjs`.
 
 ## Tests

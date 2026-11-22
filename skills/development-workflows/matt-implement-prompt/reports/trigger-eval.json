@@ -9,8 +9,8 @@
   ],
   "missing_description_concepts": [],
   "summary": {
-    "total": 14,
-    "passed": 14,
+    "total": 17,
+    "passed": 17,
     "false_positive": 0,
     "false_negative": 0,
     "pass_rate": 1.0
@@ -94,6 +94,35 @@
       {
         "prompt": "把这批 ticket 的实施提示词编排好，跑完测试和评审后再关闭 github issue",
         "family": "zh-verify-then-close",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "execution_target",
+          "issue_close",
+          "matt_flow",
+          "prompt_handoff"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "基于 main 分支和 spec #55 编排新会话实施提示词，要求拆分提交、关联 commit SHA、开 PR 合并并同步本地和远端",
+        "family": "zh-main-pr-sync",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "execution_target",
+          "matt_flow",
+          "prompt_handoff"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "基于 dev 分支和子票 #56-#58（当前工作树有未提交改动）编排新对话实施 prompt，选用 worktree 拆分提交并关联 SHA 关单后合并回 dev 清理",
+        "family": "zh-dev-merge-worktree",
         "expected_trigger": true,
         "predicted_trigger": true,
         "passed": true,
@@ -191,6 +220,16 @@
       {
         "prompt": "把当前暂存区的代码拆分成三个中文 Conventional Commit 提交",
         "family": "git-commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把已经推到远端的分支创建 PR 合并到 main 并清理远端分支",
+        "family": "gh-pr-release",
         "expected_trigger": false,
         "predicted_trigger": false,
         "passed": true,

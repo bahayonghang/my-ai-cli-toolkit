@@ -3,45 +3,143 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "用 Touying 给我搭一个 .typ 的演示文稿，套 metropolis 主题，要有标题页和几个分节，正文用 heading 当每页。",
-      "expected_output": "Authors a Touying .typ deck: imports Touying plus the metropolis theme, applies it with #show, uses headings as slides, and sets up sections.",
+      "prompt": "用 Touying 0.8.0 给我搭一个 .typ 演示文稿，套 metropolis 主题，包含标题页、几个分节和正文页。",
+      "expected_output": "Authors a Touying 0.8.0 .typ deck importing @preview/touying:0.8.0 and themes.metropolis, applies it via #show, and uses headings/slides without touching non-Typst formats.",
       "files": [],
       "assertions": [
-        "The response works in Typst/Touying (.typ), importing Touying and a theme.",
-        "It applies the theme via #show and uses headings (or #slide) for slides.",
-        "It does not produce HTML, PPT, or reveal.js output."
+        "The response imports @preview/touying:0.8.0 (targeting Typst 0.15.0+) and a Touying theme via #show.",
+        "It uses headings or #slide for slide structure and checks workspace layout first if existing files exist.",
+        "It does not produce HTML, PPT, reveal.js, or Marp output."
       ]
     },
     {
       "id": 2,
-      "prompt": "我的 Touying 幻灯片想加逐步出现的动画，点一下出一条要点，应该怎么用 #pause 和动态内容？",
-      "expected_output": "Explains incremental reveal in Touying using #pause / dynamic content, with the relevant caveats (such as avoiding #pause inside context blocks).",
+      "prompt": "我的 Touying 幻灯片想加逐步出现的动画，还想把被遮盖的文本变半透明、在分式公式里逐步显示，应该怎么写？",
+      "expected_output": "Uses Touying 0.8.0 animation syntax (#pause, #uncover/#only/#animate), alpha-changing-cover or color-changing-cover instead of deprecated semi-transparent-cover, native math animation inside frac instead of touying-equation, and warns against #pause inside context.",
       "files": [],
       "assertions": [
-        "The response uses Touying's animation mechanisms (#pause, dynamic/only/uncover) rather than generic advice.",
-        "It routes through the dynamic/animation guidance.",
-        "It stays within Typst/Touying."
+        "The response uses Touying 0.8.0 animations (#pause, #uncover, #only, or #animate) and warns against placing #pause inside context.",
+        "It recommends utils.alpha-changing-cover or utils.color-changing-cover instead of deprecated semi-transparent-cover.",
+        "It uses native math animation inside $ frac(...) $ instead of deprecated touying-equation."
       ]
     },
     {
       "id": 3,
-      "prompt": "Touying 里怎么改 slide-level、配置页面尺寸和页脚？我想把这些集中放在 globals.typ 里。",
-      "expected_output": "Shows config-common(slide-level: ...) and config-page for page/footer, centralized in globals.typ, instead of raw set page.",
+      "prompt": "Touying 里怎么改 slide-level、配置页面尺寸、页脚和溢出检测？我想把配置集中放到 globals.typ 里。",
+      "expected_output": "Uses globals.typ + main.typ + section files layout, config-common(slide-level: ..., breakable: ..., detect-overflow: ...), config-page, and config-info instead of raw set page.",
       "files": [],
       "assertions": [
-        "The response uses config-common / config-page instead of raw set page.",
-        "It sets slide-level via config-common.",
-        "It centralizes configuration (globals.typ) consistent with the skill's guidance."
+        "The response uses config-common and config-page instead of raw #set page.",
+        "It centralizes shared imports and helpers in globals.typ so main.typ and sections avoid circular imports.",
+        "It configures slide-level and overflow options accurately for Touying 0.8.0."
       ]
     },
     {
       "id": 4,
-      "prompt": "帮我做一套 HTML 的网页幻灯片，用 reveal.js，能在浏览器里翻页那种。",
-      "expected_output": "Negative trigger. A non-Typst HTML/reveal.js deck is outside Touying's scope and should not activate this skill.",
+      "prompt": "我有一个 0.6.1 的 Touying 工程，升级到 0.8.0 时 magic.bibliography()、show-only-notes 和 touying-recall 报错了，怎么迁移？",
+      "expected_output": "Follows references/migration-0.8.md: bumps Typst to 0.15.0+, switches to boolean show-bibliography-as-footnote: true with a real #bibliography, uses config-common(notes-fn: ..) with touying-notes, and updates touying-recall(subslides: ..).",
       "files": [],
       "assertions": [
-        "The skill description should not pull HTML/reveal.js/PPT deck requests into the Typst/Touying workflow.",
-        "If referenced, the response should redirect to an HTML or slide tool rather than .typ/Touying authoring."
+        "The response migrates show-bibliography-as-footnote to boolean true paired with a real #bibliography(...) and removes magic.bibliography().",
+        "It replaces the removed config-methods(show-only-notes: ..) renderer with config-common(notes-fn: ..) built on touying-notes.",
+        "It updates touying-recall to plural subslides: with swapped auto/none semantics and checks --warnings promote."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我做一套网页幻灯片，用 reveal.js 或 Marp，或者导出成 PPT 发给同事。",
+      "expected_output": "Negative trigger. HTML, reveal.js, Marp, and PPT decks are explicitly excluded from touying.",
+      "files": [],
+      "assertions": [
+        "The skill description and Trigger section explicitly exclude HTML, reveal.js, PPT, and Marp.",
+        "The response declines Typst/Touying authoring and points the user to a web/HTML, Marp, or PPT tool instead."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "帮我用 XeLaTeX 写一个中文硕士学位论文答辩 Beamer 幻灯片，匹配学校论文答辩模板。",
+      "expected_output": "Near-neighbor negative trigger. XeLaTeX Chinese thesis defense Beamer decks belong to academic-defense-beamer, not touying.",
+      "files": [],
+      "assertions": [
+        "The skill description and exclusions explicitly defer XeLaTeX thesis defense decks to academic-defense-beamer.",
+        "The response does not force a XeLaTeX thesis defense request into Typst/Touying."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "在 Touying 0.8.0 幻灯片里，怎么用 Waypoints（比如层级标签、from-wp、until-wp、not-wp）和 #animate / swap 组合先隐藏再替换并高亮变红？",
+      "expected_output": "Follows references/animations-waypoints.md: declares #waypoint(<part:intro>) / <part:end>, uses from-wp/until-wp/not-wp/get-last instead of negative integer indices, and configures #animate or #animate-hidden with swap(..., stretch: true) and styling priority rules.",
+      "files": [],
+      "assertions": [
+        "The response uses #waypoint with hierarchical labels or markers (from-wp, until-wp, get-last, or not-wp) and never relies on negative integers on flow-parsed animation functions.",
+        "It uses #animate or #animate-hidden with placement (\"cover\"/\"remove\"/swap) and styling priority composition.",
+        "It mentions stretch: true measurement trade-offs and notes that #pause after #uncover/#only does not snap past reserved subslides in 0.8.0."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "怎么在 Touying 0.8.0 的分式、矩阵和上下标原生公式里直接做渐进动画，同时用 #touying-render 展示中间阶段并用 #measure 计算动画块最大高度？",
+      "expected_output": "Follows references/animations-waypoints.md: puts #pause/#uncover directly inside native $ frac(...) $, $ mat(...) $, and $ attach(...) $ instead of deprecated touying-equation, uses #touying-render(body, subslides: ..., start: ..., repeat-last: ...), and uses #measure(body, subslide: none) inside context.",
+      "files": [],
+      "assertions": [
+        "The response writes native Typst math animations inside frac, mat, or attach instead of deprecated touying-equation.",
+        "It uses #touying-render with subslides: / start: / repeat-last: to render intermediate stages of a content value.",
+        "It calls Touying's #measure(..., subslide: none) inside context to measure animated content dimensions."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "我想让同一份 Touying 0.8.0 源文件支持 --input export-mode=article、handout 和 presentation 三种导出，并在文章模式里用 #article-text 替换讲稿段落、让图片和 CeTZ 图形靠右环绕、保留带表头的表格不被扁平化。",
+      "expected_output": "Follows references/output-modes-article.md: documents export-mode (\"slides\", \"presentation\", \"handout\", \"article\") and --input export-mode=, mode markers (#article-text, #article-only, #slides-only, <touying:...>), themes.article, and verified config-article(wrap: ..., linearize: ..., available-fields: ...) keys with table.header and graphic-marker-of.",
+      "files": [],
+      "assertions": [
+        "The response uses --input export-mode= (presentation, handout, article) alongside #article-text, #article-only, or #slides-only mode markers.",
+        "It uses exact 0.8.0 config-article(wrap: ..., linearize: ..., available-fields: ...) syntax with wrap.overrides and graphic-marker-of rather than nonexistent wrap-images or wrap-width keys.",
+        "It explains that table.header/grid.header (or #article-keep-layout) prevents automatic linearization of structured tables in article mode."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "用 Touying 0.8.0 写一个自定义主题，给特型页加上隐藏标题、用 notes-fn 定制第二屏演讲者备注样式，并用 Typst 0.15 bundle 导出每个文档独立的 .pdfpc。",
+      "expected_output": "Follows references/themes-notes-export.md: styles body via touying-slide(setting: ..), wraps helpers in touying-fn-wrapper-raw, uses place(hide(heading(...))) on special slides, puts config last in utils.merge-dicts, implements config-common(notes-fn: ..) with touying-notes, and exports .pdfpc via top-level #pdfpc.bundle-assets() and --features bundle --format bundle.",
+      "files": [],
+      "assertions": [
+        "Custom theme uses touying-slide(setting: ..), touying-fn-wrapper-raw, place(hide(heading(...))), utils.page-args-from-aspect-ratio, and places user config last in utils.merge-dicts.",
+        "Presenter view uses config-common(notes-fn: ..) built on touying-notes instead of removed config-methods(show-only-notes: ..).",
+        "Places #pdfpc.bundle-assets() outside #document(..) and compiles with --features bundle --format bundle to emit per-document .pdfpc files."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "怎么在 Touying 0.8.0 里用 touying-reducer 和自定义包做 CeTZ、Lilaq 和 Alchemist 的分步动画，并配合 Theorion 定理编号？",
+      "expected_output": "Follows references/integrations.md: uses touying-reduce for CeTZ/Alchemist, lambda touying-reducer-bindings (module => ...), touying-reducer with lq.diagram and dictionary cover for Lilaq, bans legacy string-array bindings and (uncover(..),) array syntax, and freezes Theorion theorem-counter.",
+      "files": [],
+      "assertions": [
+        "Uses lambda bindings (module => ...) for touying-reducer-bindings and explicitly avoids legacy string-array callback paths or (uncover(..),) array wrappers.",
+        "Configures CeTZ, Alchemist, and variadic Lilaq (lq.diagram) accurately for Touying 0.8.0.",
+        "Freezes Theorion theorem-counter via config-common(frozen-counters: (theorem-counter,)) so subslides keep consistent numbering."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "帮我从零设计一套高完成度的 Touying 0.8.0 技术分享幻灯片，希望排版有变化、别全都是卡片和项目符号，也别写死固定配色。",
+      "expected_output": "Follows references/visual-craft.md: assigns a concrete visual metaphor per slide, mixes layout topologies with bullet-only and consecutive-same-topology caps, defines parameterized Palette/Typography in globals.typ, and proposes 3 restrained direction prototypes differing across narrative grammar axes on real slides.",
+      "files": [],
+      "assertions": [
+        "Assigns a concrete visual metaphor per slide (excluding generic card/bullet containers) and enforces bullet-only and consecutive-same-topology layout caps.",
+        "Parameterizes palette and typography in globals.typ instead of hardcoding one fixed color scheme across all decks.",
+        "Proposes 3 restrained direction prototypes varying across narrative grammar axes on real content before full-deck authoring."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "写完一个支持 presentation/handout/article 三模式导出的 Touying 0.8.0 幻灯片后，怎么用脚本做静态审计、环境自检和多模式编译验证？如果当前机器没装 typst CLI 该怎么汇报？",
+      "expected_output": "Opens the closest graded example tier in examples/README.md (04-multi-mode-article.typ), runs scripts/touying_check.py doctor, audit --strict-warnings, and compile --modes presentation,handout,article, and reports skipped compile status as missing evidence rather than passing when typst is absent.",
+      "files": [],
+      "assertions": [
+        "The response directs checking examples/README.md to open the closest graded 0.8.0 tier before authoring.",
+        "It runs scripts/touying_check.py doctor, audit (checking 0.8.0 deprecations and layout monotony), and compile --modes presentation,handout,article.",
+        "When Typst >= 0.15.0 is unavailable, it treats status 'skipped' (missing_evidence: true) honestly as missing evidence instead of claiming pass."
       ]
     }
   ]

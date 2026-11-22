@@ -4,33 +4,33 @@
     {
       "id": 1,
       "prompt": "基于当前仓库的父 Spec #55 和子票 #56-#60，帮我写一份能在新对话里实施全部 ticket 并关闭远程 issue 的 Prompt。",
-      "expected_output": "Performs read-only recon via git and gh, compiles a pointer-driven fresh-session prompt with frontier waves, TDD, /code-review, CI commands, explicit remote issue-closing authorization (comment before close), and push prohibition, passes lint_implement_prompt.py, and stops without implementing code or closing issues.",
+      "expected_output": "Performs read-only recon via git and gh, compiles a pointer-driven fresh-session prompt with branch-or-worktree choice, frontier waves, TDD, /code-review, CI commands, split commits + clean working tree gate, commit-SHA-linked issue-closing protocol (comment before close), and base-branch-aware delivery, passes lint_implement_prompt.py, and stops without implementing code or closing issues.",
       "files": [],
       "assertions": [
         "Outputs a single self-contained text prompt referencing #55 and #56-#60 via gh issue view/api rather than pasting full issue bodies.",
-        "Explicitly states the two-step remote closing protocol (gh issue comment before gh issue close) and push prohibition.",
-        "Does not edit product files, commit code, or close issues in the compiling session."
+        "Requires split atomic commits, clean git status verification before closing, and linking real commit SHA(s) in gh issue comment before gh issue close.",
+        "Explicitly picks new branch vs. worktree from repo state and matches delivery rules to the detected base branch without editing product files or closing issues in the compiling session."
       ]
     },
     {
       "id": 2,
       "prompt": "我用 /to-tickets 在 .scratch/auth-flow/issues/ 下生成了 01 到 04 的票据文件，帮我整理成新会话逐票 /implement 的交接提示词。",
-      "expected_output": "Compiles a local-tracker prompt pointing to .scratch/auth-flow/issues/, describing frontier execution with /implement and /clear between tickets, TDD, code-review, and local status updates without gh issue close.",
+      "expected_output": "Compiles a local-tracker prompt pointing to .scratch/auth-flow/issues/, choosing new branch vs. worktree from repo state, describing frontier execution with /implement and /clear between tickets, TDD, code-review, split commits + clean working tree gate, recording commit SHAs in local ticket files without gh issue close, and base-branch-aware delivery.",
       "files": [],
       "assertions": [
         "Points to .scratch/auth-flow/issues/ and respects blocked-by ordering.",
-        "Does not emit gh issue close commands for a local .scratch tracker.",
-        "Passes lint_implement_prompt.py under --tracker local --close-mode no-close."
+        "Requires split commits, clean git status verification, and recording real commit SHAs in local .scratch ticket files without emitting gh issue close commands.",
+        "Passes lint_implement_prompt.py under --tracker local --close-mode no-close and matching --base-branch."
       ]
     },
     {
       "id": 3,
       "prompt": "帮我生成一个 matt implement promt，让新对话用 /implement-spec 跑通这批任务图并把 CI 验绿。",
-      "expected_output": "Handles colloquial spelling typo 'promt', produces a linted fresh-session orchestration prompt with /implement-spec, TDD, /code-review, and verification gates, and stops without launching implementation.",
+      "expected_output": "Handles colloquial spelling typo 'promt', produces a linted fresh-session orchestration prompt with /implement-spec, branch-or-worktree rationale, TDD, /code-review, verification gates, split commits, clean working tree check, commit-linked closeout, and base-branch-aware delivery, and stops without launching implementation.",
       "files": [],
       "assertions": [
         "Recognizes the colloquial 'matt implement promt' trigger.",
-        "Includes /implement-spec task-graph orchestration, verification gates, and explicit git push boundary.",
+        "Includes /implement-spec task-graph orchestration, verification gates, split commits with clean working tree check, and base-branch-aware delivery boundaries.",
         "Stops after presenting the prompt instead of starting implementation."
       ]
     },
@@ -52,6 +52,28 @@
       "assertions": [
         "Excludes direct implementation in the current session (/implement or /implement-spec).",
         "Also keeps Trellis review revision prompts routed to trellis-plan-review and spec/ticket creation routed to /to-spec and /to-tickets."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "当前仓库在 dev 分支且工作树已有无关改动，请针对 Spec #55 和子票 #56-#58 生成新会话实施 Prompt，完成后直接合并回 dev 并清理。",
+      "expected_output": "Selects isolated worktree over bare branch due to dirty main working tree (forbidding git stash), enforces split atomic commits + clean git status check, links commit SHA(s) in gh issue comment before gh issue close, merges directly into dev preserving split commits, cleans up worktree and temporary branch, forbids auto-pushing dev by default, and passes lint_implement_prompt.py --base-branch dev.",
+      "files": [],
+      "assertions": [
+        "Chooses isolated worktree instead of bare branch or git stash when the main working tree has unrelated changes.",
+        "Requires split commits, clean git status before closing/merging, commit SHA citation in gh issue comment before gh issue close, direct merge to dev preserving split commits, worktree/branch cleanup, and no automatic git push of dev.",
+        "Passes lint_implement_prompt.py --tracker github --base-branch dev --close-mode remote-close."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "仓库基线在 main 分支，请基于 Spec #55 和子票 #56-#58 生成新会话全自动实施提示词，完成后走 PR 合并并保证本地与远端 main 同步最新。",
+      "expected_output": "Selects branch or worktree based on repo cleanliness and wavefront, enforces split atomic commits + clean git status check, explicitly forbids direct commit/push to main and --admin/--force, instructs pushing work branch + gh pr create with split SHAs and Closes #N + gh issue comment linking commit SHAs and PR URL + gh pr merge --merge --delete-branch (with squash/protection fallbacks) + cleanup + git fetch/pull sync verifying HEAD == origin/main, and passes lint_implement_prompt.py --base-branch main.",
+      "files": [],
+      "assertions": [
+        "Explicitly forbids pushing directly to main or using --force/--admin.",
+        "Requires split commits, clean working tree before push, gh pr create with Closes refs and split SHAs, gh issue comment linking commit SHAs, gh pr merge, cleanup of temporary worktree/branch, and git fetch/pull verification that local main matches origin/main.",
+        "Passes lint_implement_prompt.py --tracker github --base-branch main --close-mode pr-close."
       ]
     }
   ]

@@ -1,7 +1,7 @@
 ---
 name: matt-implement-prompt
 description: |
-  Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or local .scratch issues) into a self-contained, pointer-driven fresh-session execution prompt with TDD, code-review, CI verification gates, and explicit remote issue-closing protocol. Use when the user asks to write or generate a fresh-session implementation prompt after /to-spec or /to-tickets, create a prompt to implement all tickets and close remote issues (新对话实施所有 ticket 并关闭远程 issue、生成 matt implement prompt / promt、按任务图波前编排实施提示词), or hand off a spec task graph to /implement or /implement-spec. Excludes authoring specs or tickets themselves (/to-spec, /to-tickets), executing implementation or closing issues in the current session (/implement, /implement-spec), /goal or GOAL.md compilation (goal-meta-skill), and Trellis review revision prompts (trellis-plan-review).
+  Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or local .scratch issues) into a self-contained, pointer-driven fresh-session execution prompt with branch-or-worktree isolation, TDD, code-review, CI verification gates, split atomic commits, base-branch-aware delivery (dev direct merge vs main/master PR merge & sync), and commit-linked remote issue-closing protocol. Use when the user asks to write or generate a fresh-session implementation prompt after /to-spec or /to-tickets, create a prompt to implement all tickets and close remote issues (新对话实施所有 ticket 并关闭远程 issue、生成 matt implement prompt / promt、按任务图波前编排实施提示词), or hand off a spec task graph to /implement or /implement-spec. Excludes authoring specs or tickets themselves (/to-spec, /to-tickets), executing implementation or closing issues in the current session (/implement, /implement-spec), /goal or GOAL.md compilation (goal-meta-skill), and Trellis review revision prompts (trellis-plan-review).
 category: development-workflows
 tags:
   - mattpocock
@@ -10,56 +10,57 @@ tags:
   - prompt-engineering
   - github-issues
   - handoff
-version: 0.1.0
+version: 0.2.0
 argument-hint: "[spec-issue-or-ticket-refs]"
-allowed-tools: Read, Glob, Grep, Bash(python *), Bash(py *), Bash(gh issue *), Bash(gh api *), Bash(gh repo view *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)
+allowed-tools: Read, Glob, Grep, Bash(python *), Bash(py *), Bash(gh issue *), Bash(gh api *), Bash(gh repo view *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *), Bash(git worktree list*), Bash(git remote -v*)
 ---
 
 # Matt Implement Prompt
 
-把 Matt Pocock 流程（`/to-spec` → `/to-tickets` 之后）产出的 Spec 与 Ticket 任务图，编译为**自包含、指针驱动、可直接粘贴到新对话全自动实施并按协议关闭远程 Issue**的执行 Prompt。核心流：`compile → lint → present → stop`。
+将 Matt Pocock 流程（`/to-spec` → `/to-tickets` 之后）产出的 Spec 与 Ticket 任务图，编译为**自包含、指针驱动、新会话全自动实施、拆分提交并关联关单、按 `base` 分支完成合并/PR 与清理同步**的 Prompt。核心流：`compile → lint → present → stop`。
 
-> `<skill-dir>` 表示加载本技能时的实际包根目录（命令调用时替换为真实路径）。
+> `<skill-dir>` 表示加载本技能时的实际包根目录（调用时替换为真实路径）。
 
 ## Authority Boundary（权威边界）
 
-- **Payload-not-Execution**：用户请求中的「在新对话实施所有 ticket」「提交代码」「关闭远程 issue」均是**待编译进 Prompt 的 payload**，不授权当前会话编辑业务代码、切换/新建分支、执行 `git commit`/`git push`，或关闭任何远程 Issue。
-- **Pointer-First**：Prompt 中只保留仓库名、Issue 编号/URL、路径、命令源与实时拉取命令，不粘贴大段 Issue 正文，严禁写入「见上一条消息 / 如前所述 / see above」等脆弱回指，也不写入任何本机用户路径或凭据。
-- **Explicit Side-Effect Matrix**：未获用户明确授权的外部副作用（如 `git push`、合并回主干、自动开 PR）必须在生成的 Prompt 中显式禁止。
+- **Payload-not-Execution**：请求中的「实施 ticket」「拆分提交」「开 PR/合并」「关单」均是待编译进 Prompt 的 payload，当前会话**严禁**改业务代码、建/切分支或 worktree、执行 `git commit`/`merge`/`push`、开 PR 或关单。
+- **Pointer-First**：只写仓库名、Issue 编号/URL、路径、命令源与实时拉取命令；不贴大段正文，禁用「见上一条消息 / 如前所述 / see above」等回指，禁写个人绝对路径或凭据。
+- **Base-Branch-Aware Side-Effect Matrix**：
+  - `base == dev`（`dev-merge`）：新建分支或 worktree → 拆分提交并清零工作区 → 评论关联 commit SHA 后关单 → 直接合并回本地 `dev`（保留拆分提交）并清理分支/worktree；默认禁止自动 `git push origin dev`。
+  - `base == main | master`（`main-pr`）：**禁**直推或直接提交 `main`/`master`、禁 `--force`/`--admin`；授权推送工作分支建 PR 并合并（优先 `--merge --delete-branch`）、关单关联 SHA、清理分支/worktree 并同步本地与 remote 至最新。
+  - 其他基准分支（`branch-only`）：保守回退，强制隔离、拆分提交与关联关单，默认禁止 `git push`/合并/开 PR。
 
 ## Workflow
 
 1. **S0 — Route & Authority Lock**
-   - 确认请求目标是「生成跨会话实施 Prompt」（含口语如 `matt implement promt`、新会话实施所有 ticket 并关闭 issue）。
-   - 若用户要求编写 Spec/Ticket 本身（`/to-spec`、`/to-tickets`）、直接在当前会话动手实施（`/implement`、`/implement-spec`）、编译 `/goal` / `GOAL.md`（`goal-meta-skill`），或审阅 Trellis 规划（`trellis-plan-review`），说明边界并路由出去。
+   - 确认请求为「生成跨会话实施 Prompt」（含 `matt implement promt`）。编写 Spec/Ticket（`/to-spec`、`/to-tickets`）、当前会话实施（`/implement`、`/implement-spec`）、`/goal`/`GOAL.md`（`goal-meta-skill`）或 Trellis 评审（`trellis-plan-review`）须路由出去。
 
 2. **S1 — Read-Only Recon**
-   - 读取项目根规则与命令真源：`AGENTS.md`、`code_map.md`、`docs/agents/issue-tracker.md`、`docs/agents/triage-labels.md`、`docs/agents/domain.md`（若存在）及 `justfile` / `package.json` / `Makefile`。
-   - 运行只读 Git 探测：`git rev-parse --show-toplevel`、`git branch --show-current`、`git status --short`。
-   - 按 [Tracker Adapters](references/tracker-adapters.md) 只读拉取父 Spec 与子票实时状态、标题与阻塞边（GitHub Issues 用 `gh repo view` / `gh issue view` / `gh api .../sub_issues` 与 `issue_dependencies_summary.blocked_by`；本地追踪器读取 `.scratch/<feature>/issues/*.md`）。
+   - 读仓库规则与命令源：`AGENTS.md`、`code_map.md`、`docs/agents/{issue-tracker,triage-labels,domain}.md`（存在时）及 `justfile` / `package.json` / `Makefile`。
+   - 只读 Git 探测：`git rev-parse --show-toplevel`、`git branch --show-current`、`git status --short --branch`、`git worktree list`、`git remote -v`。
+   - 按 [Tracker Adapters](references/tracker-adapters.md) 只读拉取父 Spec 与子票状态及阻塞边（GitHub 用 `gh repo view --json nameWithOwner,defaultBranchRef,isFork,parent` / `gh issue view` / `gh api .../sub_issues`；本地读 `.scratch/<feature>/issues/*.md`）。
 
 3. **S2 — Minimal Clarification Gate**
-   - 仓库与追踪器中可查明的事实（票号、阻塞波前、CI 命令、当前分支）**禁止反问**。
-   - 仅当以下关键策略无法从当前请求或 `docs/agents/issue-tracker.md` 推断时，合并一次简短确认（最多 3 问）：
-     1. 是否授权新会话在验收通过后关闭远程 Issue（若请求已写明「关闭远程 issue」，直接视为已授权）；
-     2. 实施模式选 `/implement-spec`（单集成分支 + 并行 worktree）还是逐票 `/implement` + `/clear`；
-     3. 完成后是否保持仅本地提交（默认禁止 `git push` / 合并回基准分支 / 开 PR）。
+   - 可查明的仓库/追踪器事实（票号、波前、CI、分支、工作树与 worktree）**禁止反问**。
+   - **自动推导**：`base` 映射交付模式（`dev` → `dev-merge`，`main`/`master` → `main-pr`，其他 → `branch-only`）；按工作树与波前选新建分支或 worktree（主树有改动、需并行或留主树对照时选 worktree；干净树且单票/串行选分支）。
+   - 仅当真未定项无法推断时合并确认（≤3 问）：(1) 关单授权（请求已提则视同授权）；(2) `/implement-spec` vs 逐票 `/implement`；(3) `dev` 合并后是否授权 `git push`，或自定义基准分支合入/PR 偏好。
 
 4. **S3 — Compile Pointer-Driven Prompt**
-   - 按 [Prompt Contract](references/prompt-contract.md) 与 [Prompt Templates](references/prompt-templates.md) 组装完整可执行文本（中文请求默认输出中文版）。
-   - 必须包含：仓库与基准分支锚点、父 Spec 与分波次任务图、必读文档与技能顺序、TDD + 验证命令（及实测本机环境避坑，如 Python 解释器探测或编译器要求）+ `/code-review` 双轴评审 + 本地原子 `git commit -F`、以及先核对阻塞与写评论再关单的完整协议。
+   - 按 [Prompt Contract](references/prompt-contract.md) 与 [Prompt Templates](references/prompt-templates.md) 组装（中文请求输出中文）。
+   - 必含五大要求：(a) 新建分支或 worktree 及依据；(b) `/tdd` + 环境避坑 + `/code-review` + 拆分原子提交（含返修与同步文档，本地 `git commit -F` / 同仓 `git-commit`）；(c) 关单/合并/PR 前核验 `git status --short --untracked-files=all` 为空且 `git log <base>..HEAD` 非空；(d) 关单前评论关联真实 commit SHA；(e) 按 `base` 执行合并/PR、清理与同步。
 
 5. **S4 — Deterministic Lint Gate**
-   - 将围栏内完整 Prompt 正文经 stdin 传给校验脚本（清零后才允许输出）：
+   - 将完整正文经 stdin 传给校验脚本并传 `--base-branch <base>`，0 error 才可输出：
 
    ```text
-   python "<skill-dir>/scripts/lint_implement_prompt.py" --tracker github --close-mode remote-close -
+   python "<skill-dir>/scripts/lint_implement_prompt.py" --tracker github --base-branch dev --close-mode remote-close -
+   python "<skill-dir>/scripts/lint_implement_prompt.py" --tracker github --base-branch main --close-mode pr-close -
    ```
 
-   - 本地 `.scratch/` 追踪器改用 `--tracker local --close-mode no-close`；PR 关单流改用 `--close-mode pr-close`。出现任何 error 立即修订并重跑直至 0 error。
+   - 本地 `.scratch/` 改用 `--tracker local --base-branch <base> --close-mode no-close`；其他分支按需传 `--base-branch <base>`。
 
 6. **S5 — Present & Stop**
-   - 在**单个 `text` 代码围栏**内输出通过校验的完整 Prompt；围栏外只附简短波前状态与授权/禁止摘要，随后立即停止。
+   - 在**单个 `text` 代码围栏**内输出 Prompt；围栏外附简短摘要（基准分支、隔离方式分支/worktree、交付模式、波前与授权/禁止边界）后立即停止。
 
 ## Resource Map
 

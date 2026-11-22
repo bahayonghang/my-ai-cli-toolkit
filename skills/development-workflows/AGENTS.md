@@ -60,7 +60,7 @@ where they agree, those files are the older reference.
   should route elsewhere (e.g. `code-refactor` → `code-quality-review` for review-only;
   `trellis-plan-review` → `code-auditor` for a code-diff review, not a planning-artifact review).
 - `just evals-check` checks this schema only. Model scoring is not in CI.
-  `scripts/check.py` still validates only SKILL.md frontmatter.
+  `scripts/check_skill_frontmatter.py` still validates only SKILL.md frontmatter.
 
 ## Interface contract
 
@@ -123,7 +123,7 @@ They differ on purpose, trigger surface, stance, and output contract:
 
 ## Frontmatter
 
-- Required top-level keys (enforced by `scripts/check.py`): `name`, `description`,
+- Required top-level keys (enforced by `scripts/check_skill_frontmatter.py`): `name`, `description`,
   `category` (`development-workflows`), `tags`, `version`. Optional but encouraged:
   `allowed-tools`, `argument-hint` for skills that take an argument.
 - `description` is the always-loaded routing contract: ≤1024 chars, **no angle brackets**,
@@ -131,7 +131,7 @@ They differ on purpose, trigger surface, stance, and output contract:
 - `version` numbers reflect real maturity; do not homogenize them. Leave `version`
   unquoted.
 - Governance metadata (`owner`, review cadence) is optional; if added, nest it under a
-  `metadata:` block — top-level unknown keys trigger a `check.py` warning.
+  `metadata:` block — top-level unknown keys trigger a `check_skill_frontmatter.py` warning.
 
 ## After structural changes
 

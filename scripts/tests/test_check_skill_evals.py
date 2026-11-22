@@ -91,6 +91,88 @@ class CheckSkillEvalsTests(unittest.TestCase):
             completed = self.run_checker(root)
         self.assertEqual(completed.returncode, 0, completed.stderr)
 
+    def test_help_exits_zero(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(SCRIPT), "--help"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("evals", completed.stdout.lower())
+
+    def test_invalid_json_exits_nonzero(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = write_skill(root, "demo-skill", None)
+            eval_dir = skill / "evals"
+            eval_dir.mkdir()
+            (eval_dir / "evals.json").write_text("{bad json", encoding="utf-8")
+            completed = self.run_checker(root)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("invalid JSON", completed.stderr)
+
+    def test_mismatched_skill_name_exits_nonzero(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_skill(
+                root,
+                "demo-skill",
+                {
+                    "skill_name": "other-skill",
+                    "evals": [
+                        {
+                            "id": 1,
+                            "prompt": "Do the thing.",
+                            "expected_output": "A result.",
+                            "files": [],
+                            "assertions": ["Names the result."],
+                        }
+                    ],
+                },
+            )
+            completed = self.run_checker(root)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("skill_name must equal demo-skill", completed.stderr)
+
+    def test_empty_evals_array_exits_nonzero(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_skill(
+                root,
+                "demo-skill",
+                {
+                    "skill_name": "demo-skill",
+                    "evals": [],
+                },
+            )
+            completed = self.run_checker(root)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("non-empty array", completed.stderr)
+
+    def test_blank_assertion_exits_nonzero(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_skill(
+                root,
+                "demo-skill",
+                {
+                    "skill_name": "demo-skill",
+                    "evals": [
+                        {
+                            "id": 1,
+                            "prompt": "Do the thing.",
+                            "expected_output": "A result.",
+                            "files": [],
+                            "assertions": ["   "],
+                        }
+                    ],
+                },
+            )
+            completed = self.run_checker(root)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("assertions must be a non-empty array of strings", completed.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

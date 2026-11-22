@@ -2,7 +2,7 @@
 """Tests for build_catalog.py. Fixtures are generated in a temp directory.
 
 Do not commit fixture files named SKILL.md: the docs catalog sync and
-scripts/check.py collect every SKILL.md under skills/.
+scripts/check_skill_frontmatter.py collect every SKILL.md under skills/.
 """
 
 from __future__ import annotations

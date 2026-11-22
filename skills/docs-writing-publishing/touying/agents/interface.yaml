@@ -1,0 +1,48 @@
+interface:
+  display_name: "Touying 0.8.0 Author"
+  short_description: "Author, refactor, migrate, and troubleshoot Typst slide decks with @preview/touying:0.8.0 (Typst 0.15.0+)."
+  default_prompt: |
+    Use $touying to author, refactor, migrate, or troubleshoot Typst slide decks with @preview/touying:0.8.0 (Typst 0.15.0+). Inspect the workspace first to reuse any existing .typ entrypoints and globals.typ conventions rather than overwriting them. Choose Quick or Full tier by task complexity, open the closest graded tier in examples/README.md before authoring, enforce Touying 0.8.0 contracts (config-page/config-common over raw set page, alpha/color-changing-cover instead of semi-transparent-cover, native math animations instead of touying-equation, boolean show-bibliography-as-footnote with real #bibliography, config-common(notes-fn: ..), plural touying-recall(subslides: ..)), and verify with scripts/touying_check.py (doctor, audit --strict-warnings, compile --warnings promote / strict stderr warning promotion); report unexecuted checks or status: skipped as missing evidence. Decline HTML/reveal.js/PPT/Marp, ordinary Typst papers, and XeLaTeX thesis defense decks (academic-defense-beamer).
+  examples:
+    - "用 Touying 0.8.0 创建一个 16:9 演示文稿，采用 globals.typ + main.typ 结构"
+    - "把这份 0.6.1 的 Touying 幻灯片迁移到 0.8.0 并消除 --warnings promote 警告"
+    - "排查 Touying 幻灯片中 #pause 放进 context 报错以及溢出检测问题"
+    - "Configure Touying 0.8.0 for presentation, handout, and article export modes with .pdfpc bundle notes"
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "agent-skills-compatible"
+    - "vscode"
+  activation:
+    mode: "manual-or-trigger"
+    paths:
+      - "*.typ"
+      - "typst.toml"
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    generated_public_claims: "evidence-bound"
+  permissions:
+    network: "none required at runtime; optional Typst Universe package fetch on first compile"
+    file_write: "target .typ presentation files inside workspace after Workspace Intent Gate"
+    subprocess: "scripts/touying_check.py (doctor/audit/compile), typst compile (with --warnings promote or strict stderr warning promotion), and local read-only inspection"
+    interactive: "clarify theme direction or deck scope only in Full tier when unspecified"
+  degradation:
+    openai: "metadata-adapter"
+    claude: "neutral-source-plus-adapter"
+    generic: "neutral-source"
+    agent-skills-compatible: "canonical-source"
+    vscode: "neutral-source-plus-tinymist"
+gates:
+  production:
+    - "single root SKILL.md entrypoint"
+    - "legacy 0.6.1 docs/ removed and all SKILL.md links resolved"
+    - "prior-art research and creation handoff with explicit missing evidence"
+    - "trigger_eval passing across should_trigger, should_not_trigger, near_neighbor"
+    - "validate_skill passing with zero failures and zero warnings"

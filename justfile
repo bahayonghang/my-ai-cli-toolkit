@@ -69,7 +69,7 @@ docs-check:
 
 # 校验 skills/ 元数据
 skills-check:
-    {{ python_cmd }} scripts/check.py skills
+    {{ python_cmd }} scripts/check_skill_frontmatter.py skills
 
 # 编译检查 skills/ platforms/ scripts/ 下的 Python 脚本；跳过 scaffold 模板
 python-check:
@@ -134,7 +134,7 @@ install-projects *args:
 
 # 项目安装器单元测试
 install-projects-test:
-    {{ python_cmd }} scripts/test_install_projects.py
+    {{ python_cmd }} scripts/tests/test_install_projects.py
 
 # 检查运行依赖是否已安装
 check-deps:

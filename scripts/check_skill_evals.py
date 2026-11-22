@@ -3,37 +3,25 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
 from pathlib import Path
 
-SKIP_PARTS = {
-    ".git",
-    "node_modules",
-    "__pycache__",
-    "ref",
-    ".agents",
-    ".claude",
-    ".trellis",
-    "scaffolds",
-}
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from _common import (  # noqa: E402
+    REPO_ROOT,
+    SKIP_PARTS,
+    configure_stdio,
+    display_path as _display_path,
+    skip_dir,
+)
+
 EVAL_FIELDS = ("id", "prompt", "expected_output", "files", "assertions")
-
-
-def configure_stdio() -> None:
-    for stream in (sys.stdout, sys.stderr):
-        if hasattr(stream, "reconfigure"):
-            stream.reconfigure(encoding="utf-8", newline="\n")
-
-
-def skip_dir(path: Path) -> bool:
-    name = path.name
-    if name.startswith(".") or name in SKIP_PARTS:
-        return True
-    if path.is_symlink() or os.path.isjunction(path):
-        return True
-    return False
 
 
 def iter_skill_dirs(skills_root: Path) -> list[Path]:
@@ -56,11 +44,7 @@ def iter_skill_dirs(skills_root: Path) -> list[Path]:
 
 
 def display_path(skills_root: Path, path: Path) -> str:
-    base = skills_root.parent
-    try:
-        return path.relative_to(base).as_posix()
-    except ValueError:
-        return path.as_posix()
+    return _display_path(path, base=skills_root.parent)
 
 
 def check_eval_item(rel: str, index: int, item: object) -> list[str]:
@@ -71,7 +55,7 @@ def check_eval_item(rel: str, index: int, item: object) -> list[str]:
     for field in EVAL_FIELDS:
         if field not in item or item[field] is None:
             errors.append(f"{prefix}: missing field {field}")
-    assertions = item.get("assertions") if isinstance(item, dict) else None
+    assertions = item.get("assertions")
     if "assertions" in item and (
         not isinstance(assertions, list)
         or not assertions
@@ -106,6 +90,9 @@ def check_skill_dir(skills_root: Path, skill_dir: Path) -> list[str]:
     if not isinstance(evals, list):
         errors.append(f"{rel}: field evals must be an array")
         return errors
+    if not evals:
+        errors.append(f"{rel}: field evals must be a non-empty array")
+        return errors
     for index, item in enumerate(evals):
         errors.extend(check_eval_item(rel, index, item))
     return errors
@@ -119,13 +106,23 @@ def collect_errors(skills_root: Path) -> tuple[list[str], int]:
     return errors, len(skill_dirs)
 
 
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Schema-check first-party skill evals. Does not call a model or the network."
+    )
+    parser.add_argument(
+        "skills_root",
+        nargs="?",
+        default=None,
+        help="Skills root directory to scan (default: <repo>/skills).",
+    )
+    return parser.parse_args(argv)
+
+
 def main(argv: list[str] | None = None) -> int:
     configure_stdio()
-    args = list(sys.argv[1:] if argv is None else argv)
-    if args:
-        skills_root = Path(args[0])
-    else:
-        skills_root = Path(__file__).resolve().parents[1] / "skills"
+    args = parse_args(list(sys.argv[1:] if argv is None else argv))
+    skills_root = Path(args.skills_root) if args.skills_root else REPO_ROOT / "skills"
     if not skills_root.is_dir():
         print(f"{skills_root.as_posix()}: skills directory not found", file=sys.stderr)
         return 1

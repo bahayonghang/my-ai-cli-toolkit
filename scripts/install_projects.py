@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Live-link first-party skills into a target project's .agents/skills and detected agent roots."""
+
 from __future__ import annotations
 
 import argparse
@@ -10,11 +12,19 @@ import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Iterable, Sequence
 
-import yaml
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
 
-from check import CANONICAL_CATEGORY_SLUGS
+from _common import (  # noqa: E402
+    CANONICAL_CATEGORY_SLUGS,
+    REPO_ROOT,
+    configure_stdio,
+    is_junction,
+    parse_frontmatter,
+)
 
 EXIT_OK = 0
 EXIT_FAIL = 1
@@ -62,20 +72,11 @@ class Skill:
 
 
 def catalog_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+    return REPO_ROOT
 
 
 def is_interactive() -> bool:
     return sys.stdin.isatty() and sys.stdout.isatty()
-
-
-def parse_frontmatter(path: Path) -> dict[str, Any]:
-    text = path.read_text(encoding="utf-8")
-    match = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
-    if not match:
-        return {}
-    data = yaml.safe_load(match.group(1))
-    return data if isinstance(data, dict) else {}
 
 
 def discover_skills(root: Path | None = None) -> list[Skill]:
@@ -790,15 +791,9 @@ def dests_from_keys(project_root: Path, keys: Sequence[str]) -> list[Path]:
 
 
 def resolve_dest_dirs(project_root: Path, agent_keys: Sequence[str]) -> list[Path]:
-    unknown = [key for key in agent_keys if key not in KNOWN_AGENT_KEYS]
-    if unknown:
-        raise InstallError(
-            "Unknown --agent "
-            + ", ".join(repr(key) for key in unknown)
-            + ". Known: "
-            + ", ".join(sorted(KNOWN_AGENT_KEYS))
-        )
-    return dests_from_keys(project_root, auto_agent_keys(project_root) | set(agent_keys))
+    detected = auto_agent_keys(project_root)
+    combined = [*sorted(detected), *(key for key in agent_keys if key not in detected)]
+    return dests_from_keys(project_root, combined)
 
 
 def lexists(path: Path) -> bool:
@@ -812,10 +807,7 @@ def lexists(path: Path) -> bool:
 
 
 def is_dir_link(path: Path) -> bool:
-    if path.is_symlink():
-        return True
-    is_junction = getattr(path, "is_junction", None)
-    return bool(callable(is_junction) and is_junction())
+    return path.is_symlink() or is_junction(path)
 
 
 def same_source(link: Path, source: Path) -> bool:
@@ -910,6 +902,7 @@ def resolve_project_root(raw: str | None) -> Path:
 
 
 def run(argv: Sequence[str] | None = None) -> int:
+    configure_stdio()
     try:
         args = parse_args(argv)
     except SystemExit as exc:
