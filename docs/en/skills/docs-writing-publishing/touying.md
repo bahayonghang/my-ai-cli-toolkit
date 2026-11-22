@@ -4,12 +4,12 @@
 
 ## Purpose overview
 
-Author Typst slide decks with the Touying package.
+Author, refactor, migrate, or troubleshoot Typst slide decks using @preview/touying:0.8.0 (Typst 0.15.0+).
 
 ## Trigger scenarios
 
-- creating or editing .typ presentations: applying or building Touying themes (e.g. metropolis), turning headings or #slide into slides, incremental reveals (#pause, dynamic content), speaker notes via pdfpc, and page layout config
-- Not for non-Typst decks (HTML, PPT, reveal.js, Marp) or ordinary non-presentation Typst documents
+- creating or editing .typ presentations, multi-file globals.typ decks, built-in or custom themes, slide headings or #slide, incremental animations (#pause, #uncover, #only, #animate), speaker notes (#speaker-note, .pdfpc), or multi-mode export (presentation, handout, article), including Chinese and English requests (制作/创建/重构/排查/迁移 Typst Touying 幻灯片、演示文稿与讲义)
+- Excludes non-Typst web or office slides (HTML, reveal.js, PPT, Marp), ordinary non-slide Typst papers or reports, and XeLaTeX thesis defense decks (academic-defense-beamer)
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Author Typst slide decks with the Touying package.
 | --- | --- |
 | Name | `touying` |
 | Category | `docs-writing-publishing` (Docs, Writing & Publishing) |
-| Version | `1.0.0` |
-| Tags | `typst`, `touying`, `slide-deck`, `animation`, `theme` |
+| Version | `2.0.0` |
+| Tags | `typst`, `touying`, `slide-deck`, `animation`, `theme`, `presentation` |
 
 ## Install command
 
@@ -30,17 +30,20 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/docs-writing-publishing/touying/docs` | directory | 34 | Embedded docs |
-| `skills/docs-writing-publishing/touying/evals` | directory | 1 | Evaluation samples |
+| `skills/docs-writing-publishing/touying/agents` | directory | 1 | Companion agents |
+| `skills/docs-writing-publishing/touying/evals` | directory | 2 | Evaluation samples |
 | `skills/docs-writing-publishing/touying/examples` | directory | 9 | Examples |
-| `skills/docs-writing-publishing/touying/references` | directory | 2 | Reference material |
-| `skills/docs-writing-publishing/touying/tests` | directory | 1 | Automated tests |
+| `skills/docs-writing-publishing/touying/manifest.json` | file | 1 | Top-level file |
+| `skills/docs-writing-publishing/touying/README.md` | file | 1 | Top-level file |
+| `skills/docs-writing-publishing/touying/references` | directory | 3 | Reference material |
+| `skills/docs-writing-publishing/touying/reports` | directory | 4 | Top-level directory |
+| `skills/docs-writing-publishing/touying/tests` | directory | 2 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| docs | `skills/docs-writing-publishing/touying/docs` | Embedded docs |
+| agents | `skills/docs-writing-publishing/touying/agents` | Companion agents |
 | evals | `skills/docs-writing-publishing/touying/evals` | Evaluation samples |
 | examples | `skills/docs-writing-publishing/touying/examples` | Examples |
 | references | `skills/docs-writing-publishing/touying/references` | Reference material |
@@ -50,6 +53,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 
 ```bash
 just skills-check
+just python-check
 just node-test
 just ci
 ```
