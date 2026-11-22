@@ -41,23 +41,30 @@ Before creating files or scaffolding a new project, inspect the working director
 - **Quick Tier** (targeted 1–5 slide edit, bug fix, config tweak, `--warnings promote` fix, or migration check):
   1. Read the target `.typ` file (and `globals.typ` if present) plus the matching reference below.
   2. Apply the minimal, scoped change adhering to Hard `0.8.0` Rules.
-  3. Compile with `typst compile --warnings promote` (when Typst is available) and inspect rendered pages if layout changed.
+  3. Run `python scripts/touying_check.py audit <target> --strict-warnings` and `python scripts/touying_check.py compile <main.typ>` (or `typst compile --warnings promote` when supported) and inspect rendered pages if layout changed.
 - **Full Tier** (brand-new deck, multi-file refactor, custom theme, or multi-mode `presentation` / `handout` / `article` deck):
   1. Clarify audience, aspect ratio (`16-9` / `16-10` / `4-3`), language/fonts, and required export modes.
-  2. Outline the deck sections, slide-level hierarchy, and visual metaphors before coding.
+  2. **Open the closest tier before authoring**: inspect [Graded Examples Index](examples/README.md) (`01-minimal` through `06-bundle-pdfpc`) and start from the closest verified `0.8.0` pattern.
   3. For custom or high-craft themes, propose up to **3 restrained visual direction prototypes** (palette, typography scale, header/footer density) and confirm one before building out all slides.
-  4. Structure multi-file decks cleanly (`globals.typ` + `main.typ` + `sections/*.typ`), then compile every target mode with `--warnings promote` and visually inspect rendered slide pages.
+  4. Structure multi-file decks cleanly (`globals.typ` + `main.typ` + `sections/*.typ`), then verify with `touying_check.py audit --strict-warnings` and `compile` across every target mode (with `--warnings promote` / strict warning promotion) and visually inspect rendered slide pages.
 
-## 4. Task Routing
+## 4. Task Routing & Graded Examples
 
-Load only the reference file needed for the current subtask:
+Load only the reference or graded example tier needed for the current subtask (open the closest tier in [Graded Examples Index](examples/README.md) before authoring):
 
 | Task | Resource |
 | --- | --- |
 | Core configs (`config-page`, `config-common`, `config-info`, `config-colors`, `config-methods`, `config-store`, `touying-get-config`), multi-file layout, headings/labels, overflow controls | [Core 0.8.0 Contract](references/core-0.8.md) |
 | Upgrading `0.6.x` / `0.7.x` decks, themes, bibliographies, covers, or speaker notes to `0.8.0` | [Migration Guide (to 0.8.0)](references/migration-0.8.md) |
-| Compiler errors, `--warnings promote` failures, overflow/mark panics, input validation | [Troubleshooting](references/troubleshooting.md) |
-| Existing starter templates (note: `examples/*.typ` upgrade & Wave 2 animation/theme/integration refs follow in subsequent slices) | `examples/simple.typ`, `examples/default.typ` |
+| Compiler errors, `--warnings promote` failures, overflow/mark panics, input validation, `touying_check.py` rules & exit codes | [Troubleshooting](references/troubleshooting.md) |
+| Graded `0.8.0` templates (`01-minimal` .. `06-bundle-pdfpc`) — open closest tier first | [Graded Examples Index](examples/README.md) |
+
+Deterministic CLI checks (stdlib Python, cross-platform):
+```bash
+python scripts/touying_check.py doctor --json
+python scripts/touying_check.py audit <path-or-dir> --strict-warnings --json
+python scripts/touying_check.py compile <main.typ> [--modes presentation,handout,article] [--bundle] --json
+```
 
 ## 5. Hard 0.8.0 Rules
 
@@ -74,5 +81,6 @@ Load only the reference file needed for the current subtask:
 
 ## 6. Closing Gate
 
-- Never report a deck as compiling cleanly or visually verified unless you actually ran `typst compile --warnings promote` (for every active `export-mode` if applicable) and inspected rendered output pages when layout changed.
-- If `typst` CLI is missing or rendering/visual inspection could not run, state the exact check that was skipped as `missing evidence` rather than guessing pass status.
+- Run `python scripts/touying_check.py audit <target> --strict-warnings` and `python scripts/touying_check.py compile <main.typ>` before declaring success.
+- Never report a deck as compiling cleanly or visually verified unless you actually ran `touying_check.py compile` / `typst compile --warnings promote` (for every active `export-mode` or `--bundle` if applicable) and inspected rendered output pages when layout changed.
+- If `typst` CLI is missing (`status: "skipped"`, `missing_evidence: true`) or rendering/visual inspection could not run, state the exact check that was skipped as `missing evidence` rather than guessing pass status.

@@ -26,3 +26,35 @@ When `$ARGUMENTS` names a target `.typ` file and validation fails, return exact 
 - `"Error: Provide a valid .typ file path."` — when an explicit path argument is empty or omits a file when required
 - `"Error: File not found."` — when the requested `.typ` file does not exist
 - `"Error: Not a .typ file."` — when the path extension is not `.typ`
+
+## 3. Deterministic Check Script (`scripts/touying_check.py`)
+
+Cross-platform Python 3.12+ stdlib script (`--json` supported on all subcommands):
+
+### Subcommands
+- `doctor [--typst-bin typst] [--json]`: probes `typst --version` (`>= 0.15.0`), checks the OS package cache for `@preview/touying:0.8.0`, and prints idempotent remediation commands if missing or outdated.
+- `audit <paths...> [--strict-warnings] [--max-consecutive-bullets 2] [--json]`: recursively scans `.typ` files (stripping comments before matching) for deprecated/removed APIs, antipatterns, and layout monotony.
+- `compile <target.typ> [--typst-bin typst] [--root DIR] [--modes presentation,handout,article] [--bundle] [--require-typst] [--json]`: compiles into a temporary directory without polluting the workspace. Uses `--warnings promote` when supported by the `typst` CLI, and promotes `warning:` stderr diagnostics directly on Typst 0.15.1 (ignoring only the built-in experimental bundle banner under `--bundle`). When Typst `>= 0.15.0` is unavailable, emits `status: "skipped"` and `missing_evidence: true` (never `"pass"`). Under `--bundle`, runs `--features bundle --format bundle` and verifies both `.pdf` and valid JSON `.pdfpc` outputs.
+
+### Exit Codes
+- `0`: check passed, or `compile` skipped due to missing Typst without `--require-typst`
+- `1`: `doctor` missing/outdated Typst; `audit` blocking error, `ZERO_FILES_SCANNED`, or advisory warning under `--strict-warnings`; or `compile` failure
+- `2`: invalid/missing `.typ` target path, or `compile --require-typst` when Typst `>= 0.15.0` is unavailable
+
+### Audit Rule Codes
+| Rule Code | Severity | Meaning & Fix |
+| --- | --- | --- |
+| `ZERO_FILES_SCANNED` | Error | No `.typ` files found in target path(s) |
+| `PATH_NOT_FOUND` | Error | Provided target path does not exist |
+| `OUTDATED_TOUYING_IMPORT` | Error | `@preview/touying:<0.8.0>` detected; upgrade import to `0.8.0` |
+| `DEPRECATED_SEMI_TRANSPARENT_COVER` | Error | Use `utils.alpha-changing-cover` or `utils.color-changing-cover` (only `fallback-hide:` allows legacy cover) |
+| `DEPRECATED_TOUYING_EQUATION` | Error | Replace with native Typst math animations (`$ frac(a #pause + b, c) $`) |
+| `REMOVED_MAGIC_BIBLIOGRAPHY` | Error | Use `config-common(show-bibliography-as-footnote: true)` + `#bibliography(...)` |
+| `REMOVED_UTILS_HANDOUT_ONLY` | Error | Use top-level `#handout-only[...]` |
+| `REMOVED_SHOW_ONLY_NOTES_RENDERER` | Error | Replace `config-methods(show-only-notes: ...)` with `config-common(notes-fn: ...)` |
+| `OLD_TOUYING_RECALL_SUBSLIDE_ARG` | Error | Rename singular `subslide:` to plural `subslides:` in `touying-recall` |
+| `RAW_SET_PAGE` | Error | Replace `#set page(...)` with `config-page(...)` |
+| `PAUSE_INSIDE_CONTEXT` | Error | Move `#pause` out of `context { ... }` / `context [ ... ]` into slide flow |
+| `SLIDE_WRAPPED_BODY_ANTIPATTERN` | Error | Use `setting: body => ...` inside `touying-slide(...)` instead of wrapping `body` in `align`/`block`/`box` |
+| `CONSECUTIVE_BULLET_SLIDES` | Advisory | Exceeds `--max-consecutive-bullets` consecutive bullet-only slides without visual/layout diversity (fails under `--strict-warnings`) |
+| `MISSING_SPEAKER_NOTES` | Advisory | Presentation with `> 2` slides contains zero `#speaker-note` annotations (fails under `--strict-warnings`) |
