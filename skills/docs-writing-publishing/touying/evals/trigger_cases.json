@@ -50,6 +50,18 @@
       "item-by-item",
       "speaker-note",
       "pdfpc",
+      "notes-fn",
+      "touying-notes",
+      "touying-reduce",
+      "touying-reducer",
+      "cetz",
+      "fletcher",
+      "lilaq",
+      "alchemist",
+      "codly",
+      "theorion",
+      "pinit",
+      "mitex",
       "动画",
       "渐进",
       "备注",
@@ -57,7 +69,12 @@
       "页脚",
       "分节",
       "参考文献",
-      "公式"
+      "公式",
+      "主题定制",
+      "自定义主题",
+      "版式",
+      "视觉",
+      "原型"
     ],
     "mode_or_export": [
       "handout",
@@ -171,6 +188,30 @@
     {
       "text": "Use Touying waypoints and #animate with swap in a .typ slide deck and configure export-mode article layout with config-article",
       "family": "en-waypoints-animate-article"
+    },
+    {
+      "text": "帮我用 Touying 0.8.0 定制一个主题，修改 stargazer 的页脚并解决 dewdrop 主题参数报错",
+      "family": "zh-theme-customization"
+    },
+    {
+      "text": "用 touying-notes 和 notes-fn 给这套 Typst 幻灯片自定义第二屏演讲者视图，并设置底部背景对齐",
+      "family": "zh-notes-fn-second-screen"
+    },
+    {
+      "text": "Configure Typst 0.15 bundle export with #pdfpc.bundle-assets() for multi-document Touying slide decks",
+      "family": "en-bundle-pdfpc"
+    },
+    {
+      "text": "在 Touying 幻灯片里用 touying-reduce 和 lambda bindings 集成 CeTZ、Fletcher 和 Lilaq 分步动画",
+      "family": "zh-ecosystem-reducer"
+    },
+    {
+      "text": "Integrate Alchemist, Theorion, and Pinit callouts into our Typst Touying presentation deck using 0.8.0 bindings",
+      "family": "en-ecosystem-integrations"
+    },
+    {
+      "text": "帮我给这套 Typst Touying 技术汇报做 3 个视觉方向原型并控制幻灯片版式拓扑多样性，避免全页卡片列表",
+      "family": "zh-visual-craft"
     }
   ],
   "should_not_trigger": [

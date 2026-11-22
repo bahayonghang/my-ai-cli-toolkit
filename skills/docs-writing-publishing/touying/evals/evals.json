@@ -97,6 +97,39 @@
         "It uses exact 0.8.0 config-article(wrap: ..., linearize: ..., available-fields: ...) syntax with wrap.overrides and graphic-marker-of rather than nonexistent wrap-images or wrap-width keys.",
         "It explains that table.header/grid.header (or #article-keep-layout) prevents automatic linearization of structured tables in article mode."
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "用 Touying 0.8.0 写一个自定义主题，给特型页加上隐藏标题、用 notes-fn 定制第二屏演讲者备注样式，并用 Typst 0.15 bundle 导出每个文档独立的 .pdfpc。",
+      "expected_output": "Follows references/themes-notes-export.md: styles body via touying-slide(setting: ..), wraps helpers in touying-fn-wrapper-raw, uses place(hide(heading(...))) on special slides, puts config last in utils.merge-dicts, implements config-common(notes-fn: ..) with touying-notes, and exports .pdfpc via top-level #pdfpc.bundle-assets() and --features bundle --format bundle.",
+      "files": [],
+      "assertions": [
+        "Custom theme uses touying-slide(setting: ..), touying-fn-wrapper-raw, place(hide(heading(...))), utils.page-args-from-aspect-ratio, and places user config last in utils.merge-dicts.",
+        "Presenter view uses config-common(notes-fn: ..) built on touying-notes instead of removed config-methods(show-only-notes: ..).",
+        "Places #pdfpc.bundle-assets() outside #document(..) and compiles with --features bundle --format bundle to emit per-document .pdfpc files."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "怎么在 Touying 0.8.0 里用 touying-reducer 和自定义包做 CeTZ、Lilaq 和 Alchemist 的分步动画，并配合 Theorion 定理编号？",
+      "expected_output": "Follows references/integrations.md: uses touying-reduce for CeTZ/Alchemist, lambda touying-reducer-bindings (module => ...), touying-reducer with lq.diagram and dictionary cover for Lilaq, bans legacy string-array bindings and (uncover(..),) array syntax, and freezes Theorion theorem-counter.",
+      "files": [],
+      "assertions": [
+        "Uses lambda bindings (module => ...) for touying-reducer-bindings and explicitly avoids legacy string-array callback paths or (uncover(..),) array wrappers.",
+        "Configures CeTZ, Alchemist, and variadic Lilaq (lq.diagram) accurately for Touying 0.8.0.",
+        "Freezes Theorion theorem-counter via config-common(frozen-counters: (theorem-counter,)) so subslides keep consistent numbering."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "帮我从零设计一套高完成度的 Touying 0.8.0 技术分享幻灯片，希望排版有变化、别全都是卡片和项目符号，也别写死固定配色。",
+      "expected_output": "Follows references/visual-craft.md: assigns a concrete visual metaphor per slide, mixes layout topologies with bullet-only and consecutive-same-topology caps, defines parameterized Palette/Typography in globals.typ, and proposes 3 restrained direction prototypes differing across narrative grammar axes on real slides.",
+      "files": [],
+      "assertions": [
+        "Assigns a concrete visual metaphor per slide (excluding generic card/bullet containers) and enforces bullet-only and consecutive-same-topology layout caps.",
+        "Parameterizes palette and typography in globals.typ instead of hardcoding one fixed color scheme across all decks.",
+        "Proposes 3 restrained direction prototypes varying across narrative grammar axes on real content before full-deck authoring."
+      ]
     }
   ]
 }

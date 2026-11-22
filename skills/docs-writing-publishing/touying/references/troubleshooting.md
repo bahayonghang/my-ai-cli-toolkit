@@ -26,6 +26,14 @@
 | `#touying-render` warns `start:/repeat-last: have no effect` or `touying-recall` warns on whole-slide target in article mode | Article mode renders once with no subslide timeline or slide replay | Wrap slide-gated `#touying-render(start: ...)` or whole-slide recalls in `#slides-only[...]`; see [Output Modes & Article Mode](output-modes-article.md) |
 | `#article-linearize` / `#article-keep-layout` panics inside `#article-text` / `#article-only` | Those wrappers only ever reach article mode directly | Write the desired article layout directly inside `#article-text` or `#article-only` |
 | `config-article(wrap:)` error or `table`/`grid` flattens unexpectedly in article mode | Invalid keys (`wrap` uses `width`, `align`, element keys, `overrides` with `target:`) or table lacks `table.header`/`grid.header` | Use `config-article(wrap: (...), linearize: ...)` and declare `table.header(...)` or wrap with `#article-keep-layout[...]`; see [Output Modes & Article Mode](output-modes-article.md) |
+| `dewdrop-theme` rejects `outline-title` or `stargazer-theme` rejects `footer` / `footer-right` | Neither parameter exists on those themes in `0.8.0` | Pass `title:` to `dewdrop`'s `#outline-slide(title: ...)` and configure `stargazer-theme` via `footer-a`..`footer-d` / `footer-columns` |
+| `config-methods(show-only-notes: fn)` fails or notes panel background ignored | Legacy `show-only-notes` renderer removed; `config-page(background: ..)` is confined to slide half | Implement `config-common(notes-fn: ...)` wrapping `touying-notes` with `fill` / `header-fill` |
+| `lazy-v` / `lazy-h` has no effect inside `cols` | `cols` defaults `lazy-layout: false` since `0.7.4` | Pass `lazy-layout: true` to `cols(...)` or wrap explicitly in `lazy-layout(direction: ttb/ltr, ...)` |
+| `touying-reduce` / CeTZ / Fletcher fails on string-array bindings or `(uncover(..),)` | `0.8.0` requires lambda `module => ...` bindings and dropped array callback syntax | Define `touying-reducer-bindings` using `module => ...` lambdas and call `utils.methods(s)` without `(uncover(..),)` |
+| Theorion theorem counter increments across `#pause` subslides | `theorem-counter` is not in `_default-frozen-states` | Add `config-common(frozen-counters: (theorem-counter,))` |
+| CSL note citations (`chicago-notes`) produce double footnotes or leak before reveal | `show-bibliography-as-footnote: true` wraps citations a second time | Leave `show-bibliography-as-footnote: false` when using note-style CSL; use `config-common(footnote-style: ...)` for marker styling |
+
+See also deeper references for [Animations & Waypoints](animations-waypoints.md), [Output Modes & Article Mode](output-modes-article.md), [Themes, Notes & Export](themes-notes-export.md), [Integrations & Ecosystem](integrations.md), and [Visual Craft & Layout Diversity](visual-craft.md).
 
 ## 2. Explicit Path Input Errors
 
