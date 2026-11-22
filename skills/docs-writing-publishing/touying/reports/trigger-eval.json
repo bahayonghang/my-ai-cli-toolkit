@@ -10,8 +10,8 @@
   ],
   "missing_description_concepts": [],
   "summary": {
-    "total": 25,
-    "passed": 25,
+    "total": 31,
+    "passed": 31,
     "false_positive": 0,
     "false_negative": 0,
     "pass_rate": 1.0
@@ -234,6 +234,93 @@
         "matched_concepts": [
           "feature_topic",
           "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我用 Touying 0.8.0 定制一个主题，修改 stargazer 的页脚并解决 dewdrop 主题参数报错",
+        "family": "zh-theme-customization",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 touying-notes 和 notes-fn 给这套 Typst 幻灯片自定义第二屏演讲者视图，并设置底部背景对齐",
+        "family": "zh-notes-fn-second-screen",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "feature_topic",
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Configure Typst 0.15 bundle export with #pdfpc.bundle-assets() for multi-document Touying slide decks",
+        "family": "en-bundle-pdfpc",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "feature_topic",
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Touying 幻灯片里用 touying-reduce 和 lambda bindings 集成 CeTZ、Fletcher 和 Lilaq 分步动画",
+        "family": "zh-ecosystem-reducer",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Integrate Alchemist, Theorion, and Pinit callouts into our Typst Touying presentation deck using 0.8.0 bindings",
+        "family": "en-ecosystem-integrations",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我给这套 Typst Touying 技术汇报做 3 个视觉方向原型并控制幻灯片版式拓扑多样性，避免全页卡片列表",
+        "family": "zh-visual-craft",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
           "slide_action",
           "typst_touying"
         ],

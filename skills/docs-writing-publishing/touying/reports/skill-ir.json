@@ -49,7 +49,13 @@
       "Set up a dual export-mode Touying presentation that compiles both slides and article output from one source",
       "在 Touying 幻灯片中用 waypoint 层级标签和 #animate swap 组合渐进高亮并替换公式步骤",
       "帮我给 Typst Touying 演示文稿配置 config-article 图片环绕和 #article-text 文章模式导出",
-      "Use Touying waypoints and #animate with swap in a .typ slide deck and configure export-mode article layout with config-article"
+      "Use Touying waypoints and #animate with swap in a .typ slide deck and configure export-mode article layout with config-article",
+      "帮我用 Touying 0.8.0 定制一个主题，修改 stargazer 的页脚并解决 dewdrop 主题参数报错",
+      "用 touying-notes 和 notes-fn 给这套 Typst 幻灯片自定义第二屏演讲者视图，并设置底部背景对齐",
+      "Configure Typst 0.15 bundle export with #pdfpc.bundle-assets() for multi-document Touying slide decks",
+      "在 Touying 幻灯片里用 touying-reduce 和 lambda bindings 集成 CeTZ、Fletcher 和 Lilaq 分步动画",
+      "Integrate Alchemist, Theorion, and Pinit callouts into our Typst Touying presentation deck using 0.8.0 bindings",
+      "帮我给这套 Typst Touying 技术汇报做 3 个视觉方向原型并控制幻灯片版式拓扑多样性，避免全页卡片列表"
     ],
     "should_not_trigger": [
       "帮我用 HTML 和 reveal.js 做一个能在浏览器键盘翻页的互动网页幻灯片",
@@ -76,9 +82,12 @@
     "references": [
       "references\\animations-waypoints.md",
       "references\\core-0.8.md",
+      "references\\integrations.md",
       "references\\migration-0.8.md",
       "references\\output-modes-article.md",
-      "references\\troubleshooting.md"
+      "references\\themes-notes-export.md",
+      "references\\troubleshooting.md",
+      "references\\visual-craft.md"
     ],
     "scripts": [],
     "evals": [
