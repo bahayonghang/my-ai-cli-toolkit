@@ -3,45 +3,66 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "用 Touying 给我搭一个 .typ 的演示文稿，套 metropolis 主题，要有标题页和几个分节，正文用 heading 当每页。",
-      "expected_output": "Authors a Touying .typ deck: imports Touying plus the metropolis theme, applies it with #show, uses headings as slides, and sets up sections.",
+      "prompt": "用 Touying 0.8.0 给我搭一个 .typ 演示文稿，套 metropolis 主题，包含标题页、几个分节和正文页。",
+      "expected_output": "Authors a Touying 0.8.0 .typ deck importing @preview/touying:0.8.0 and themes.metropolis, applies it via #show, and uses headings/slides without touching non-Typst formats.",
       "files": [],
       "assertions": [
-        "The response works in Typst/Touying (.typ), importing Touying and a theme.",
-        "It applies the theme via #show and uses headings (or #slide) for slides.",
-        "It does not produce HTML, PPT, or reveal.js output."
+        "The response imports @preview/touying:0.8.0 (targeting Typst 0.15.0+) and a Touying theme via #show.",
+        "It uses headings or #slide for slide structure and checks workspace layout first if existing files exist.",
+        "It does not produce HTML, PPT, reveal.js, or Marp output."
       ]
     },
     {
       "id": 2,
-      "prompt": "我的 Touying 幻灯片想加逐步出现的动画，点一下出一条要点，应该怎么用 #pause 和动态内容？",
-      "expected_output": "Explains incremental reveal in Touying using #pause / dynamic content, with the relevant caveats (such as avoiding #pause inside context blocks).",
+      "prompt": "我的 Touying 幻灯片想加逐步出现的动画，还想把被遮盖的文本变半透明、在分式公式里逐步显示，应该怎么写？",
+      "expected_output": "Uses Touying 0.8.0 animation syntax (#pause, #uncover/#only/#animate), alpha-changing-cover or color-changing-cover instead of deprecated semi-transparent-cover, native math animation inside frac instead of touying-equation, and warns against #pause inside context.",
       "files": [],
       "assertions": [
-        "The response uses Touying's animation mechanisms (#pause, dynamic/only/uncover) rather than generic advice.",
-        "It routes through the dynamic/animation guidance.",
-        "It stays within Typst/Touying."
+        "The response uses Touying 0.8.0 animations (#pause, #uncover, #only, or #animate) and warns against placing #pause inside context.",
+        "It recommends utils.alpha-changing-cover or utils.color-changing-cover instead of deprecated semi-transparent-cover.",
+        "It uses native math animation inside $ frac(...) $ instead of deprecated touying-equation."
       ]
     },
     {
       "id": 3,
-      "prompt": "Touying 里怎么改 slide-level、配置页面尺寸和页脚？我想把这些集中放在 globals.typ 里。",
-      "expected_output": "Shows config-common(slide-level: ...) and config-page for page/footer, centralized in globals.typ, instead of raw set page.",
+      "prompt": "Touying 里怎么改 slide-level、配置页面尺寸、页脚和溢出检测？我想把配置集中放到 globals.typ 里。",
+      "expected_output": "Uses globals.typ + main.typ + section files layout, config-common(slide-level: ..., breakable: ..., detect-overflow: ...), config-page, and config-info instead of raw set page.",
       "files": [],
       "assertions": [
-        "The response uses config-common / config-page instead of raw set page.",
-        "It sets slide-level via config-common.",
-        "It centralizes configuration (globals.typ) consistent with the skill's guidance."
+        "The response uses config-common and config-page instead of raw #set page.",
+        "It centralizes shared imports and helpers in globals.typ so main.typ and sections avoid circular imports.",
+        "It configures slide-level and overflow options accurately for Touying 0.8.0."
       ]
     },
     {
       "id": 4,
-      "prompt": "帮我做一套 HTML 的网页幻灯片，用 reveal.js，能在浏览器里翻页那种。",
-      "expected_output": "Negative trigger. A non-Typst HTML/reveal.js deck is outside Touying's scope and should not activate this skill.",
+      "prompt": "我有一个 0.6.1 的 Touying 工程，升级到 0.8.0 时 magic.bibliography()、show-only-notes 和 touying-recall 报错了，怎么迁移？",
+      "expected_output": "Follows references/migration-0.8.md: bumps Typst to 0.15.0+, switches to boolean show-bibliography-as-footnote: true with a real #bibliography, uses config-common(notes-fn: ..) with touying-notes, and updates touying-recall(subslides: ..).",
       "files": [],
       "assertions": [
-        "The skill description should not pull HTML/reveal.js/PPT deck requests into the Typst/Touying workflow.",
-        "If referenced, the response should redirect to an HTML or slide tool rather than .typ/Touying authoring."
+        "The response migrates show-bibliography-as-footnote to boolean true paired with a real #bibliography(...) and removes magic.bibliography().",
+        "It replaces the removed config-methods(show-only-notes: ..) renderer with config-common(notes-fn: ..) built on touying-notes.",
+        "It updates touying-recall to plural subslides: with swapped auto/none semantics and checks --warnings promote."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我做一套网页幻灯片，用 reveal.js 或 Marp，或者导出成 PPT 发给同事。",
+      "expected_output": "Negative trigger. HTML, reveal.js, Marp, and PPT decks are explicitly excluded from touying.",
+      "files": [],
+      "assertions": [
+        "The skill description and Trigger section explicitly exclude HTML, reveal.js, PPT, and Marp.",
+        "The response declines Typst/Touying authoring and points the user to a web/HTML, Marp, or PPT tool instead."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "帮我用 XeLaTeX 写一个中文硕士学位论文答辩 Beamer 幻灯片，匹配学校论文答辩模板。",
+      "expected_output": "Near-neighbor negative trigger. XeLaTeX Chinese thesis defense Beamer decks belong to academic-defense-beamer, not touying.",
+      "files": [],
+      "assertions": [
+        "The skill description and exclusions explicitly defer XeLaTeX thesis defense decks to academic-defense-beamer.",
+        "The response does not force a XeLaTeX thesis defense request into Typst/Touying."
       ]
     }
   ]

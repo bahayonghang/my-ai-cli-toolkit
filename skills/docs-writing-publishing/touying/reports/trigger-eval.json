@@ -1,0 +1,328 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "authoring_action",
+    "feature_topic",
+    "mode_or_export",
+    "slide_action",
+    "typst_touying"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 22,
+    "passed": 22,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "用 Touying 0.8.0 给我搭一个 .typ 的学术汇报幻灯片，套用 university 主题",
+        "family": "zh-new-deck-theme",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我重构这个 Typst 演示文稿目录，把配置拆到 globals.typ，正文按分节拆开",
+        "family": "zh-multifile-globals",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "我的 Touying 课件想用 #pause 和 #uncover 做渐进动画，还想把分式公式也分步出现",
+        "family": "zh-incremental-math",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把老版本的 Touying 幻灯片升级迁移到 0.8.0，处理半透明遮罩和参考文献脚注报错",
+        "family": "zh-migration-08",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "排查一下为什么 Typst 编译 Touying 报 Unsupported mark 和页脚页眉配置不生效",
+        "family": "zh-troubleshoot-marks",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我给这套 Typst 组会汇报加上演讲者备注和 .pdfpc bundle 导出",
+        "family": "zh-speaker-notes-pdfpc",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "feature_topic",
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "怎么把同一份 Touying 演示文稿源文件同时编译成 presentation、handout 和 article 模式？",
+        "family": "zh-multi-mode-export",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我改一下这个 .typ 幻灯片的 slide-level 和 config-page 边距，别用 set page 覆盖掉主题",
+        "family": "zh-colloquial-config",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Create a new Typst Touying 0.8.0 presentation deck with metropolis theme and speaker notes",
+        "family": "en-new-deck",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Migrate our older Touying .typ slides to 0.8.0 and fix deprecated cover and bibliography errors",
+        "family": "en-migration",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "authoring_action",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Troubleshoot why #pause inside context fails in our Typst slide deck and check overflow warnings",
+        "family": "en-troubleshoot",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Set up a dual export-mode Touying presentation that compiles both slides and article output from one source",
+        "family": "en-dual-mode",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "帮我用 HTML 和 reveal.js 做一个能在浏览器键盘翻页的互动网页幻灯片",
+        "family": "web-revealjs-html",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "authoring_action",
+          "slide_action"
+        ],
+        "negative_pattern": "reveal.js"
+      },
+      {
+        "prompt": "把这份产品汇报材料做成 Windows 可编辑的 PPT (.pptx) 发给客户",
+        "family": "office-pptx",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "authoring_action",
+          "slide_action"
+        ],
+        "negative_pattern": "ppt"
+      },
+      {
+        "prompt": "用 Marp 从这段 Markdown 快速导出几页技术分享 slides",
+        "family": "markdown-marp",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "slide_action"
+        ],
+        "negative_pattern": "marp"
+      },
+      {
+        "prompt": "用普通 Typst 帮我排一篇双栏学术期刊普通论文，不要幻灯片",
+        "family": "ordinary-typst-paper",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": "普通论文"
+      },
+      {
+        "prompt": "Generate a Word (.docx) technical proposal from these markdown notes",
+        "family": "word-docx",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "word"
+      },
+      {
+        "prompt": "Build an interactive HTML landing page with CSS animations and SVG diagrams",
+        "family": "html-webpage",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "html"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "帮我用 academic-defense-beamer 的 XeLaTeX 模板制作一份中文硕士学位论文答辩幻灯片",
+        "family": "academic-defense-beamer-explicit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "slide_action"
+        ],
+        "negative_pattern": "academic-defense-beamer"
+      },
+      {
+        "prompt": "用 XeLaTeX Beamer 写一份高校毕业答辩演示文稿，包含目录高亮与致谢页",
+        "family": "xelatex-beamer-defense",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "authoring_action",
+          "slide_action"
+        ],
+        "negative_pattern": "xelatex"
+      },
+      {
+        "prompt": "写一份普通 Typst 课程实验报告，只需要常规章节标题、图表和参考文献",
+        "family": "ordinary-typst-report",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic",
+          "typst_touying"
+        ],
+        "negative_pattern": "普通 typst"
+      },
+      {
+        "prompt": "用 reveal.js 做一个带演讲者备注视图的网页演讲稿",
+        "family": "revealjs-with-notes",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "authoring_action",
+          "feature_topic"
+        ],
+        "negative_pattern": "reveal.js"
+      }
+    ]
+  }
+}

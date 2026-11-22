@@ -1,0 +1,53 @@
+{
+  "name": "touying",
+  "version": "2.0.0",
+  "owner": "bahayonghang",
+  "updated_at": "2026-11-21",
+  "review_cadence": "quarterly-or-on-touying-release",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "production",
+  "category": "docs-writing-publishing",
+  "license": "MIT",
+  "upstream_inspiration": "https://github.com/apcamargo/typst-skills; https://github.com/touying-typ/seaslides; https://github.com/tylina/tylina-skill; https://github.com/statzhero/typst-touying-skill",
+  "intent": {
+    "job_to_be_done": "Author, refactor, migrate, and troubleshoot Typst slide decks using @preview/touying:0.8.0 (Typst 0.15.0+) with multi-file architecture, multi-mode export, and compile-verified closing gates.",
+    "target_users": [
+      "Typst presentation authors",
+      "Researchers and engineers building technical slide decks",
+      "Qiaomu / Agent Skills operators"
+    ],
+    "inputs": [
+      "Target .typ file or presentation repository",
+      "Deck outline, content, theme or migration requirements"
+    ],
+    "outputs": [
+      "Valid Touying 0.8.0 .typ source files (single-file or globals.typ + main.typ + sections)",
+      "Verified compile diagnostics under --warnings promote (or explicit missing evidence)"
+    ],
+    "exclusions": [
+      "Non-Typst HTML, reveal.js, PPT/pptx, or Marp slide decks",
+      "Ordinary non-presentation Typst documents without slide or dual article-mode intent",
+      "XeLaTeX thesis defense decks (academic-defense-beamer)"
+    ]
+  },
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic",
+    "agent-skills-compatible",
+    "vscode"
+  ],
+  "release_gates": [
+    "prior_art_research",
+    "root_entrypoint_isolation",
+    "validate_skill",
+    "trigger_eval",
+    "export_skill_ir",
+    "readme_product_page",
+    "unit_tests",
+    "evals_schema_check",
+    "secret_and_path_sanitization"
+  ]
+}
