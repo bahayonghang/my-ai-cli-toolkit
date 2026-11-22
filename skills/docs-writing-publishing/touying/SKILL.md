@@ -45,7 +45,7 @@ Before creating files or scaffolding a new project, inspect the working director
 - **Full Tier** (brand-new deck, multi-file refactor, custom theme, or multi-mode `presentation` / `handout` / `article` deck):
   1. Clarify audience, aspect ratio (`16-9` / `16-10` / `4-3`), language/fonts, and required export modes.
   2. Outline the deck sections, slide-level hierarchy, and visual metaphors before coding.
-  3. For custom or high-craft themes, propose up to **3 restrained visual direction prototypes** (palette, typography scale, header/footer density) and confirm one before building out all slides.
+  3. For custom or high-craft themes, follow [Visual Craft & Layout Diversity](references/visual-craft.md): define per-slide visual metaphors, cap bullet-only slides, propose **3 restrained visual direction prototypes** with parameterized palettes on real content, and confirm one before building out all slides.
   4. Structure multi-file decks cleanly (`globals.typ` + `main.typ` + `sections/*.typ`), then compile every target mode with `--warnings promote` and visually inspect rendered slide pages.
 
 ## 4. Task Routing
@@ -56,8 +56,11 @@ Load only the reference file needed for the current subtask:
 | --- | --- |
 | Core configs (`config-page`, `config-common`, `config-info`, `config-colors`, `config-methods`, `config-store`, `touying-get-config`), multi-file layout, headings/labels, overflow controls | [Core 0.8.0 Contract](references/core-0.8.md) |
 | Upgrading `0.6.x` / `0.7.x` decks, themes, bibliographies, covers, or speaker notes to `0.8.0` | [Migration Guide (to 0.8.0)](references/migration-0.8.md) |
+| Built-in 8 themes (`default`, `simple`, `metropolis`, `dewdrop`, `university`, `aqua`, `stargazer`, `themes.article`), layout components (`cols`, `lazy-layout`), custom theme rules, speaker notes (`notes-fn`, `.pdfpc`/bundle), footnote bibliography | [Themes, Notes & Export](references/themes-notes-export.md) |
+| Diagram reducers (`touying-reduce`, lambda `touying-reducer-bindings` for CeTZ/Fletcher/Lilaq/Alchemist), Codly, Theorion, Pinit, MiTeX, `touying-exporter`, Tylina, `gistd` | [Integrations & Ecosystem](references/integrations.md) |
+| Per-slide visual metaphors, layout topology diversity, parameterized palettes, 3-direction prototyping, anti-slop Do Not rules | [Visual Craft & Layout Diversity](references/visual-craft.md) |
 | Compiler errors, `--warnings promote` failures, overflow/mark panics, input validation | [Troubleshooting](references/troubleshooting.md) |
-| Existing starter templates (note: `examples/*.typ` upgrade & Wave 2 animation/theme/integration refs follow in subsequent slices) | `examples/simple.typ`, `examples/default.typ` |
+| Starter templates (graded `0.8.0` examples & audit script follow in the examples slice) | `examples/simple.typ`, `examples/default.typ` |
 
 ## 5. Hard 0.8.0 Rules
 
