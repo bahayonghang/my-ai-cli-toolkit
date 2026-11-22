@@ -1,0 +1,92 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-11-21",
+  "package": {
+    "name": "matt-implement-prompt",
+    "version": "0.1.0",
+    "owner": "bahayonghang",
+    "maturity_tier": "production",
+    "lifecycle_stage": "production",
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or local .scratch issues) into a self-contained, pointer-driven fresh-session execution prompt with TDD, code-review, CI verification gates, and explicit remote issue-closing protocol. Use when the user asks to write or generate a fresh-session implementation prompt after /to-spec or /to-tickets, create a prompt to implement all tickets and close remote issues (新对话实施所有 ticket 并关闭远程 issue、生成 matt implement prompt / promt、按任务图波前编排实施提示词), or hand off a spec task graph to /implement or /implement-spec. Excludes authoring specs or tickets themselves (/to-spec, /to-tickets), executing implementation or closing issues in the current session (/implement, /implement-spec), /goal or GOAL.md compilation (goal-meta-skill), and Trellis review revision prompts (trellis-plan-review).\n",
+    "job_to_be_done": "Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or local .scratch issues) into a self-contained, pointer-driven fresh-session execution prompt with TDD, code-review, CI verification gates, and explicit remote issue-closing protocol. Use when the user asks to write or generate a fresh-session implementation prompt after /to-spec or /to-tickets, create a prompt to implement all tickets and close remote issues (新对话实施所有 ticket 并关闭远程 issue、生成 matt implement prompt / promt、按任务图波前编排实施提示词), or hand off a spec task graph to /implement or /implement-spec. Excludes authoring specs or tickets themselves (/to-spec, /to-tickets), executing implementation or closing issues in the current session (/implement, /implement-spec), /goal or GOAL.md compilation (goal-meta-skill), and Trellis review revision prompts (trellis-plan-review).\n",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "把已经建好的 spec #55 和子票 #56-#60 整理成新对话实施并关闭远程 issue 的 prompt",
+      "帮我生成一个 matt implement promt，放到新会话里执行所有 ticket",
+      "按任务图波前顺序写一段新会话交接提示词，用 implement-spec 并行落地并关单",
+      "Compile a fresh-session prompt to implement all tickets for spec #55 and close remote issues",
+      "Generate a pointer-driven handoff prompt for our local .scratch ticket files so a new session can run implement",
+      "把这批 ticket 的实施提示词编排好，跑完测试和评审后再关闭 github issue"
+    ],
+    "should_not_trigger": [
+      "帮我把优化 touying 的任务写成 Codex 的 /goal 指令",
+      "保存一份根目录 GOAL.md 契约并用 Goal 模式完成重构",
+      "帮我把刚才的讨论先写一份 spec 和拆成 ticket",
+      "直接开始实现 #56，不要写提示词"
+    ],
+    "near_neighbor": [
+      "根据 Trellis 合并审阅报告生成返修规划的交接 Prompt",
+      "在当前对话里直接写代码跑 TDD 完成这个功能",
+      "帮我运行 /to-spec 和 /to-tickets 发布到 GitHub Issues",
+      "把当前暂存区的代码拆分成三个中文 Conventional Commit 提交"
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\prompt-contract.md",
+      "references\\prompt-templates.md",
+      "references\\tracker-adapters.md"
+    ],
+    "scripts": [
+      "scripts\\lint_implement_prompt.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": null,
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "agent-skills-compatible"
+    ],
+    "activation": {},
+    "execution": {},
+    "trust": {},
+    "permissions": {},
+    "degradation": {}
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

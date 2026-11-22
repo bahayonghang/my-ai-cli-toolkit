@@ -1,0 +1,58 @@
+{
+  "skill_name": "matt-implement-prompt",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "基于当前仓库的父 Spec #55 和子票 #56-#60，帮我写一份能在新对话里实施全部 ticket 并关闭远程 issue 的 Prompt。",
+      "expected_output": "Performs read-only recon via git and gh, compiles a pointer-driven fresh-session prompt with frontier waves, TDD, /code-review, CI commands, explicit remote issue-closing authorization (comment before close), and push prohibition, passes lint_implement_prompt.py, and stops without implementing code or closing issues.",
+      "files": [],
+      "assertions": [
+        "Outputs a single self-contained text prompt referencing #55 and #56-#60 via gh issue view/api rather than pasting full issue bodies.",
+        "Explicitly states the two-step remote closing protocol (gh issue comment before gh issue close) and push prohibition.",
+        "Does not edit product files, commit code, or close issues in the compiling session."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我用 /to-tickets 在 .scratch/auth-flow/issues/ 下生成了 01 到 04 的票据文件，帮我整理成新会话逐票 /implement 的交接提示词。",
+      "expected_output": "Compiles a local-tracker prompt pointing to .scratch/auth-flow/issues/, describing frontier execution with /implement and /clear between tickets, TDD, code-review, and local status updates without gh issue close.",
+      "files": [],
+      "assertions": [
+        "Points to .scratch/auth-flow/issues/ and respects blocked-by ordering.",
+        "Does not emit gh issue close commands for a local .scratch tracker.",
+        "Passes lint_implement_prompt.py under --tracker local --close-mode no-close."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "帮我生成一个 matt implement promt，让新对话用 /implement-spec 跑通这批任务图并把 CI 验绿。",
+      "expected_output": "Handles colloquial spelling typo 'promt', produces a linted fresh-session orchestration prompt with /implement-spec, TDD, /code-review, and verification gates, and stops without launching implementation.",
+      "files": [],
+      "assertions": [
+        "Recognizes the colloquial 'matt implement promt' trigger.",
+        "Includes /implement-spec task-graph orchestration, verification gates, and explicit git push boundary.",
+        "Stops after presenting the prompt instead of starting implementation."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我把优化 touying 的需求写成 Codex 的 /goal 目标指令，并保存到根目录 GOAL.md。",
+      "expected_output": "Negative trigger. Compiling a /goal directive or persistent GOAL.md belongs to goal-meta-skill and must not activate matt-implement-prompt.",
+      "files": [],
+      "assertions": [
+        "Does not activate matt-implement-prompt for /goal or GOAL.md compilation.",
+        "Routes /goal and GOAL.md requests to goal-meta-skill."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "不要写 Prompt 了，直接在这个对话里开始写代码实现 #56，或者帮我把现有代码改完。",
+      "expected_output": "Negative / near-neighbor trigger. Direct code implementation in the current session belongs to /implement or /implement-spec rather than matt-implement-prompt.",
+      "files": [],
+      "assertions": [
+        "Excludes direct implementation in the current session (/implement or /implement-spec).",
+        "Also keeps Trellis review revision prompts routed to trellis-plan-review and spec/ticket creation routed to /to-spec and /to-tickets."
+      ]
+    }
+  ]
+}

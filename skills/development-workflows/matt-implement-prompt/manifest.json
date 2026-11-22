@@ -1,0 +1,34 @@
+{
+  "name": "matt-implement-prompt",
+  "version": "0.1.0",
+  "owner": "bahayonghang",
+  "updated_at": "2026-11-21",
+  "review_cadence": "quarterly-or-on-matt-workflow-change",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "production",
+  "category": "development-workflows",
+  "license": "MIT",
+  "release_gates": {
+    "local": [
+      "validate_skill",
+      "trigger_eval",
+      "unittest",
+      "just-ci"
+    ],
+    "published": [
+      "missing evidence"
+    ]
+  },
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic",
+    "agent-skills-compatible"
+  ],
+  "contracts": {
+    "output_contract": "Single fenced text prompt passing scripts/lint_implement_prompt.py with zero errors, pointer-driven task graph, explicit verification gates, and explicit authorization/prohibition boundaries.",
+    "authority_boundary": "Read-only reconnaissance plus prompt compilation and lint only; never edits target product code, switches branches, pushes, or closes issues in the compiling session."
+  }
+}
