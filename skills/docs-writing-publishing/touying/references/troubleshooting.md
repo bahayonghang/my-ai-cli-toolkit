@@ -17,7 +17,7 @@
 | Unexpected blank or wrong page in `#appendix` | `#show: appendix` placed mid-slide or `freeze-slide-counter` expected | Place `#show: appendix` at top level after main deck; add `config-common(freeze-slide-counter: true)` to also freeze numerator |
 | `touying-get-config` fails in `if` / arithmetic | `touying-get-config` returns deferred `context` content, not raw values | Use `touying-fn-wrapper-raw((self: none) => ...)` to compute from `self` |
 | Custom slide function breaks theme or headers | Missing `touying-slide-wrapper` | Return `touying-slide-wrapper(self => { ... })` |
-| Missing CJK or icon fonts on compile | Local fonts not discovered on CLI path | Compile with `typst compile --font-path <fonts-dir> --warnings promote main.typ` |
+| Missing CJK or icon fonts on compile | Local fonts not discovered on CLI path | Compile with `typst compile --font-path <fonts-dir> main.typ` (add `--warnings promote` when supported, or verify via `touying_check.py compile`) |
 | `.pdfpc` export via bundle fails or missing notes | `#pdfpc.bundle-assets()` called inside `#document(...)` | Call `#pdfpc.bundle-assets()` at top level outside every `#document(...)` and pass `--features bundle --format bundle` |
 | `Circular waypoint dependency detected` or `Unknown waypoint label` | Cyclic `waypoint(start: <label>)` dependency or range marker referencing undeclared label | Break `start:` cycles and declare `<label>` via `#waypoint(<label>)` or implicit `<label>`; see [Animations & Waypoints](animations-waypoints.md) |
 | `item-by-item: start must resolve to a single subslide position` | Range marker (`from-wp`, `until-wp`) or range string passed to `start:` | Pass `<wp>`, `get-first(<wp>)`, `get-last(<wp>)`, `prev-wp`, `next-wp`, or a single int/number string |

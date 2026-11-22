@@ -39,6 +39,11 @@ Verified against `@preview/touying:0.8.0` (`src/core/animation.typ`, `src/core/w
 Follows on subslide 4 because item-by-item sets advances-flow: true.
 ```
 
+### Figure Captions & Container `#meanwhile` (`0.8.0`)
+
+- **Figure captions**: `#pause`, `#uncover`, and `#meanwhile` work inside `figure.caption`. Touying walks figure body and caption as a tree, with the caption continuing from where the body left off; when the figure body is covered, its caption, supplement, and numbering are covered along with it.
+- **Container `#meanwhile`**: `#meanwhile` inside containers (`block`, `grid`, `table`, `stack`, or `figure.caption`) is no longer swallowed by a trailing `#pause` (for `A #pause B` followed by `#block[#meanwhile FIRST #pause SECOND]`, `FIRST` appears cleanly on subslide 1).
+
 ## 2. Visibility Wrappers & Subslide Specs
 
 - `#uncover(visible-subslides, uncover-cont, cover-fn: auto)` — reserves layout space via the theme `cover` method (or custom `cover-fn`) when hidden.

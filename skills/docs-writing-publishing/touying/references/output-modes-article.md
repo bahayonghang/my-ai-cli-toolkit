@@ -16,10 +16,13 @@ Configure output mode via `config-common(export-mode: ...)` or override at compi
 ### CLI Compilation & `utils.get-input`
 
 ```sh
-typst compile main.typ main-presentation.pdf --input export-mode=presentation --warnings promote
-typst compile main.typ main-handout.pdf      --input export-mode=handout --warnings promote
-typst compile main.typ main-article.pdf      --input export-mode=article --warnings promote
+typst compile main.typ main-presentation.pdf --input export-mode=presentation
+typst compile main.typ main-handout.pdf      --input export-mode=handout
+typst compile main.typ main-article.pdf      --input export-mode=article
+python <skill-dir>/scripts/touying_check.py compile main.typ --modes presentation,handout,article --json
 ```
+
+- Pass `--warnings promote` to raw `typst compile` when using a Typst CLI that exposes that flag, or rely on `touying_check.py compile` (which probes `typst compile --help` automatically and strictly promotes `stderr` warnings in Python on `typst 0.15.1`).
 
 - `entrypoint.typ` reads `utils.get-input(key: "export-mode")`, overriding both source `export-mode` and the low-level `article-mode` flag.
 - `utils.get-input(key: none)` parses Typst expressions (`red`, `3`, `2em`, `true`, dicts) and leaves unknown bare single words (`handout`, `article`, `presentation`) as strings, so `--input export-mode=article` works without shell quotes. Calling `utils.get-input()` with no key returns the full parsed `sys.inputs` dictionary (excluding `x-preview`).

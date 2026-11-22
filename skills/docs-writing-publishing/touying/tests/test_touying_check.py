@@ -338,6 +338,34 @@ class TouyingCheckScriptTests(unittest.TestCase):
             self.assertEqual(payload["status"], "fail")
             self.assertGreater(len(payload["runs"][0]["warnings_promoted"]), 0)
 
+    def test_speaker_note_unclosed_bracket_in_string_or_raw_does_not_swallow_slides(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            deck = Path(tmp) / "speaker-raw-bracket.typ"
+            slides_text = "\n".join(
+                [
+                    '#import "@preview/touying:0.8.0": *',
+                    "#import themes.simple: *",
+                    "#show: simple-theme.with()",
+                    "== Note With Brackets",
+                    '- Bullet one',
+                    '#speaker-note[Check "[" in string and `[raw` here.]',
+                    "== Bullet Slide 2",
+                    "- Only bullets",
+                    "== Bullet Slide 3",
+                    "- Only bullets",
+                    "== Bullet Slide 4",
+                    "- Only bullets",
+                    "== Bullet Slide 5",
+                    "- Only bullets",
+                ]
+            )
+            deck.write_text(slides_text, encoding="utf-8")
+            proc = run_cli("audit", str(deck), "--json")
+            self.assertEqual(proc.returncode, 0, msg=proc.stderr + proc.stdout)
+            payload = json.loads(proc.stdout)
+            rules = [f["rule"] for f in payload["findings"]]
+            self.assertIn("CONSECUTIVE_BULLET_SLIDES", rules)
+
 
 if __name__ == "__main__":
     unittest.main()

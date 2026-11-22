@@ -54,8 +54,8 @@ class TouyingWave2ThemesIntegrationsCraftTests(unittest.TestCase):
         skill_text = skill_md.read_text(encoding="utf-8")
         self.assertLess(
             len(skill_text.encode("utf-8")),
-            10240,
-            "SKILL.md UTF-8 size must stay well under 10 KB",
+            10_000,
+            "SKILL.md UTF-8 size must stay under 10 KB",
         )
         skill_links = _extract_relative_md_links(skill_md)
         for rel in expected_refs:
@@ -157,7 +157,12 @@ class TouyingWave2ThemesIntegrationsCraftTests(unittest.TestCase):
         ):
             self.assertIn(token, text, f"themes-notes-export.md missing bibliography item `{token}`")
 
-        # Ensure removed APIs are never recommended
+        # Ensure removed APIs and invalid dict footnote-style are never recommended
+        self.assertNotRegex(
+            text,
+            r"footnote-style:\s*\(",
+            "themes-notes-export.md must not pass a dictionary to config-common(footnote-style:)",
+        )
         _assert_not_recommended(self, text, r"config-methods\s*\(\s*show-only-notes\s*:", "themes-notes-export.md")
         _assert_not_recommended(self, text, r"magic\.bibliography\s*\(", "themes-notes-export.md")
 

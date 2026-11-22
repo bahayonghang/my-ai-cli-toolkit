@@ -192,7 +192,7 @@ def scan_typst_source(text: str) -> tuple[str, str]:
                 while j < n and text[j] == "`":
                     j += 1
                 run_len = j - i
-                if run_len >= raw_ticks and (raw_ticks == 1 or run_len >= raw_ticks):
+                if run_len >= raw_ticks:
                     stripped.append(text[i:j])
                     masked.append(text[i:j])
                     raw_ticks = 0
@@ -325,24 +325,23 @@ def split_top_level_args(args_text: str) -> list[str]:
     return args
 
 
-def strip_speaker_note_blocks(text: str) -> str:
+def strip_speaker_note_blocks(text: str, masked: str | None = None) -> str:
     """Remove #speaker-note(...) and #speaker-note[...] blocks while keeping newlines."""
+    scan = masked if masked is not None else text
     out = list(text)
     pattern = re.compile(r"#?speaker-note\b")
-    for match in pattern.finditer(text):
+    n = len(scan)
+    for match in pattern.finditer(scan):
         i = match.end()
-        n = len(text)
-        while i < n and text[i] in " \t\r\n":
+        while i < n and scan[i] in " \t\r\n":
             i += 1
-        if i < n and text[i] == "(":
-            end_paren = find_matching_delimiter(text, i, "(", ")")
-            i = end_paren + 1
-            while i < n and text[i] in " \t":
+        if i < n and scan[i] == "(":
+            i = find_matching_delimiter(scan, i, "(", ")") + 1
+            while i < n and scan[i] in " \t":
                 i += 1
-        if i < n and text[i] == "[":
-            end_br = find_matching_delimiter(text, i, "[", "]")
-            i = end_br + 1
-        for k in range(match.start(), min(i, n)):
+        if i < n and scan[i] == "[":
+            i = find_matching_delimiter(scan, i, "[", "]") + 1
+        for k in range(match.start(), min(i, len(out))):
             if out[k] != "\n":
                 out[k] = " "
     return "".join(out)
@@ -387,70 +386,61 @@ def audit_file(
             )
         )
 
-    # 3. DEPRECATED_TOUYING_EQUATION
-    eq_re = re.compile(r"(?<![A-Za-z0-9_-])touying-equation(?![A-Za-z0-9_-])")
-    for m in eq_re.finditer(masked):
-        findings.append(
-            Finding(
-                severity="error",
-                rule="DEPRECATED_TOUYING_EQUATION",
-                file=file_str,
-                line=line_number_at(masked, m.start()),
-                message="Deprecated `touying-equation`; write native math animations directly (e.g. `$ frac(a #pause + b, c) $`).",
-            )
-        )
-
-    # 4. REMOVED_MAGIC_BIBLIOGRAPHY
-    bib_re = re.compile(r"(?<![A-Za-z0-9_-])magic\.bibliography\s*\(")
-    for m in bib_re.finditer(masked):
-        findings.append(
-            Finding(
-                severity="error",
-                rule="REMOVED_MAGIC_BIBLIOGRAPHY",
-                file=file_str,
-                line=line_number_at(masked, m.start()),
-                message="Removed `magic.bibliography()`; use `config-common(show-bibliography-as-footnote: true)` with a real `#bibliography(...)`.",
-            )
-        )
-
-    # 5. REMOVED_UTILS_HANDOUT_ONLY
-    handout_re = re.compile(r"(?<![A-Za-z0-9_-])utils\.handout-only(?![A-Za-z0-9_-])")
-    for m in handout_re.finditer(masked):
-        findings.append(
-            Finding(
-                severity="error",
-                rule="REMOVED_UTILS_HANDOUT_ONLY",
-                file=file_str,
-                line=line_number_at(masked, m.start()),
-                message="Removed `utils.handout-only`; use top-level `#handout-only[...]`.",
-            )
-        )
-
-    # 6. REMOVED_SHOW_ONLY_NOTES_RENDERER
-    for _, call_line, args_text in iter_call_spans(masked, re.compile(r"(?<![A-Za-z0-9_-])config-methods\s*\(")):
-        for arg in split_top_level_args(args_text):
-            if re.match(r"^\s*show-only-notes\s*:", arg):
-                findings.append(
-                    Finding(
-                        severity="error",
-                        rule="REMOVED_SHOW_ONLY_NOTES_RENDERER",
-                        file=file_str,
-                        line=call_line,
-                        message="Removed `config-methods(show-only-notes: ...)`; customize panels via `config-common(notes-fn: ...)` built on `touying-notes`.",
-                    )
+    # 3-5. Pattern-based removed / deprecated 0.8.0 API checks
+    regex_rules = (
+        (
+            re.compile(r"(?<![A-Za-z0-9_-])touying-equation(?![A-Za-z0-9_-])"),
+            "DEPRECATED_TOUYING_EQUATION",
+            "Deprecated `touying-equation`; write native math animations directly (e.g. `$ frac(a #pause + b, c) $`).",
+        ),
+        (
+            re.compile(r"(?<![A-Za-z0-9_-])magic\.bibliography\s*\("),
+            "REMOVED_MAGIC_BIBLIOGRAPHY",
+            "Removed `magic.bibliography()`; use `config-common(show-bibliography-as-footnote: true)` with a real `#bibliography(...)`.",
+        ),
+        (
+            re.compile(r"(?<![A-Za-z0-9_-])utils\.handout-only(?![A-Za-z0-9_-])"),
+            "REMOVED_UTILS_HANDOUT_ONLY",
+            "Removed `utils.handout-only`; use top-level `#handout-only[...]`.",
+        ),
+    )
+    for rx, rule_name, msg in regex_rules:
+        for m in rx.finditer(masked):
+            findings.append(
+                Finding(
+                    severity="error",
+                    rule=rule_name,
+                    file=file_str,
+                    line=line_number_at(masked, m.start()),
+                    message=msg,
                 )
+            )
 
-    # 7. OLD_TOUYING_RECALL_SUBSLIDE_ARG
-    for _, call_line, args_text in iter_call_spans(masked, re.compile(r"(?<![A-Za-z0-9_-])touying-recall\s*\(")):
-        for arg in split_top_level_args(args_text):
-            if re.match(r"^\s*subslide\s*:", arg):
+    # 6-7. Call-span deprecated named argument checks
+    named_arg_rules = (
+        (
+            re.compile(r"(?<![A-Za-z0-9_-])config-methods\s*\("),
+            re.compile(r"^\s*show-only-notes\s*:"),
+            "REMOVED_SHOW_ONLY_NOTES_RENDERER",
+            "Removed `config-methods(show-only-notes: ...)`; customize panels via `config-common(notes-fn: ...)` built on `touying-notes`.",
+        ),
+        (
+            re.compile(r"(?<![A-Za-z0-9_-])touying-recall\s*\("),
+            re.compile(r"^\s*subslide\s*:"),
+            "OLD_TOUYING_RECALL_SUBSLIDE_ARG",
+            "Outdated singular `subslide:` argument in `touying-recall`; use plural `subslides:` (`auto` = all/final, `none` = last only).",
+        ),
+    )
+    for call_rx, arg_rx, rule_name, msg in named_arg_rules:
+        for _, call_line, args_text in iter_call_spans(masked, call_rx):
+            if any(arg_rx.match(arg) for arg in split_top_level_args(args_text)):
                 findings.append(
                     Finding(
                         severity="error",
-                        rule="OLD_TOUYING_RECALL_SUBSLIDE_ARG",
+                        rule=rule_name,
                         file=file_str,
                         line=call_line,
-                        message="Outdated singular `subslide:` argument in `touying-recall`; use plural `subslides:` (`auto` = all/final, `none` = last only).",
+                        message=msg,
                     )
                 )
 
@@ -538,7 +528,7 @@ def audit_advisory_warnings(
         r"^\s*#(?:slide|empty-slide|focus-slide|title-slide|centered-slide)\b"
     )
 
-    clean_stripped = strip_speaker_note_blocks(stripped)
+    clean_stripped = strip_speaker_note_blocks(stripped, masked)
     lines = clean_stripped.splitlines()
 
     slides: list[tuple[int, str, list[str]]] = []
@@ -732,17 +722,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 def cmd_audit(args: argparse.Namespace) -> int:
     files, findings = collect_typ_files(args.paths)
-    if not files and not findings:
-        findings.append(
-            Finding(
-                severity="error",
-                rule="ZERO_FILES_SCANNED",
-                file=str(args.paths[0]) if args.paths else ".",
-                line=1,
-                message="Zero .typ files found across target paths.",
-            )
-        )
-    elif not files:
+    if not files:
         findings.append(
             Finding(
                 severity="error",

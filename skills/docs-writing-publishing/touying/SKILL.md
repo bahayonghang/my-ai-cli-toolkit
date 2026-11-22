@@ -65,6 +65,7 @@ Load only the reference or example tier needed (open the closest tier in [Graded
 | Graded `0.8.0` templates (`01-minimal`..`06-bundle-pdfpc`) — open closest tier first | [Graded Examples Index](examples/README.md) |
 
 ```bash
+# Run from the touying skill directory or prefix <skill-dir>/
 python scripts/touying_check.py doctor --json
 python scripts/touying_check.py audit <path-or-dir> --strict-warnings --json
 python scripts/touying_check.py compile <main.typ> [--modes presentation,handout,article] [--bundle] --json

@@ -11,7 +11,7 @@
 - Root package files: `SKILL.md` (`< 10 KB` UTF-8 Production router), `README.md`, `manifest.json`, `agents/interface.yaml`.
 - Deep reference modules (`references/`, 8 files): `core-0.8.md`, `animations-waypoints.md`, `output-modes-article.md`, `themes-notes-export.md`, `integrations.md`, `visual-craft.md`, `migration-0.8.md`, `troubleshooting.md`.
 - Graded `0.8.0` examples (`examples/`, `README.md` + 6 tiers across 8 `.typ` files):
-  - `01-minimal.typ` (single-file `metropolis`)
+  - `01-minimal.typ` (single-file `simple-theme`)
   - `02-multi-file/` (`globals.typ`, `main.typ`, `content.typ`, `outline-slide`, `appendix`)
   - `03-animations-waypoints-math.typ` (`#jump`, `#item-by-item-fn`, `#touying-raw`, `#waypoint`, `#animate`/`swap`, native `frac`/`mat`, `#touying-render`, `#meanwhile`, `#touying-recall`)
   - `04-multi-mode-article.typ` (`presentation`, `handout`, `article`, `#article-text`, `config-article`, `table.header` preservation)
@@ -49,6 +49,7 @@
   - **Round 1** flagged 5 concrete defects across examples (`02-multi` Agenda `0.` prefix and unexplained `7 / 5` appendix footer; `03-anim` orphan empty bullets from `- #only(...)`; `04-art` `#article-text` hiding sibling `table`; `05-notes` `24pt`/`48pt` left offset and empty subslide-1 note).
   - **Round 2** confirmed `01`, `02`, `04`, `05` clean and surfaced 2 remaining `03-anim` subtleties (`#touying-render` snapshot following equation `#pause` causing double-fade/wrap on `p10`–`p12`, and an empty `== Whole-Slide Recall` slide before replay). Both were fixed (`#meanwhile` + separate paragraph before snapshot; top-level `#touying-recall` without empty wrapper heading).
   - **Round 3** inspected refreshed `03-anim` `1x` (`p10`–`p14`) and `4x` crops (including math page `p12` and final recall `p14`) -> `Overall verdict: PASS`, `Defects: []`. Zero PNG/PDF artifacts remain in the repository.
+- **Full-branch `/code-review` remediation**: Both axes (`Standards` + `Spec` across `dev...HEAD`) were verified clean after fixing `config-common(footnote-style: ...)` (`auto`/function only), adding `figure.caption` and container `#meanwhile` guidance in `references/animations-waypoints.md`, aligning CLI examples with Typst `0.15.1`, fixing `01-minimal.typ`'s theme note above, and refining `scripts/touying_check.py`.
 
 ## 7. Honest Verification Limits & `missing evidence`
 

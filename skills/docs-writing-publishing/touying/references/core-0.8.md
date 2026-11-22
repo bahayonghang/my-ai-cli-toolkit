@@ -146,7 +146,7 @@ Defines `primary`, `secondary`, `tertiary`, and `neutral`, each with 7 shades:
 
 **Bibliography, footnotes & typography**:
 - `show-bibliography-as-footnote: false` — Boolean in `0.8.0`; pair with a real `#bibliography("ref.bib")` (or `only("h", bibliography(...))` on multi-subslide slides).
-- `reset-footnote-number-per-slide: true`, `footnote-style: auto` (dictionary/function applied both to real footnotes and to Touying's covered placeholder marker).
+- `reset-footnote-number-per-slide: true`, `footnote-style: auto` (`auto` or a `function` `it => ...` installed via `show footnote: footnote-style` and measured for Touying's covered placeholder marker; never pass a dictionary).
 - `show-strong-with-alert: true`, `nontight-list-enum-and-terms: false`, `align-list-marker-with-baseline: false`, `align-enum-marker-with-baseline: false`, `scale-list-items: none`, `show-hide-set-list-marker-none: true`.
 - `default-composer: auto` — Defaults to `components.cols.with(lazy-layout: false)`.
 

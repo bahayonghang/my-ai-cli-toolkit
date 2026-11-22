@@ -148,6 +148,11 @@ class TouyingAnimationsAndModesDocsTests(unittest.TestCase):
         self.assertNotIn("wrap-images", text)
         self.assertNotIn("wrap-width", text)
 
+    def test_animations_waypoints_covers_figure_caption_and_container_meanwhile(self) -> None:
+        text = ANIMATIONS_MD.read_text(encoding="utf-8")
+        for token in ("figure.caption", "#meanwhile", "block", "grid", "table", "stack"):
+            self.assertIn(token, text, f"animations-waypoints.md missing container/caption item `{token}`")
+
     def test_deprecated_apis_never_recommended_in_new_references(self) -> None:
         for path in (ANIMATIONS_MD, OUTPUT_MODES_MD):
             self.assertTrue(path.is_file(), f"missing reference file: {path.name}")

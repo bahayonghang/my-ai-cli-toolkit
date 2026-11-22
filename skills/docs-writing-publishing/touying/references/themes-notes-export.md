@@ -155,7 +155,7 @@ Touying `0.8.0` replaces the removed `magic.bibliography()` state mechanism with
 #show: simple-theme.with(
   config-common(
     show-bibliography-as-footnote: true,
-    footnote-style: (typographic: false, baseline: 0em, size: 0.9em),
+    footnote-style: it => text(fill: rgb("#1f4e79"), size: 0.9em, it),
   ),
 )
 
@@ -170,5 +170,5 @@ Touying `0.8.0` replaces the removed `magic.bibliography()` state mechanism with
 
 - **Never** call removed `magic.bibliography()` or pass `bibliography(...)` as the value of `show-bibliography-as-footnote:`.
 - Use `#only("h", bibliography("ref.bib"))` if the bibliography sits on a multi-subslide slide so citation numbering does not restart across subslides.
-- Set `config-common(footnote-style: ...)` when restyling citation/footnote markers so real footnotes and Touying's covered placeholder boxes match widths.
+- Pass `auto` or a callback function (`it => ...`) to `config-common(footnote-style: ...)` when restyling citation/footnote markers (`show footnote: footnote-style`) so real footnotes and Touying's covered placeholder boxes match widths; **never** pass a dictionary (that fails with `expected content or function, found dictionary`).
 - **CSL note style caution**: if your citation style already produces footnote citations (such as `"chicago-notes"`), leave `show-bibliography-as-footnote: false` (`0.8.0` keeps covered note-style citations suppressed cleanly until their reveal subslide).
