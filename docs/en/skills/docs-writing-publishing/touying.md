@@ -35,9 +35,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | `skills/docs-writing-publishing/touying/examples` | directory | 9 | Examples |
 | `skills/docs-writing-publishing/touying/manifest.json` | file | 1 | Top-level file |
 | `skills/docs-writing-publishing/touying/README.md` | file | 1 | Top-level file |
-| `skills/docs-writing-publishing/touying/references` | directory | 3 | Reference material |
+| `skills/docs-writing-publishing/touying/references` | directory | 5 | Reference material |
 | `skills/docs-writing-publishing/touying/reports` | directory | 4 | Top-level directory |
-| `skills/docs-writing-publishing/touying/tests` | directory | 2 | Automated tests |
+| `skills/docs-writing-publishing/touying/tests` | directory | 3 | Automated tests |
 
 ## Scripts, references, and test resources
 

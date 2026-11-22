@@ -10,8 +10,8 @@
   ],
   "missing_description_concepts": [],
   "summary": {
-    "total": 22,
-    "passed": 22,
+    "total": 25,
+    "passed": 25,
     "false_positive": 0,
     "false_negative": 0,
     "pass_rate": 1.0
@@ -190,6 +190,49 @@
         "passed": true,
         "score": 0.6,
         "matched_concepts": [
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Touying 幻灯片中用 waypoint 层级标签和 #animate swap 组合渐进高亮并替换公式步骤",
+        "family": "zh-waypoints-animate",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "feature_topic",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我给 Typst Touying 演示文稿配置 config-article 图片环绕和 #article-text 文章模式导出",
+        "family": "zh-article-mode-config",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "mode_or_export",
+          "slide_action",
+          "typst_touying"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use Touying waypoints and #animate with swap in a .typ slide deck and configure export-mode article layout with config-article",
+        "family": "en-waypoints-animate-article",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "feature_topic",
           "mode_or_export",
           "slide_action",
           "typst_touying"

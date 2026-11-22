@@ -46,7 +46,10 @@
       "Create a new Typst Touying 0.8.0 presentation deck with metropolis theme and speaker notes",
       "Migrate our older Touying .typ slides to 0.8.0 and fix deprecated cover and bibliography errors",
       "Troubleshoot why #pause inside context fails in our Typst slide deck and check overflow warnings",
-      "Set up a dual export-mode Touying presentation that compiles both slides and article output from one source"
+      "Set up a dual export-mode Touying presentation that compiles both slides and article output from one source",
+      "在 Touying 幻灯片中用 waypoint 层级标签和 #animate swap 组合渐进高亮并替换公式步骤",
+      "帮我给 Typst Touying 演示文稿配置 config-article 图片环绕和 #article-text 文章模式导出",
+      "Use Touying waypoints and #animate with swap in a .typ slide deck and configure export-mode article layout with config-article"
     ],
     "should_not_trigger": [
       "帮我用 HTML 和 reveal.js 做一个能在浏览器键盘翻页的互动网页幻灯片",
@@ -71,8 +74,10 @@
   },
   "resources": {
     "references": [
+      "references\\animations-waypoints.md",
       "references\\core-0.8.md",
       "references\\migration-0.8.md",
+      "references\\output-modes-article.md",
       "references\\troubleshooting.md"
     ],
     "scripts": [],
