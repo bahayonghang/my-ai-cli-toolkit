@@ -1,8 +1,8 @@
 interface:
   display_name: "Matt Implement Prompt"
-  short_description: "Compile Matt Pocock Spec + Tickets into a self-contained, linted fresh-session implementation and remote issue-closing prompt."
+  short_description: "Compile Matt Pocock Spec + Tickets into a linted fresh-session prompt with branch/worktree choice, split commits, commit-linked issue closing, and base-branch merge/PR sync."
   default_prompt: |
-    Use $matt-implement-prompt to inspect the target repository and Spec/Ticket task graph read-only, compile a pointer-driven fresh-session prompt covering frontier execution, TDD, code-review, CI verification, and explicit remote issue-closing protocol, lint it to zero errors with scripts/lint_implement_prompt.py, present it in one text fence, and stop without editing product code or closing issues.
+    Use $matt-implement-prompt to inspect the target repository (including working tree, worktrees, remotes, and base branch) and Spec/Ticket task graph read-only, compile a pointer-driven fresh-session prompt choosing new branch vs. worktree, enforcing frontier execution, TDD, code-review, CI verification, split atomic commits with clean-tree check, commit-SHA-linked issue closure, and base-branch-aware delivery (direct merge+cleanup on dev; PR+merge+local/remote sync on main/master), lint it to zero errors with scripts/lint_implement_prompt.py --base-branch <base>, present it in one text fence, and stop without editing product code, committing, pushing, or closing issues.
 compatibility:
   adapter_targets:
     - openai

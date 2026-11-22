@@ -1,8 +1,8 @@
 {
   "name": "matt-implement-prompt",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "owner": "bahayonghang",
-  "updated_at": "2026-11-21",
+  "updated_at": "2026-11-22",
   "review_cadence": "quarterly-or-on-matt-workflow-change",
   "status": "active",
   "maturity_tier": "production",
@@ -28,7 +28,7 @@
     "agent-skills-compatible"
   ],
   "contracts": {
-    "output_contract": "Single fenced text prompt passing scripts/lint_implement_prompt.py with zero errors, pointer-driven task graph, explicit verification gates, and explicit authorization/prohibition boundaries.",
-    "authority_boundary": "Read-only reconnaissance plus prompt compilation and lint only; never edits target product code, switches branches, pushes, or closes issues in the compiling session."
+    "output_contract": "Single fenced text prompt passing scripts/lint_implement_prompt.py with zero errors, pointer-driven task graph, explicit branch-vs-worktree isolation choice, split atomic commits with clean working tree check, commit-SHA-linked issue closure, and base-branch-aware delivery/cleanup/sync protocol (dev-merge, main-pr, or branch-only).",
+    "authority_boundary": "Read-only reconnaissance plus prompt compilation and lint only; never edits target product code, switches branches, creates worktrees, commits, merges, pushes, opens PRs, or closes issues in the compiling session."
   }
 }

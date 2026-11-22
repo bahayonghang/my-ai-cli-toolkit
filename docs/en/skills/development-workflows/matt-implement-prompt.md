@@ -4,7 +4,7 @@
 
 ## Purpose overview
 
-Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or local .scratch issues) into a self-contained, pointer-driven fresh-session execution prompt with TDD, code-review, CI verification gates, and explicit remote issue-closing protocol.
+Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or local .scratch issues) into a self-contained, pointer-driven fresh-session execution prompt with branch-or-worktree isolation, TDD, code-review, CI verification gates, split atomic commits, base-branch-aware delivery (dev direct merge vs main/master PR merge & sync), and commit-linked remote issue-closing protocol.
 
 ## Trigger scenarios
 
@@ -17,7 +17,7 @@ Compile Matt Pocock workflow specs and tracer-bullet tickets (GitHub Issues or l
 | --- | --- |
 | Name | `matt-implement-prompt` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `mattpocock`, `implement-spec`, `implement`, `prompt-engineering`, `github-issues`, `handoff` |
 
 ## Install command
