@@ -2,7 +2,7 @@ interface:
   display_name: "Touying 0.8.0 Author"
   short_description: "Author, refactor, migrate, and troubleshoot Typst slide decks with @preview/touying:0.8.0 (Typst 0.15.0+)."
   default_prompt: |
-    Use $touying to author, refactor, migrate, or troubleshoot Typst slide decks with @preview/touying:0.8.0 (Typst 0.15.0+). Inspect the workspace first to reuse any existing .typ entrypoints and globals.typ conventions rather than overwriting them. Choose Quick or Full tier by task complexity, enforce Touying 0.8.0 contracts (config-page/config-common over raw set page, alpha/color-changing-cover instead of semi-transparent-cover, native math animations instead of touying-equation, boolean show-bibliography-as-footnote with real #bibliography, config-common(notes-fn: ..), plural touying-recall(subslides: ..)), and never claim compile or visual pass without actually running typst compile --warnings promote; report unexecuted checks as missing evidence. Decline HTML/reveal.js/PPT/Marp, ordinary Typst papers, and XeLaTeX thesis defense decks (academic-defense-beamer).
+    Use $touying to author, refactor, migrate, or troubleshoot Typst slide decks with @preview/touying:0.8.0 (Typst 0.15.0+). Inspect the workspace first to reuse any existing .typ entrypoints and globals.typ conventions rather than overwriting them. Choose Quick or Full tier by task complexity, open the closest graded tier in examples/README.md before authoring, enforce Touying 0.8.0 contracts (config-page/config-common over raw set page, alpha/color-changing-cover instead of semi-transparent-cover, native math animations instead of touying-equation, boolean show-bibliography-as-footnote with real #bibliography, config-common(notes-fn: ..), plural touying-recall(subslides: ..)), and verify with scripts/touying_check.py (doctor, audit --strict-warnings, compile --warnings promote / strict stderr warning promotion); report unexecuted checks or status: skipped as missing evidence. Decline HTML/reveal.js/PPT/Marp, ordinary Typst papers, and XeLaTeX thesis defense decks (academic-defense-beamer).
   examples:
     - "用 Touying 0.8.0 创建一个 16:9 演示文稿，采用 globals.typ + main.typ 结构"
     - "把这份 0.6.1 的 Touying 幻灯片迁移到 0.8.0 并消除 --warnings promote 警告"
@@ -31,7 +31,7 @@ compatibility:
   permissions:
     network: "none required at runtime; optional Typst Universe package fetch on first compile"
     file_write: "target .typ presentation files inside workspace after Workspace Intent Gate"
-    subprocess: "typst compile --warnings promote and local read-only inspection"
+    subprocess: "scripts/touying_check.py (doctor/audit/compile), typst compile (with --warnings promote or strict stderr warning promotion), and local read-only inspection"
     interactive: "clarify theme direction or deck scope only in Full tier when unspecified"
   degradation:
     openai: "metadata-adapter"

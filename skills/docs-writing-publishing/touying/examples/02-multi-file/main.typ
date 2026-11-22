@@ -17,7 +17,7 @@
 
 #title-slide(extra: [Typst 0.15.0+])
 
-#outline-slide(indent: (1em,), depth: 1, title: [Agenda])
+#outline-slide(indent: (1em,), depth: 1, title: [Agenda], numbered: (false,))
 
 #include "content.typ"
 
@@ -34,5 +34,9 @@
   [`main.typ`], [Theme config & `#include`], [`/globals.typ`],
   [`content.typ`], [Section & slide bodies], [`/globals.typ`],
 )
+
+#text(size: 0.8em, fill: luma(90))[
+  `#show: appendix` freezes `utils.last-slide-number` (`5`) while `slide-counter` advances (`7 / 5`); pair with `config-common(freeze-slide-counter: true)` to freeze both.
+]
 
 #speaker-note[Appendix freezes `utils.last-slide-number` automatically.]

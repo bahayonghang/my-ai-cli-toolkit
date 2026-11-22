@@ -55,7 +55,9 @@
       "Configure Typst 0.15 bundle export with #pdfpc.bundle-assets() for multi-document Touying slide decks",
       "在 Touying 幻灯片里用 touying-reduce 和 lambda bindings 集成 CeTZ、Fletcher 和 Lilaq 分步动画",
       "Integrate Alchemist, Theorion, and Pinit callouts into our Typst Touying presentation deck using 0.8.0 bindings",
-      "帮我给这套 Typst Touying 技术汇报做 3 个视觉方向原型并控制幻灯片版式拓扑多样性，避免全页卡片列表"
+      "帮我给这套 Typst Touying 技术汇报做 3 个视觉方向原型并控制幻灯片版式拓扑多样性，避免全页卡片列表",
+      "帮我运行 touying_check.py 对这个 Typst Touying .typ 演示文稿做 doctor 环境诊断、audit 审计与编译排查",
+      "Run touying_check.py doctor, audit, and multi-mode presentation compilation to troubleshoot our Typst Touying .typ slide deck"
     ],
     "should_not_trigger": [
       "帮我用 HTML 和 reveal.js 做一个能在浏览器键盘翻页的互动网页幻灯片",
@@ -131,7 +133,7 @@
     "permissions": {
       "network": "none required at runtime; optional Typst Universe package fetch on first compile",
       "file_write": "target .typ presentation files inside workspace after Workspace Intent Gate",
-      "subprocess": "typst compile --warnings promote and local read-only inspection",
+      "subprocess": "scripts/touying_check.py (doctor/audit/compile), typst compile (with --warnings promote or strict stderr warning promotion), and local read-only inspection",
       "interactive": "clarify theme direction or deck scope only in Full tier when unspecified"
     },
     "degradation": {

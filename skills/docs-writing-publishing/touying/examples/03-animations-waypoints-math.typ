@@ -69,10 +69,10 @@ Phase B active
   columns: (1fr, 1fr),
   gutter: 1em,
   [
-    - #uncover(<phase>)[Visible across `<phase:a>` and `<phase:b>`]
-    - #only(get-first(<phase:a>))[Only on first subslide of `<phase:a>`]
-    - #only((from-wp(<phase:a>), until-wp(<phase:b>)))[From `phase:a` until `phase:b`]
-    - #only(get-last(<phase:b>))[Only on last subslide of `<phase:b>`]
+    #uncover(<phase>)[- Visible across `<phase:a>` and `<phase:b>`]
+    #only(get-first(<phase:a>))[- Only on first subslide of `<phase:a>`]
+    #only((from-wp(<phase:a>), until-wp(<phase:b>)))[- From `phase:a` until `phase:b`]
+    #only(get-last(<phase:b>))[- Only on last subslide of `<phase:b>`]
   ],
   [
     #animate(
@@ -99,10 +99,11 @@ Phase B active
 
   $ frac(a #pause + b, c) = #pause mat(1, #pause 0; 0, 1) $
 
+  #meanwhile
   Rendered stage 2 snapshot:
+
   #box(inset: 0.5em, stroke: 0.5pt + gray)[#touying-render(preview-seq, subslides: 2, base: 1)]
 ]
 
-== Whole-Slide Recall
-
+// Whole-slide recall replays the final subslide of <wp-slide> directly at slide level.
 #touying-recall(<wp-slide>, subslides: none)

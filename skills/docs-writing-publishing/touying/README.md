@@ -1,6 +1,12 @@
 # Touying (`2.0.0`)
 
-面向 `@preview/touying:0.8.0`（要求 Typst `0.15.0+`）的 Typst 演示文稿工程技能包：提供精准的触发与排除边界、多文件架构规范、从 `0.6.x`/`0.7.x` 升级至 `0.8.0` 的破坏性变更迁移指南，以及 `--warnings promote` 排障闭环。
+面向 `@preview/touying:0.8.0`（要求 Typst `0.15.0+`）的 Typst 演示文稿工程技能包：提供精准的触发与排除边界、多文件架构规范、从 `0.6.x`/`0.7.x` 升级至 `0.8.0` 的破坏性变更迁移指南、`8` 份 `0.8.0` 参考手册与 `6` 级可编译示例（含 `animations`/`waypoints`、`article` 多模式、定制 `notes-fn`/bundle `.pdfpc` 及生态集成），以及确定性脚本与 `--warnings promote` 排障闭环。
+
+## 目录结构亮点
+
+- **核心规范与专题指南（`references/`）**：`core-0.8.md`、`animations-waypoints.md`、`output-modes-article.md`、`migration-0.8.md`、`themes-notes-export.md`、`integrations.md`、`visual-craft.md` 与 `troubleshooting.md`。
+- **分级 0.8.0 示例（[examples/README.md](examples/README.md)）**：`01-minimal.typ`、`02-multi-file/`、`03-animations-waypoints-math.typ`、`04-multi-mode-article.typ`、`05-theme-notes.typ` 与 `06-bundle-pdfpc.typ`。
+- **环境诊断与审计脚本（`scripts/touying_check.py`）**：提供 `doctor`（检测 Typst `>= 0.15.0` 与 `--warnings` 标志）、`audit --strict-warnings`（静态反模式与纯列表退化审计）以及 `compile`（多模式与 `--bundle` 实测编译及严格告警提升）。
 
 ## 安装
 
@@ -51,6 +57,12 @@ python -m unittest discover -s skills/docs-writing-publishing/touying/tests -p t
 # Qiaomu Production 包门禁与触发边界评测
 python .agents/skills/qiaomu-meta-skill/scripts/validate_skill.py skills/docs-writing-publishing/touying
 python .agents/skills/qiaomu-meta-skill/scripts/trigger_eval.py skills/docs-writing-publishing/touying --cases evals/trigger_cases.json
+python .agents/skills/qiaomu-meta-skill/scripts/release_check.py skills/docs-writing-publishing/touying --phase local --run-tests
+
+# Touying 0.8.0 环境自检、静态审计与分级示例编译
+python skills/docs-writing-publishing/touying/scripts/touying_check.py doctor --json
+python skills/docs-writing-publishing/touying/scripts/touying_check.py audit skills/docs-writing-publishing/touying/examples --strict-warnings --json
+python skills/docs-writing-publishing/touying/scripts/touying_check.py compile skills/docs-writing-publishing/touying/examples/04-multi-mode-article.typ --modes presentation,handout,article --json
 ```
 
 ## Troubleshooting

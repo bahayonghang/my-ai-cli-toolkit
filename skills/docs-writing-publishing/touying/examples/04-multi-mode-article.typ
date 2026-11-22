@@ -47,6 +47,14 @@
   [Layout Column B (linearized in article mode)],
 )
 
+#article-text[
+  In `article` mode, `#article-text` replaces the terse slide layout above with continuous prose, while the `table.header` matrix below stays intact as a structured table.
+]
+
+#speaker-note[Compile with `--modes presentation,handout,article`.]
+
+== Structured Table Preservation
+
 #table(
   columns: 2,
   table.header([Export Mode], [Output Target]),
@@ -54,12 +62,6 @@
   [handout], [Compact final subslides],
   [article], [Continuous A4 prose],
 )
-
-#article-text[
-  In `article` mode, `#article-text` replaces the terse slide layout above with continuous prose while retaining the structured table from the section.
-]
-
-#speaker-note[Compile with `--modes presentation,handout,article`.]
 
 == Live Presentation Slide <touying:presentation>
 

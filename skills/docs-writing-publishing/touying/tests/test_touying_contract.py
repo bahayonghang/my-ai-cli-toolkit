@@ -197,7 +197,7 @@ class TouyingPackageContractTests(unittest.TestCase):
             candidate = SKILL_ROOT / single
             if candidate.is_file():
                 scan_files.append(candidate)
-        for folder in ("agents", "references", "evals", "reports", "tests"):
+        for folder in ("agents", "references", "scripts", "examples", "evals", "reports", "tests"):
             folder_path = SKILL_ROOT / folder
             if folder_path.is_dir():
                 for item in sorted(folder_path.rglob("*")):

@@ -9,6 +9,7 @@
   ),
   header-fill: self.colors.primary,
   fill: rgb("#f4f6f9"),
+  note-setting: note => pad(x: 24pt, y: 16pt, note),
   ..args,
 )
 
@@ -91,6 +92,8 @@
 #speaker-note[Cover slide uses `<touying:hidden>` so it stays out of section outlines.]
 
 == Wrapper & Setting Rules
+
+#speaker-note[Introduce `touying-fn-wrapper-raw` before stepping through `#pause`.]
 
 #callout-pill[
   Nested animations work inside `touying-fn-wrapper-raw` #pause cleanly!

@@ -74,7 +74,12 @@
       "自定义主题",
       "版式",
       "视觉",
-      "原型"
+      "原型",
+      "touying_check.py",
+      "doctor",
+      "audit",
+      "诊断",
+      "审计"
     ],
     "mode_or_export": [
       "handout",
@@ -212,6 +217,14 @@
     {
       "text": "帮我给这套 Typst Touying 技术汇报做 3 个视觉方向原型并控制幻灯片版式拓扑多样性，避免全页卡片列表",
       "family": "zh-visual-craft"
+    },
+    {
+      "text": "帮我运行 touying_check.py 对这个 Typst Touying .typ 演示文稿做 doctor 环境诊断、audit 审计与编译排查",
+      "family": "zh-check-script-audit"
+    },
+    {
+      "text": "Run touying_check.py doctor, audit, and multi-mode presentation compilation to troubleshoot our Typst Touying .typ slide deck",
+      "family": "en-check-script-compile"
     }
   ],
   "should_not_trigger": [
