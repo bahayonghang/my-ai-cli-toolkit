@@ -89,7 +89,9 @@
       "references\\troubleshooting.md",
       "references\\visual-craft.md"
     ],
-    "scripts": [],
+    "scripts": [
+      "scripts\\touying_check.py"
+    ],
     "evals": [
       "evals\\evals.json",
       "evals\\trigger_cases.json"

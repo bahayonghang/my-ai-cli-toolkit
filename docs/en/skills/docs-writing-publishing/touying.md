@@ -37,7 +37,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | `skills/docs-writing-publishing/touying/README.md` | file | 1 | Top-level file |
 | `skills/docs-writing-publishing/touying/references` | directory | 8 | Reference material |
 | `skills/docs-writing-publishing/touying/reports` | directory | 4 | Top-level directory |
-| `skills/docs-writing-publishing/touying/tests` | directory | 4 | Automated tests |
+| `skills/docs-writing-publishing/touying/scripts` | directory | 1 | Executable scripts |
+| `skills/docs-writing-publishing/touying/tests` | directory | 10 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -47,6 +48,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | evals | `skills/docs-writing-publishing/touying/evals` | Evaluation samples |
 | examples | `skills/docs-writing-publishing/touying/examples` | Examples |
 | references | `skills/docs-writing-publishing/touying/references` | Reference material |
+| scripts | `skills/docs-writing-publishing/touying/scripts` | Executable scripts |
 | tests | `skills/docs-writing-publishing/touying/tests` | Automated tests |
 
 ## Validation
