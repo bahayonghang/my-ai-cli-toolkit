@@ -46,6 +46,8 @@
       "animate",
       "waypoint",
       "waypoints",
+      "touying-render",
+      "item-by-item",
       "speaker-note",
       "pdfpc",
       "动画",
@@ -61,6 +63,9 @@
       "handout",
       "article",
       "export-mode",
+      "config-article",
+      "article-text",
+      "handout-subslides",
       "export",
       "bundle",
       "双模式",
@@ -154,6 +159,18 @@
     {
       "text": "Set up a dual export-mode Touying presentation that compiles both slides and article output from one source",
       "family": "en-dual-mode"
+    },
+    {
+      "text": "在 Touying 幻灯片中用 waypoint 层级标签和 #animate swap 组合渐进高亮并替换公式步骤",
+      "family": "zh-waypoints-animate"
+    },
+    {
+      "text": "帮我给 Typst Touying 演示文稿配置 config-article 图片环绕和 #article-text 文章模式导出",
+      "family": "zh-article-mode-config"
+    },
+    {
+      "text": "Use Touying waypoints and #animate with swap in a .typ slide deck and configure export-mode article layout with config-article",
+      "family": "en-waypoints-animate-article"
     }
   ],
   "should_not_trigger": [

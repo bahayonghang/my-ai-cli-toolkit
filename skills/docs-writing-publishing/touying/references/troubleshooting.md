@@ -19,6 +19,13 @@
 | Custom slide function breaks theme or headers | Missing `touying-slide-wrapper` | Return `touying-slide-wrapper(self => { ... })` |
 | Missing CJK or icon fonts on compile | Local fonts not discovered on CLI path | Compile with `typst compile --font-path <fonts-dir> --warnings promote main.typ` |
 | `.pdfpc` export via bundle fails or missing notes | `#pdfpc.bundle-assets()` called inside `#document(...)` | Call `#pdfpc.bundle-assets()` at top level outside every `#document(...)` and pass `--features bundle --format bundle` |
+| `Circular waypoint dependency detected` or `Unknown waypoint label` | Cyclic `waypoint(start: <label>)` dependency or range marker referencing undeclared label | Break `start:` cycles and declare `<label>` via `#waypoint(<label>)` or implicit `<label>`; see [Animations & Waypoints](animations-waypoints.md) |
+| `item-by-item: start must resolve to a single subslide position` | Range marker (`from-wp`, `until-wp`) or range string passed to `start:` | Pass `<wp>`, `get-first(<wp>)`, `get-last(<wp>)`, `prev-wp`, `next-wp`, or a single int/number string |
+| `#animate` rejects `subslides: auto` or stretched `swap` measures `0pt` | `#animate` requires `"h"` instead of `auto`, and `stretch: true` cannot measure bare `context` content | Write `"h"` for placement-time subslide and wrap `context` content in a fixed `box(...)` (or keep `stretch: false`); see [Animations & Waypoints](animations-waypoints.md) |
+| `std.measure` returns `0pt` on `#uncover`/`#only` body | Typst `std.measure` sees unresolved metadata marks | Call Touying's `#measure(body, subslide: ...)` inside `context` |
+| `#touying-render` warns `start:/repeat-last: have no effect` or `touying-recall` warns on whole-slide target in article mode | Article mode renders once with no subslide timeline or slide replay | Wrap slide-gated `#touying-render(start: ...)` or whole-slide recalls in `#slides-only[...]`; see [Output Modes & Article Mode](output-modes-article.md) |
+| `#article-linearize` / `#article-keep-layout` panics inside `#article-text` / `#article-only` | Those wrappers only ever reach article mode directly | Write the desired article layout directly inside `#article-text` or `#article-only` |
+| `config-article(wrap:)` error or `table`/`grid` flattens unexpectedly in article mode | Invalid keys (`wrap` uses `width`, `align`, element keys, `overrides` with `target:`) or table lacks `table.header`/`grid.header` | Use `config-article(wrap: (...), linearize: ...)` and declare `table.header(...)` or wrap with `#article-keep-layout[...]`; see [Output Modes & Article Mode](output-modes-article.md) |
 
 ## 2. Explicit Path Input Errors
 

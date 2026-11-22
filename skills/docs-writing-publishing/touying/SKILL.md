@@ -55,9 +55,11 @@ Load only the reference file needed for the current subtask:
 | Task | Resource |
 | --- | --- |
 | Core configs (`config-page`, `config-common`, `config-info`, `config-colors`, `config-methods`, `config-store`, `touying-get-config`), multi-file layout, headings/labels, overflow controls | [Core 0.8.0 Contract](references/core-0.8.md) |
+| Incremental animations (`#pause`, `#jump`, `#item-by-item`, `#touying-raw`), Waypoints (`<wp>`, `get-first`/`from-wp`/`not-wp`), `#animate`/`swap`, `#touying-render`, `#touying-recall`, native math, `#measure`, and covers | [Animations & Waypoints](references/animations-waypoints.md) |
+| Output modes (`"slides"`, `"presentation"`, `"handout"`, `"article"`), `--input export-mode=`, mode markers/labels, `handout-subslides`, `config-article`, and `themes.article` | [Output Modes & Article Mode](references/output-modes-article.md) |
 | Upgrading `0.6.x` / `0.7.x` decks, themes, bibliographies, covers, or speaker notes to `0.8.0` | [Migration Guide (to 0.8.0)](references/migration-0.8.md) |
 | Compiler errors, `--warnings promote` failures, overflow/mark panics, input validation | [Troubleshooting](references/troubleshooting.md) |
-| Existing starter templates (note: `examples/*.typ` upgrade & Wave 2 animation/theme/integration refs follow in subsequent slices) | `examples/simple.typ`, `examples/default.typ` |
+| Existing starter templates (`examples/*.typ` upgrade & theme/integration refs follow in subsequent slices) | `examples/simple.typ`, `examples/default.typ` |
 
 ## 5. Hard 0.8.0 Rules
 
@@ -70,6 +72,7 @@ Load only the reference file needed for the current subtask:
 - **Footnote bibliography**: enable via boolean `config-common(show-bibliography-as-footnote: true)` and emit a real `#bibliography("ref.bib")` (use `only("h", bibliography(...))` on multi-subslide slides, or `hide(...)` to suppress the list) instead of removed `magic.bibliography()`.
 - **Speaker-note panel & modes**: customize presenter panels via `config-common(notes-fn: ...)` built on `touying-notes` instead of removed `config-methods(show-only-notes: ...)`. Use top-level `#handout-only[..]`, `#presentation-only[..]`, `#slides-only[..]`, `#article-only[..]`, `#article-text[..]`, or `config-common(export-mode: ...)`.
 - **Recall & subslide flow**: use plural `touying-recall(<lbl>, subslides: ...)` (`auto` = all subslides of a slide or final state of a labelled element; `none` = last subslide only). Remember `#pause` after `#uncover`/`#only`/`#alternatives` no longer snaps past their reserved subslides, and negative ints on `#only`/`#uncover`/`#animate` panic (use `#waypoint(<end>)` + `get-last(<end>)`).
+- **Layered effects, render, measure & article config**: use `#animate` / `swap(stretch: true)` for combined placement and styles, `#touying-render` for value-held stages, `#measure` inside `context` for animated content sizing, and `config-article(wrap: ..., linearize: ..., available-fields: ..., title-block-fn: ...)` for article layout.
 - **Appendix**: place `#show: appendix` after the main deck (freezes `utils.last-slide-number`; pair with `config-common(freeze-slide-counter: true)` if numerator should also freeze).
 
 ## 6. Closing Gate
