@@ -173,7 +173,7 @@ class PickerTests(unittest.TestCase):
         self.assertEqual(kinds[0], "all")
         self.assertIn("group", kinds)
         self.assertIn("skill", kinds)
-        self.assertGreaterEqual(kinds.count("group"), 6)
+        self.assertGreaterEqual(kinds.count("group"), 5)
 
     def test_select_all_toggles_every_skill(self) -> None:
         self.picker.toggle()

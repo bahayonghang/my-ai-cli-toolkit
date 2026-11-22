@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 76
-- **Last Active**: 2026-11-11
+- **Total Sessions**: 81
+- **Last Active**: 2026-11-19
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~365 | Active |
+| `journal-2.md` | ~487 | Active |
 | `journal-1.md` | ~1999 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,11 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 81 | 2026-11-19 | design-atlas 0.7.0 与 DevSweep 双仓合并、八张工单关闭 | `a98d1791` | `dev` |
+| 80 | 2026-11-19 | DevSweep Clean 并排图签收，关闭 #6 | - | `dev` |
+| 79 | 2026-11-19 | DevSweep #6 完整门禁复验通过 | - | `dev` |
+| 78 | 2026-11-19 | design-atlas GPUI 并排验收与测试隔离记录 | - | `dev` |
+| 77 | 2026-11-16 | design-atlas GPUI spec and tickets published | - | `dev` |
 | 76 | 2026-11-11 | Design Atlas 0.6.0 craft polish | `f25076ce` | `dev` |
 | 75 | 2026-11-10 | design-atlas 轻盈毛玻璃色板拨盘 | `18e7e19918b8c61370dd6d26dfa787e0f4e11815`, `c737d13b5aa4d0bc14154dc147ee7108aafd1983` | `dev` |
 | 74 | 2026-11-09 | 吸收 humanizer 到 design-atlas 0.4.0 | `fbd7a5d1` | `dev` |

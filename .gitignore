@@ -54,3 +54,4 @@ ast-grep-workspace/
 reports/skill-session-review/
 
 out/
+skills-lock.json
