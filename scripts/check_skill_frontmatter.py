@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
+"""Validate SKILL.md YAML frontmatter against the repository's skill schema."""
+
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import yaml
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from _common import (  # noqa: E402
+    CANONICAL_CATEGORY_SLUGS,
+    configure_stdio,
+    display_path,
+    extract_frontmatter_raw,
+    skip_dir,
+)
+
 MAX_SKILL_NAME_LENGTH = 64
-CANONICAL_CATEGORY_SLUGS = {
-    "academic-research-tools",
-    "development-workflows",
-    "developer-tools-integrations",
-    "git-github-collaboration",
-    "docs-writing-publishing",
-    "research-learning-knowledge",
-}
 ALLOWED_FRONTMATTER_KEYS = {
     "name",
     "description",
@@ -41,9 +48,9 @@ class ValidationResult:
     warnings: list[str] = field(default_factory=list)
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Validate skill frontmatter with the repository's current schema.",
+        description="Validate SKILL.md YAML frontmatter with the repository's current schema.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -55,12 +62,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--json", action="store_true", help="Emit machine-readable JSON."
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main() -> int:
-    args = parse_args()
-    skill_dirs = collect_skill_dirs(args.targets)
+def main(argv: Sequence[str] | None = None) -> int:
+    configure_stdio()
+    args = parse_args(argv)
+    skill_dirs, missing = collect_skill_dirs(args.targets)
+    if missing:
+        for item in missing:
+            print(f"Target not found: {item}", file=sys.stderr)
+        return 1
     if not skill_dirs:
         print("No skills found.", file=sys.stderr)
         return 1
@@ -89,11 +101,13 @@ def main() -> int:
     return 0 if all(result.ok for result in results) else 1
 
 
-def collect_skill_dirs(targets: list[str]) -> list[Path]:
+def collect_skill_dirs(targets: Sequence[str]) -> tuple[list[Path], list[str]]:
     skill_dirs: set[Path] = set()
+    missing: list[str] = []
     for raw_target in targets:
         target = Path(raw_target)
         if not target.exists():
+            missing.append(raw_target)
             continue
         if target.is_file() and target.name == "SKILL.md":
             skill_dirs.add(target.parent.resolve())
@@ -102,14 +116,18 @@ def collect_skill_dirs(targets: list[str]) -> list[Path]:
             skill_dirs.add(target.resolve())
             continue
         if target.is_dir():
-            for skill_md in target.rglob("SKILL.md"):
-                skill_dirs.add(skill_md.parent.resolve())
-    return sorted(skill_dirs)
+            for dirpath, dirnames, filenames in os.walk(target, followlinks=False):
+                current = Path(dirpath)
+                dirnames[:] = [name for name in dirnames if not skip_dir(current / name)]
+                if "SKILL.md" in filenames:
+                    skill_dirs.add(current.resolve())
+                    dirnames.clear()
+    return sorted(skill_dirs), missing
 
 
 def validate_skill(skill_dir: Path) -> ValidationResult:
     skill_md = skill_dir / "SKILL.md"
-    result = ValidationResult(path=str(skill_dir), ok=True)
+    result = ValidationResult(path=display_path(skill_dir), ok=True)
 
     if not skill_md.is_file():
         result.ok = False
@@ -117,25 +135,20 @@ def validate_skill(skill_dir: Path) -> ValidationResult:
         return result
 
     try:
-        content = skill_md.read_text(encoding="utf-8")
+        content = skill_md.read_text(encoding="utf-8-sig")
     except UnicodeDecodeError as exc:
         result.ok = False
         result.errors.append(f"SKILL.md must be UTF-8 encoded: {exc}")
         return result
 
-    if not content.startswith("---"):
+    raw_frontmatter, fm_error = extract_frontmatter_raw(content)
+    if fm_error is not None or raw_frontmatter is None:
         result.ok = False
-        result.errors.append("Missing YAML frontmatter")
-        return result
-
-    match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
-    if not match:
-        result.ok = False
-        result.errors.append("Invalid frontmatter delimiters")
+        result.errors.append(fm_error or "Missing YAML frontmatter")
         return result
 
     try:
-        frontmatter = yaml.safe_load(match.group(1))
+        frontmatter = yaml.safe_load(raw_frontmatter)
     except yaml.YAMLError as exc:
         result.ok = False
         result.errors.append(f"Invalid YAML: {exc}")
@@ -207,7 +220,7 @@ def validate_category(
     if category is None:
         if metadata_category(metadata):
             result.warnings.append(
-                "Nested metadata.category is present, but mcs-core only reads top-level category"
+                "Nested metadata.category is present, but repository validators and catalog tools only read top-level category"
             )
         else:
             result.warnings.append("Top-level category is missing")
@@ -238,7 +251,7 @@ def validate_tags(tags: Any, metadata: Any, result: ValidationResult) -> None:
     if tags is None:
         if metadata_tags(metadata):
             result.warnings.append(
-                "Nested metadata.tags is present, but mcs-core only reads top-level tags"
+                "Nested metadata.tags is present, but repository validators and catalog tools only read top-level tags"
             )
         return
 
@@ -272,13 +285,11 @@ def metadata_tags(metadata: Any) -> list[str]:
 
 def infer_directory_category(skill_dir: Path) -> str | None:
     parts = skill_dir.parts
-    try:
-        skills_index = parts.index("skills")
-    except ValueError:
-        return skill_dir.parent.name or None
-
-    if len(parts) > skills_index + 1:
-        return parts[skills_index + 1]
+    skills_indices = [idx for idx, part in enumerate(parts) if part == "skills"]
+    if skills_indices:
+        skills_index = skills_indices[-1]
+        if len(parts) > skills_index + 1:
+            return parts[skills_index + 1]
     return skill_dir.parent.name or None
 
 

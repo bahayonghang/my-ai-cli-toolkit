@@ -9,32 +9,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Keep this skip set aligned with inventory_tests.dynamic_python_test_dirs.
-SKIP_PARTS = {
-    ".git",
-    "node_modules",
-    "__pycache__",
-    "ref",
-    ".agents",
-    ".claude",
-    ".trellis",
-    "scaffolds",
-}
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
 
-
-def configure_stdio() -> None:
-    for stream in (sys.stdout, sys.stderr):
-        if hasattr(stream, "reconfigure"):
-            stream.reconfigure(encoding="utf-8", newline="\n")
-
-
-def skip_dir(path: Path) -> bool:
-    name = path.name
-    if name.startswith(".") or name in SKIP_PARTS:
-        return True
-    if path.is_symlink() or os.path.isjunction(path):
-        return True
-    return False
+from _common import REPO_ROOT, SKIP_PARTS, configure_stdio, skip_dir  # noqa: E402
 
 
 def has_test_module(directory: Path) -> bool:
@@ -87,17 +66,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--dynamic-unittest-discover",
         action="store_true",
-        help="Marker for repo-test-audit recipe parsing. Does not change discovery.",
+        help="Compatibility flag kept for external recipe audits; does not alter discovery.",
     )
     parser.parse_args(sys.argv[1:] if argv is None else argv)
-    root = Path(__file__).resolve().parents[1]
+    root = REPO_ROOT
     directories = python_test_dirs(root)
     if not directories:
         print("no unittest directories", file=sys.stderr)
         return 1
     for directory in directories:
         relative = directory.relative_to(root).as_posix()
-        print(f"unittest discover -s {relative}", flush=True)
+        print(f"unittest discover -s {relative}", file=sys.stderr, flush=True)
         completed = subprocess.run(
             [sys.executable, "-m", "unittest", "discover", "-s", relative, "-p", "test_*.py"],
             cwd=root,
