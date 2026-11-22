@@ -47,7 +47,7 @@ https://github.com/apcamargo/typst-skills; https://github.com/touying-typ/seasli
 
 ```bash
 # 仓库元数据与评测 schema 校验
-python scripts/check.py skills/docs-writing-publishing/touying
+python scripts/check_skill_frontmatter.py skills/docs-writing-publishing/touying
 python scripts/check_skill_evals.py skills
 
 # 包内契约测试（Node + Python stdlib unittest）

@@ -24,7 +24,7 @@ First-party installable skill catalog organized by category and skill slug.
 - `name:`, `description:`, `category:`, `tags:`, `version:` — frontmatter fields consumed by validators and docs generation.
 - `argument-hint`, `allowed-tools` — optional skill metadata used by specific runtimes.
 - `tests/*.mjs` — Node skill test entry points for `just node-test`.
-- `scripts/check.py` — root validator for `just skills-check`.
+- `scripts/check_skill_frontmatter.py` — root validator for `just skills-check`.
 
 ## Generated and Ignored Notes
 

@@ -38,7 +38,7 @@ over-declarations.
 - Include at least two near-neighbor **routing-negative** cases asserting the
   request should route to a sibling skill, not this one.
 - `just evals-check` checks this schema. It does not call a model.
-  `scripts/check.py` still validates only SKILL.md frontmatter, and
+  `scripts/check_skill_frontmatter.py` still validates only SKILL.md frontmatter, and
   `node-test` runs `tests/*.mjs`.
 
 ## Interface contract
@@ -60,7 +60,7 @@ over-declarations.
 
 - Optional. If added, place `owner` / review cadence under a nested `metadata:`
   block, not as new top-level frontmatter keys (top-level unknown keys trigger a
-  `scripts/check.py` warning).
+  `scripts/check_skill_frontmatter.py` warning).
 
 ## After structural changes
 

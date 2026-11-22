@@ -8,7 +8,7 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 - `platforms/<platform>/` — platform-scoped source assets such as commands, agents, prompts, rules, and hooks. A `platforms/<platform>/rules/` directory is not the root `rules/` set. This repo currently has no platform `rules/` directory.
 - `platforms/codex/` — Codex native subagent templates; start with `platforms/codex/code_map.md` before editing this subtree.
 - `platforms/claude/hooks/` — Claude Code runtime hook assets and hook JSON.
-- `scripts/` — shared repository validation, maintenance, and local skill live-link scripts.
+- `scripts/` — shared repository validation, maintenance, and local skill live-link scripts; start with `scripts/AGENTS.md` before editing this subtree.
 - `docs/` — VitePress documentation site and generated catalog pages; `docs/scripts/sync_docs_catalog.py` owns catalog synchronization.
 - `.github/workflows/` — GitHub Actions CI; mirrors root `just ci` across OS matrix.
 - `ref/` — ignored third-party/reference checkout area, not first-party source.
@@ -16,7 +16,7 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 
 ## Key Entrypoints
 - `justfile` — local command source of truth for docs, skill, Python, Node, and aggregate CI gates.
-- `scripts/check.py` — skill metadata validator used by `just skills-check`.
+- `scripts/check_skill_frontmatter.py` — skill YAML frontmatter validator used by `just skills-check`.
 - `docs/scripts/sync_docs_catalog.py` — scans `skills/` and `platforms/` to generate docs catalog/sidebar content.
 - `scripts/install_projects.py` — live-link first-party skills into a project; used by `just install-projects`.
 - `platforms/codex/agents/*.toml` — reusable Codex native subagent templates.
