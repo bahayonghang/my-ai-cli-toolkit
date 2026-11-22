@@ -38,33 +38,32 @@ Before creating files or scaffolding a new project, inspect the working director
 
 ## 3. Complexity Tiers (Quick vs Full)
 
-- **Quick Tier** (targeted 1–5 slide edit, bug fix, config tweak, `--warnings promote` fix, or migration check):
-  1. Read the target `.typ` file (and `globals.typ` if present) plus the matching reference below.
-  2. Apply the minimal, scoped change adhering to Hard `0.8.0` Rules.
-  3. Run `python scripts/touying_check.py audit <target> --strict-warnings` and `python scripts/touying_check.py compile <main.typ>` (or `typst compile --warnings promote` when supported) and inspect rendered pages if layout changed.
-- **Full Tier** (brand-new deck, multi-file refactor, custom theme, or multi-mode `presentation` / `handout` / `article` deck):
-  1. Clarify audience, aspect ratio (`16-9` / `16-10` / `4-3`), language/fonts, and required export modes.
-  2. **Open the closest tier before authoring**: inspect [Graded Examples Index](examples/README.md) (`01-minimal` through `06-bundle-pdfpc`) and outline the deck sections, slide-level hierarchy, and visual metaphors before coding.
-  3. For custom or high-craft themes, follow [Visual Craft & Layout Diversity](references/visual-craft.md): define per-slide visual metaphors, cap bullet-only slides, propose **3 restrained visual direction prototypes** with parameterized palettes on real content, and confirm one before building out all slides.
-  4. Structure multi-file decks cleanly (`globals.typ` + `main.typ` + `sections/*.typ`), then verify with `touying_check.py audit --strict-warnings` and `compile` across every target mode (with `--warnings promote` / strict warning promotion) and visually inspect rendered slide pages.
+- **Quick Tier** (1–5 slide edit, bug fix, config tweak, warning fix, or migration):
+  1. Read target `.typ` (`globals.typ` if present) and the matching reference below.
+  2. Apply the minimal change following Hard `0.8.0` Rules.
+  3. Run `python scripts/touying_check.py audit <target> --strict-warnings` and `compile <main.typ>` (with `--warnings promote` / strict warning promotion); inspect rendered pages on layout edits.
+- **Full Tier** (new deck, multi-file refactor, custom theme, or multi-mode export):
+  1. Clarify audience, aspect ratio, fonts, and required export modes (`presentation`, `handout`, `article`).
+  2. **Open the closest tier first**: inspect [Graded Examples Index](examples/README.md) (`01-minimal`..`06-bundle-pdfpc`) and outline sections, `slide-level`, and visual metaphors.
+  3. For custom/high-craft themes, follow [Visual Craft & Layout Diversity](references/visual-craft.md): define per-slide visual metaphors, cap bullet-only slides, and compare **3 restrained direction prototypes** with parameterized palettes on real content before building out.
+  4. Structure multi-file decks (`globals.typ` + `main.typ` + `sections/*.typ`), then run `touying_check.py audit --strict-warnings`, `compile` for every target mode, and inspect rendered slides.
 
 ## 4. Task Routing & Graded Examples
 
-Load only the reference or graded example tier needed for the current subtask (open the closest tier in [Graded Examples Index](examples/README.md) before authoring):
+Load only the reference or example tier needed (open the closest tier in [Graded Examples Index](examples/README.md) before authoring):
 
 | Task | Resource |
 | --- | --- |
-| Core configs (`config-page`, `config-common`, `config-info`, `config-colors`, `config-methods`, `config-store`, `touying-get-config`), multi-file layout, headings/labels, overflow controls | [Core 0.8.0 Contract](references/core-0.8.md) |
-| Incremental animations (`#pause`, `#jump`, `#item-by-item`, `#touying-raw`), Waypoints (`<wp>`, `get-first`/`from-wp`/`not-wp`), `#animate`/`swap`, `#touying-render`, `#touying-recall`, native math, `#measure`, and covers | [Animations & Waypoints](references/animations-waypoints.md) |
-| Output modes (`"slides"`, `"presentation"`, `"handout"`, `"article"`), `--input export-mode=`, mode markers/labels, `handout-subslides`, `config-article`, and `themes.article` | [Output Modes & Article Mode](references/output-modes-article.md) |
-| Upgrading `0.6.x` / `0.7.x` decks, themes, bibliographies, covers, or speaker notes to `0.8.0` | [Migration Guide (to 0.8.0)](references/migration-0.8.md) |
-| Built-in 8 themes (`default`, `simple`, `metropolis`, `dewdrop`, `university`, `aqua`, `stargazer`, `themes.article`), layout components (`cols`, `lazy-layout`), custom theme rules, speaker notes (`notes-fn`, `.pdfpc`/bundle), footnote bibliography | [Themes, Notes & Export](references/themes-notes-export.md) |
-| Diagram reducers (`touying-reduce`, lambda `touying-reducer-bindings` for CeTZ/Fletcher/Lilaq/Alchemist), Codly, Theorion, Pinit, MiTeX, `touying-exporter`, Tylina, `gistd` | [Integrations & Ecosystem](references/integrations.md) |
-| Per-slide visual metaphors, layout topology diversity, parameterized palettes, 3-direction prototyping, anti-slop Do Not rules | [Visual Craft & Layout Diversity](references/visual-craft.md) |
-| Compiler errors, `--warnings promote` failures, overflow/mark panics, input validation, `touying_check.py` rules & exit codes | [Troubleshooting](references/troubleshooting.md) |
-| Graded `0.8.0` templates (`01-minimal` .. `06-bundle-pdfpc`) — open closest tier first | [Graded Examples Index](examples/README.md) |
+| Core configs (`config-page`/`common`/`info`/`colors`/`methods`/`store`), multi-file layout, headings, overflow | [Core 0.8.0 Contract](references/core-0.8.md) |
+| Animations (`#pause`, `#jump`, `#item-by-item`, `#touying-raw`), Waypoints, `#animate`/`swap`, `#touying-render`, `#touying-recall`, native math, `#measure`, covers | [Animations & Waypoints](references/animations-waypoints.md) |
+| Output modes (`slides`/`presentation`/`handout`/`article`), `--input export-mode=`, mode markers/labels, `handout-subslides`, `config-article`, `themes.article` | [Output Modes & Article Mode](references/output-modes-article.md) |
+| Upgrading `0.6.x`/`0.7.x` decks, themes, bibliographies, covers, or notes to `0.8.0` | [Migration Guide (to 0.8.0)](references/migration-0.8.md) |
+| Built-in 8 themes (`default`, `simple`, `metropolis`, `dewdrop`, `university`, `aqua`, `stargazer`, `themes.article`), layout helpers, custom themes, `notes-fn`, `.pdfpc`/bundle, bib footnotes | [Themes, Notes & Export](references/themes-notes-export.md) |
+| Lambda `touying-reduce` / `touying-reducer-bindings` (CeTZ/Fletcher/Lilaq/Alchemist), Codly, Theorion, Pinit, MiTeX, `touying-exporter`, Tylina, `gistd` | [Integrations & Ecosystem](references/integrations.md) |
+| Per-slide visual metaphors, layout topology caps, parameterized palettes, 3-direction prototyping, anti-slop Do Not rules | [Visual Craft & Layout Diversity](references/visual-craft.md) |
+| Compiler errors, warning failures, overflow/mark panics, input validation, `touying_check.py` exit codes & rules | [Troubleshooting](references/troubleshooting.md) |
+| Graded `0.8.0` templates (`01-minimal`..`06-bundle-pdfpc`) — open closest tier first | [Graded Examples Index](examples/README.md) |
 
-Deterministic CLI checks (stdlib Python, cross-platform):
 ```bash
 python scripts/touying_check.py doctor --json
 python scripts/touying_check.py audit <path-or-dir> --strict-warnings --json
@@ -73,20 +72,17 @@ python scripts/touying_check.py compile <main.typ> [--modes presentation,handout
 
 ## 5. Hard 0.8.0 Rules
 
-- **Version & compiler baseline**: default to `#import "@preview/touying:0.8.0": *` and target Typst `0.15.0+`.
-- **Page & slide config**: configure pages via `config-page(...)` and `config-common(...)`, never raw `#set page(...)`. Set heading split depth via `config-common(slide-level: n)`.
-- **Mark boundaries (`context` & `measure`)**: never place `#pause`, `#meanwhile`, `#only`, or `#uncover` inside `context` blocks or measured containers. Inside theme callbacks, use `utils.methods(self)` (with explicit `repeat:`) or wrap helper components with `touying-fn-wrapper-raw` (avoid baking positional body into `.with(...)`).
-- **Slide customization & wrapping**: pass per-slide rules via `#slide(setting: body => ...)` or `config-common(subslide-preamble: ...)` rather than wrapping `body` manually in `slide-fn` or misusing deferred `touying-set-config`. Wrap custom slide functions with `touying-slide-wrapper`.
-- **Covers (deprecated replacement)**: use `utils.alpha-changing-cover` (preserves hues) or `utils.color-changing-cover` (faster compile) instead of deprecated `utils.semi-transparent-cover`.
-- **Math animations (deprecated replacement)**: write native Typst math animations (`$ frac(a #pause + b, c) $`, `$ mat(a, #pause b; c, d) $`) directly instead of deprecated `touying-equation`.
-- **Footnote bibliography**: enable via boolean `config-common(show-bibliography-as-footnote: true)` and emit a real `#bibliography("ref.bib")` (use `only("h", bibliography(...))` on multi-subslide slides, or `hide(...)` to suppress the list) instead of removed `magic.bibliography()`.
-- **Speaker-note panel & modes**: customize presenter panels via `config-common(notes-fn: ...)` built on `touying-notes` instead of removed `config-methods(show-only-notes: ...)`. Use top-level `#handout-only[..]`, `#presentation-only[..]`, `#slides-only[..]`, `#article-only[..]`, `#article-text[..]`, or `config-common(export-mode: ...)`.
-- **Recall & subslide flow**: use plural `touying-recall(<lbl>, subslides: ...)` (`auto` = all subslides of a slide or final state of a labelled element; `none` = last subslide only). Remember `#pause` after `#uncover`/`#only`/`#alternatives` no longer snaps past their reserved subslides, and negative ints on `#only`/`#uncover`/`#animate` panic (use `#waypoint(<end>)` + `get-last(<end>)`).
-- **Layered effects, render, measure & article config**: use `#animate` / `swap(stretch: true)` for combined placement and styles, `#touying-render` for value-held stages, `#measure` inside `context` for animated content sizing, and `config-article(wrap: ..., linearize: ..., available-fields: ..., title-block-fn: ...)` for article layout.
-- **Appendix**: place `#show: appendix` after the main deck (freezes `utils.last-slide-number`; pair with `config-common(freeze-slide-counter: true)` if numerator should also freeze).
+- **Version & baseline**: default to `#import "@preview/touying:0.8.0": *` on Typst `0.15.0+`.
+- **Page & slide config**: use `config-page(...)` and `config-common(...)`, never raw `#set page(...)`; set split depth via `config-common(slide-level: n)`.
+- **Mark boundaries**: never place `#pause`, `#meanwhile`, `#only`, or `#uncover` inside `context` or measured blocks. In theme callbacks use `utils.methods(self)` (with explicit `repeat:`) or `touying-fn-wrapper-raw` with positional `body` (avoid `.with(...)`).
+- **Slide wrapping**: apply per-slide rules via `#slide(setting: body => ...)` or `subslide-preamble`, not manual `body` wrapping in `slide-fn`; wrap custom slide functions with `touying-slide-wrapper`.
+- **Deprecated replacements**: use `utils.alpha-changing-cover` / `utils.color-changing-cover` instead of deprecated `utils.semi-transparent-cover`; use native math (`$ frac(a #pause + b, c) $`) instead of deprecated `touying-equation`.
+- **Footnote bibliography**: set boolean `config-common(show-bibliography-as-footnote: true)` with a real `#bibliography("ref.bib")` (`only("h", bibliography(...))` on multi-subslide slides, or `hide(...)`), never removed `magic.bibliography()`.
+- **Speaker notes & modes**: use `config-common(notes-fn: ...)` on `touying-notes` instead of removed `config-methods(show-only-notes: ...)`. Use `#handout-only`, `#presentation-only`, `#slides-only`, `#article-only`, `#article-text`, or `export-mode`.
+- **Recall, flow & render**: use plural `touying-recall(<lbl>, subslides: ...)` (`auto` = all/final; `none` = last). `#pause` after `#uncover`/`#only`/`#alternatives` no longer snaps past reserved subslides, and negative ints on flow primitives panic (use `#waypoint` + `get-last`). Use `#animate` / `swap(stretch: true)`, `#touying-render`, `#measure`, and `config-article(wrap:, linearize:, available-fields:, title-block-fn:)`.
+- **Appendix**: place `#show: appendix` after main deck (freezes `utils.last-slide-number`; pair with `freeze-slide-counter: true` if needed).
 
 ## 6. Closing Gate
 
-- Run `python scripts/touying_check.py audit <target> --strict-warnings` and `python scripts/touying_check.py compile <main.typ>` before declaring success.
-- Never report a deck as compiling cleanly or visually verified unless you actually ran `touying_check.py compile` / `typst compile --warnings promote` (for every active `export-mode` or `--bundle` if applicable) and inspected rendered output pages when layout changed.
-- If `typst` CLI is missing (`status: "skipped"`, `missing_evidence: true`) or rendering/visual inspection could not run, state the exact check that was skipped as `missing evidence` rather than guessing pass status.
+- Run `python scripts/touying_check.py audit <target> --strict-warnings` and `compile <main.typ>` before reporting success.
+- Never claim clean compile or visual readiness without real `touying_check.py compile` (every active `export-mode` / `--bundle`) and page inspection; report unexecuted checks or missing `typst` (`status: "skipped"`) as `missing evidence`.
