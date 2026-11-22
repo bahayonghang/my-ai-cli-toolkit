@@ -130,6 +130,17 @@
         "Parameterizes palette and typography in globals.typ instead of hardcoding one fixed color scheme across all decks.",
         "Proposes 3 restrained direction prototypes varying across narrative grammar axes on real content before full-deck authoring."
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "写完一个支持 presentation/handout/article 三模式导出的 Touying 0.8.0 幻灯片后，怎么用脚本做静态审计、环境自检和多模式编译验证？如果当前机器没装 typst CLI 该怎么汇报？",
+      "expected_output": "Opens the closest graded example tier in examples/README.md (04-multi-mode-article.typ), runs scripts/touying_check.py doctor, audit --strict-warnings, and compile --modes presentation,handout,article, and reports skipped compile status as missing evidence rather than passing when typst is absent.",
+      "files": [],
+      "assertions": [
+        "The response directs checking examples/README.md to open the closest graded 0.8.0 tier before authoring.",
+        "It runs scripts/touying_check.py doctor, audit (checking 0.8.0 deprecations and layout monotony), and compile --modes presentation,handout,article.",
+        "When Typst >= 0.15.0 is unavailable, it treats status 'skipped' (missing_evidence: true) honestly as missing evidence instead of claiming pass."
+      ]
     }
   ]
 }
