@@ -1,0 +1,67 @@
+{
+  "skill_name": "in-your-own-words",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/in-your-own-words 最近老有用户反馈登录态动不动掉线，你帮我看下是不是 token 刷新那里竞态了，顺便把重连稳一点。",
+      "expected_output": "Restates in plain paraphrased Chinese (not echoing verbatim): the Goal (keeping user sessions stable across short network glitches or token expiry), the underlying Problem (concurrent refresh race invalidating active tokens and brittle reconnect handling), an observable Success Check (single-flight refresh + passing reconnect/login tests), and up to 3 high-leverage assumptions/forks, closing with one drift-check question and hard-stopping without editing any code.",
+      "files": [],
+      "assertions": [
+        "Paraphrases the brief in its own words instead of repeating the user's sentences verbatim.",
+        "Explicitly separates Goal, underlying Problem, observable Success Check, and concise Assumptions/Open Forks (<= 3).",
+        "Ends with one drift-check confirmation line and stops without modifying files, generating patches, or starting implementation."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Before writing any code, restate in your own words what you think my goals are and what problem we're trying to solve for scripts/check_skill_frontmatter.py.",
+      "expected_output": "Performs minimal read-only inspection of scripts/check_skill_frontmatter.py if helpful to ground facts without asking the user about file contents, then delivers a concise English playback (Goal, Problem, Success Check, <= 3 Assumptions/Open Forks), asks for drift correction, and hard-stops without editing files.",
+      "files": [],
+      "assertions": [
+        "Inspects referenced repository paths read-only instead of asking the user factual questions about the file.",
+        "Responds in English matching the prompt with Goal, Problem, Success Check, and Assumptions/Open Forks.",
+        "Hard-stops for confirmation without writing code or running mutating commands."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/in-your-own-words 帮我把这个 API 的鉴权字段重构掉——旧字段立刻删掉别留包袱，同时必须 100% 向后兼容所有老版本客户端，先做可逆的小改就行。",
+      "expected_output": "Explicitly surfaces the internal contradiction (dropping legacy auth fields immediately vs. maintaining 100% backward compatibility with old clients) as an open fork instead of smoothing it over, and hard-stops without applying even 'reversible' edits.",
+      "files": [],
+      "assertions": [
+        "Surfaces the contradiction between immediate field removal and 100% backward compatibility as an explicit open fork.",
+        "Does not proceed with 'reversible' edits prior to user confirmation."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我把这段产品介绍润色改写得更有说服力，去掉 AI 味。",
+      "expected_output": "Negative trigger. Prose rewriting and de-AI editing belong to write or renhua and must not activate in-your-own-words.",
+      "files": [],
+      "assertions": [
+        "Does not activate in-your-own-words for prose copywriting or de-AI polishing requests.",
+        "Routes prose rewriting tasks to write or renhua."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "用 grilling 拷问一下我这个系统设计方案，按设计树一轮一轮把所有未决分支问清楚。",
+      "expected_output": "Near-neighbor trigger. Multi-round relentless design-tree interrogation belongs to grilling or laoyeye rather than single-shot in-your-own-words playback.",
+      "files": [],
+      "assertions": [
+        "Does not activate in-your-own-words when the user asks for multi-round grilling or design-tree interrogation.",
+        "Routes design-tree interviewing to grilling or laoyeye."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "把刚才聊完的需求写成完整 Spec 并拆成 GitHub Issues 票据。",
+      "expected_output": "Near-neighbor trigger. Authoring full specifications and breaking them into trackable tickets belong to /to-spec and /to-tickets rather than in-your-own-words.",
+      "files": [],
+      "assertions": [
+        "Does not activate in-your-own-words for full spec authoring or ticket decomposition.",
+        "Routes spec and ticket creation to /to-spec and /to-tickets."
+      ]
+    }
+  ]
+}

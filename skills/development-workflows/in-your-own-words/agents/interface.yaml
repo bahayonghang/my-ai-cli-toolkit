@@ -1,0 +1,21 @@
+interface:
+  display_name: "In Your Own Words"
+  short_description: "Restate the user's goals, underlying problem, success check, and key assumptions in your own words, then stop for confirmation before acting."
+  default_prompt: |
+    Use $in-your-own-words to perform optional minimal read-only grounding when concrete files or symbols are referenced, restate in plain paraphrased language (matching the user's language) what the user's Goal, underlying Problem, observable Success Check, and up to 3 high-leverage Assumptions or Open Forks are, close with one direct drift-check question, and hard-stop without editing files, creating patches, running mutating commands, or turning into a multi-round questionnaire.
+compatibility:
+  canonical_format: "agent-skills-v1"
+  adapter_targets:
+    - openai
+    - claude
+    - generic
+    - agent-skills-compatible
+  activation:
+    explicit_preferred: true
+    host_override_hint: "Cursor / Claude Code users desiring strict slash-only invocation may add disable-model-invocation: true in host-specific packaging."
+  permissions:
+    filesystem: "read-only"
+    network: "none"
+    shell: "none during playback (optional offline python check_playback.py audit only)"
+  degradation: "Works purely in conversation without tools when no repo files are referenced."
+  evidence: "Portable markdown and stdlib Python contract verified locally; cross-client runtime discovery remains missing evidence."

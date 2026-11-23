@@ -1,0 +1,147 @@
+{
+  "note": "in-your-own-words 0.1.0 trigger boundary. Covers explicit /in-your-own-words, natural Chinese/English goal-and-problem playback requests, while excluding grilling, /to-spec, /to-tickets, matt-implement-prompt, goal-meta-skill, prose rewriting (write/renhua), translation, summarization, and crystal-clear routine edits.",
+  "recommended_threshold": 0.49,
+  "description_required_concepts": [
+    "playback_action",
+    "goal_problem",
+    "alignment_gate"
+  ],
+  "positive_concepts": {
+    "playback_action": [
+      "in your own words",
+      "restate",
+      "play back",
+      "playback",
+      "用你自己的话",
+      "用自己的话",
+      "复述",
+      "重述",
+      "说一遍你理解",
+      "讲讲你理解"
+    ],
+    "goal_problem": [
+      "goal",
+      "goals",
+      "problem",
+      "intent",
+      "目标",
+      "问题",
+      "痛点",
+      "意图",
+      "要解决"
+    ],
+    "alignment_gate": [
+      "alignment",
+      "align",
+      "confirm",
+      "before starting",
+      "before coding",
+      "before acting",
+      "understanding",
+      "对齐",
+      "确认",
+      "理解",
+      "动手前",
+      "开工前",
+      "写代码前",
+      "开始前",
+      "再动手"
+    ],
+    "slash_name": [
+      "in your own words"
+    ]
+  },
+  "negative_patterns": [
+    "grilling",
+    "grill me",
+    "拷问",
+    "设计树",
+    "to spec",
+    "to tickets",
+    "写一份 spec",
+    "拆成 ticket",
+    "拆票",
+    "goal md",
+    "goal 模式",
+    "matt implement",
+    "润色",
+    "去 ai 味",
+    "翻译成",
+    "总结一下这篇文章",
+    "直接开始改代码"
+  ],
+  "should_trigger": [
+    {
+      "text": "/in-your-own-words",
+      "family": "slash-bare"
+    },
+    {
+      "text": "动手前先用你自己的话复述一遍我的目标和要解决的问题，确认没偏再开工",
+      "family": "zh-restate-goals-problem"
+    },
+    {
+      "text": "先别写代码，用自己的话对齐一下需求理解和我们到底要解决什么问题",
+      "family": "zh-pre-coding-alignment"
+    },
+    {
+      "text": "先说一遍你理解的业务目标、核心痛点以及怎么算成功，我确认后再动手",
+      "family": "zh-confirm-before-acting"
+    },
+    {
+      "text": "/in-your-own-words before touching auth.ts, restate my goal and the problem here",
+      "family": "en-slash-grounded"
+    },
+    {
+      "text": "Restate in your own words what you think my goals are and what problem we are trying to solve",
+      "family": "en-restate-goals-problem"
+    },
+    {
+      "text": "Play back your understanding of our goal and open assumptions before coding",
+      "family": "en-playback-before-coding"
+    },
+    {
+      "text": "先用 in-your-own-words 复述一下这个重连需求的 goal 和 problem，确认理解一致再继续",
+      "family": "bilingual-mixed"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "帮我把这段产品介绍润色改写得更有说服力，去掉 AI 味",
+      "family": "prose-polishing"
+    },
+    {
+      "text": "把这封英文邮件翻译成自然流畅的简体中文",
+      "family": "translation"
+    },
+    {
+      "text": "总结一下这篇文章的三个核心结论给我看",
+      "family": "article-summary"
+    },
+    {
+      "text": "在 src/utils/date.ts 第 18 行把 UTC 偏移改对然后直接开始改代码并跑单测",
+      "family": "well-specified-routine-edit"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "用 grilling 拷问一下我这个系统架构方案，按设计树逐轮把分支问透",
+      "family": "grilling-design-tree"
+    },
+    {
+      "text": "把刚才讨论的需求用 to-spec 写成完整规格并拆成 ticket 发布到 GitHub",
+      "family": "to-spec-to-tickets"
+    },
+    {
+      "text": "把 Spec #55 和子票编译成新会话执行的 matt implement prompt",
+      "family": "matt-implement-prompt"
+    },
+    {
+      "text": "帮我把这个重构需求写成 Codex 的 GOAL.md 并用 goal 模式运行",
+      "family": "goal-meta-skill"
+    },
+    {
+      "text": "用苏格拉底追问和第一性原理帮我做一轮横纵深度研究",
+      "family": "laoyeye-research"
+    }
+  ]
+}

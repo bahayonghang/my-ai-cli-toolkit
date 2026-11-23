@@ -1,0 +1,231 @@
+{
+  "ok": true,
+  "threshold": 0.49,
+  "description_concepts": [
+    "alignment_gate",
+    "goal_problem",
+    "playback_action",
+    "slash_name"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 17,
+    "passed": 17,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "/in-your-own-words",
+        "family": "slash-bare",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.5,
+        "matched_concepts": [
+          "playback_action",
+          "slash_name"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "动手前先用你自己的话复述一遍我的目标和要解决的问题，确认没偏再开工",
+        "family": "zh-restate-goals-problem",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "alignment_gate",
+          "goal_problem",
+          "playback_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "先别写代码，用自己的话对齐一下需求理解和我们到底要解决什么问题",
+        "family": "zh-pre-coding-alignment",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "alignment_gate",
+          "goal_problem",
+          "playback_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "先说一遍你理解的业务目标、核心痛点以及怎么算成功，我确认后再动手",
+        "family": "zh-confirm-before-acting",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "alignment_gate",
+          "goal_problem",
+          "playback_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "/in-your-own-words before touching auth.ts, restate my goal and the problem here",
+        "family": "en-slash-grounded",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "goal_problem",
+          "playback_action",
+          "slash_name"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Restate in your own words what you think my goals are and what problem we are trying to solve",
+        "family": "en-restate-goals-problem",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "goal_problem",
+          "playback_action",
+          "slash_name"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Play back your understanding of our goal and open assumptions before coding",
+        "family": "en-playback-before-coding",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.75,
+        "matched_concepts": [
+          "alignment_gate",
+          "goal_problem",
+          "playback_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "先用 in-your-own-words 复述一下这个重连需求的 goal 和 problem，确认理解一致再继续",
+        "family": "bilingual-mixed",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "alignment_gate",
+          "goal_problem",
+          "playback_action",
+          "slash_name"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "帮我把这段产品介绍润色改写得更有说服力，去掉 AI 味",
+        "family": "prose-polishing",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "润色"
+      },
+      {
+        "prompt": "把这封英文邮件翻译成自然流畅的简体中文",
+        "family": "translation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "翻译成"
+      },
+      {
+        "prompt": "总结一下这篇文章的三个核心结论给我看",
+        "family": "article-summary",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "总结一下这篇文章"
+      },
+      {
+        "prompt": "在 src/utils/date.ts 第 18 行把 UTC 偏移改对然后直接开始改代码并跑单测",
+        "family": "well-specified-routine-edit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "直接开始改代码"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "用 grilling 拷问一下我这个系统架构方案，按设计树逐轮把分支问透",
+        "family": "grilling-design-tree",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "grilling"
+      },
+      {
+        "prompt": "把刚才讨论的需求用 to-spec 写成完整规格并拆成 ticket 发布到 GitHub",
+        "family": "to-spec-to-tickets",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "to spec"
+      },
+      {
+        "prompt": "把 Spec #55 和子票编译成新会话执行的 matt implement prompt",
+        "family": "matt-implement-prompt",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "matt implement"
+      },
+      {
+        "prompt": "帮我把这个重构需求写成 Codex 的 GOAL.md 并用 goal 模式运行",
+        "family": "goal-meta-skill",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.25,
+        "matched_concepts": [
+          "goal_problem"
+        ],
+        "negative_pattern": "goal md"
+      },
+      {
+        "prompt": "用苏格拉底追问和第一性原理帮我做一轮横纵深度研究",
+        "family": "laoyeye-research",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

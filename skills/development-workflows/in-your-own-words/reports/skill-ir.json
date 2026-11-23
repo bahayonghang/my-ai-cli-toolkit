@@ -1,0 +1,113 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-11-22",
+  "package": {
+    "name": "in-your-own-words",
+    "version": "0.1.0",
+    "owner": "bahayonghang",
+    "maturity_tier": "production",
+    "lifecycle_stage": "production",
+    "upstream_inspiration": "cursor/plugins@in-your-own-words (pstack); Yeachan-Heo/oh-my-claudecode@in-your-own-words; affaan-m/ECC@intent-driven-development; mattpocock/skills@grill-me",
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Restate in your own words what you think the user's goals are, what underlying problem they are trying to solve, what observable success looks like, and any high-leverage assumptions or open forks, then stop for confirmation before editing files or acting. Use for /in-your-own-words or when the user asks to restate or play back goals, problem, and understanding before starting or coding (用你自己的话复述目标和要解决的问题、动手前先对齐需求理解、先确认理解再开工). Excludes multi-round design-tree interrogation (grilling, laoyeye), authoring full specs or tickets (/to-spec, /to-tickets), compiling execution prompts (matt-implement-prompt) or /goal directives (goal-meta-skill), paraphrasing or rewriting prose (write, renhua), translating or summarizing documents, and well-specified routine tasks unless explicitly invoked.\n",
+    "job_to_be_done": "Restate the user's goals, underlying problem, observable success check, and up to 3 high-leverage assumptions or open forks in plain paraphrased words, then hard-stop for confirmation before editing files or acting.",
+    "target_users": [
+      "Engineers aligning with an AI coding agent on ambiguous or high-stakes tasks",
+      "Teams enforcing a cheap pre-execution understanding check before code generation"
+    ],
+    "inputs": [
+      "User brief, feature request, bug symptom, or /in-your-own-words invocation",
+      "Optional referenced repository files, error logs, or specs inspected read-only"
+    ],
+    "outputs": [
+      "Concise four-part playback (Goal, Problem, Success Check, Assumptions & Open Forks) plus a single drift-check stop"
+    ],
+    "exclusions": [
+      "Multi-round design-tree interrogation (grilling, laoyeye)",
+      "Authoring full specs or tickets (/to-spec, /to-tickets)",
+      "Compiling fresh-session execution prompts (matt-implement-prompt) or /goal directives (goal-meta-skill)",
+      "Prose polishing, copywriting, translation, or article summarization (write, renhua)",
+      "Well-specified routine edits unless explicitly invoked"
+    ],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "/in-your-own-words",
+      "动手前先用你自己的话复述一遍我的目标和要解决的问题，确认没偏再开工",
+      "先别写代码，用自己的话对齐一下需求理解和我们到底要解决什么问题",
+      "先说一遍你理解的业务目标、核心痛点以及怎么算成功，我确认后再动手",
+      "/in-your-own-words before touching auth.ts, restate my goal and the problem here",
+      "Restate in your own words what you think my goals are and what problem we are trying to solve",
+      "Play back your understanding of our goal and open assumptions before coding",
+      "先用 in-your-own-words 复述一下这个重连需求的 goal 和 problem，确认理解一致再继续"
+    ],
+    "should_not_trigger": [
+      "帮我把这段产品介绍润色改写得更有说服力，去掉 AI 味",
+      "把这封英文邮件翻译成自然流畅的简体中文",
+      "总结一下这篇文章的三个核心结论给我看",
+      "在 src/utils/date.ts 第 18 行把 UTC 偏移改对然后直接开始改代码并跑单测"
+    ],
+    "near_neighbor": [
+      "用 grilling 拷问一下我这个系统架构方案，按设计树逐轮把分支问透",
+      "把刚才讨论的需求用 to-spec 写成完整规格并拆成 ticket 发布到 GitHub",
+      "把 Spec #55 和子票编译成新会话执行的 matt implement prompt",
+      "帮我把这个重构需求写成 Codex 的 GOAL.md 并用 goal 模式运行",
+      "用苏格拉底追问和第一性原理帮我做一轮横纵深度研究"
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\playback-contract.md"
+    ],
+    "scripts": [
+      "scripts\\check_playback.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\skill-ir.json",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills-v1",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "agent-skills-compatible"
+    ],
+    "activation": {
+      "explicit_preferred": true,
+      "host_override_hint": "Cursor / Claude Code users desiring strict slash-only invocation may add disable-model-invocation: true in host-specific packaging."
+    },
+    "execution": {},
+    "trust": {},
+    "permissions": {
+      "filesystem": "read-only",
+      "network": "none",
+      "shell": "none during playback (optional offline python check_playback.py audit only)"
+    },
+    "degradation": "Works purely in conversation without tools when no repo files are referenced."
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}
