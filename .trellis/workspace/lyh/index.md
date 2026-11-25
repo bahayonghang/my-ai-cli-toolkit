@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 81
-- **Last Active**: 2026-11-19
+- **Total Sessions**: 82
+- **Last Active**: 2026-11-24
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~487 | Active |
+| `journal-2.md` | ~510 | Active |
 | `journal-1.md` | ~1999 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 82 | 2026-11-24 | design-atlas 0.8.0 按页面任务判定与渲染对照 | `ed99d785da44b9fd3af67fa33439497f91bfe63e` | `codex/design-atlas-68` |
 | 81 | 2026-11-19 | design-atlas 0.7.0 与 DevSweep 双仓合并、八张工单关闭 | `a98d1791` | `dev` |
 | 80 | 2026-11-19 | DevSweep Clean 并排图签收，关闭 #6 | - | `dev` |
 | 79 | 2026-11-19 | DevSweep #6 完整门禁复验通过 | - | `dev` |

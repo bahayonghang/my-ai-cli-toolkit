@@ -1,0 +1,12 @@
+The proof desk already meets the current DESIGN.md at both sizes, so I made no project changes.
+
+| Viewport | Initial Plate A | Plate B after Tab → Right Arrow |
+|---|---|---|
+| 1440×900 | [Desktop capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-ihb5iiup/1440-A.png) | [Desktop keyboard capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-ihb5iiup/1440-B.png) |
+| 390×844 | [Narrow capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-ihb5iiup/390-A.png) | [Narrow keyboard capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-ihb5iiup/390-B.png) |
+
+- **Ink order.** Passes 01 and 03 use marigold squares. Pass 02 uses an iris circle. The key matches all three by both color and shape.
+- **Plate selection.** Keyboard selection moved the checked radio and marigold fill to Plate B, showed a visible focus ring, and changed the note to “Iris · Mix before the second pass.”
+- **Revision notice.** The complete warning stays inside the proof panel, with 12.35:1 text contrast. It fits on one line at desktop and wraps to two at 390px. All four states fit without scrolling.
+
+The design-atlas check reported zero failures, warnings, or waivers. Independent visual review found no issue requiring an edit.

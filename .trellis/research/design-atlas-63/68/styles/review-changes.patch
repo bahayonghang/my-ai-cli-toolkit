@@ -1,0 +1,58 @@
+--- a/scandinavian/index.html
++++ b/scandinavian/index.html
+@@ -37,0 +38,4 @@
++#appearance { display: inline-flex; align-items: center; gap: 8px; }
++.tick { width: 14px; height: 14px; display: inline-grid; place-items: center; border: 1px solid currentColor; border-radius: 2px; }
++button[aria-pressed="true"] .tick::after { content: ""; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
++button[aria-pressed="true"]:hover, label:has(:checked):hover { background: var(--secondary); color: var(--canvas); }
+@@ -43,2 +47,2 @@
+-h1 { font-size: clamp(40px, 5.2vw, 72px); line-height: 1.03; letter-spacing: -.055em; font-weight: 500; }
+-.heading p { color: var(--secondary); font-size: 16px; text-wrap: pretty; line-height: 1.52; max-width: 32ch; margin-top: 18px; }
++h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.03; letter-spacing: -.055em; font-weight: 500; }
++.heading p { color: var(--secondary); font-size: 1rem; text-wrap: pretty; line-height: 1.5; max-width: 48ch; margin-top: 18px; }
+@@ -50 +54 @@
+-figcaption { margin-top: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; color: var(--secondary); font-size: 14px; }
++figcaption { margin-top: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; color: var(--secondary); font-size: 0.875rem; line-height: 1.45; }
+@@ -75 +79,2 @@
+-  .symbol { background: CanvasText; }
++  .symbol { background: CanvasText; forced-color-adjust: none; }
++  .paper { forced-color-adjust: none; }
+@@ -86 +91 @@
+-  <button type="button" id="appearance" aria-pressed="false">Dark paper</button>
++  <button type="button" id="appearance" aria-pressed="false"><span class="tick" aria-hidden="true"></span>Dark paper</button>
+--- a/scandinavian/DESIGN.md
++++ b/scandinavian/DESIGN.md
+@@ -102,0 +103,3 @@
++## Print record
++
++The working sheet opens on light paper with both plates visible. The Dark paper control changes the surrounding interface. The print stays on its original cream substrate in each appearance. Keep the source field names Kelp, Oxide and Register. The supplied Register value is “1,000 × 740 pixels per plate”.
+--- a/neobrutalism/index.html
++++ b/neobrutalism/index.html
+@@ -11 +11 @@
+-  --paper:#fff4db; --canvas:var(--surface); --text:var(--ink); --rule:3px solid var(--ink);
++  --paper:#f3e8cc; --canvas:var(--surface); --text:var(--ink); --rule:3px solid var(--ink);
+@@ -13 +13 @@
+-  --display:clamp(3.8rem,7.2vw,7rem); --shadow:5px 5px 0 var(--ink); --radius:4px;
++  --display:clamp(3.8rem,7.2vw,7rem); --shadow:5px 5px 0 var(--text); --radius:4px;
+@@ -19 +19 @@
+-body {margin:0; background:var(--canvas); color:var(--text); font:17px/1.48 var(--sans)}
++body {margin:0; background:var(--canvas); color:var(--text); font:0.9375rem/1.48 var(--sans)}
+@@ -49 +49 @@
+-figure {margin:0; align-self:start; grid-column:2; grid-row:1/3; border:var(--rule); box-shadow:var(--shadow); color:var(--ink)}
++figure {margin:0; align-self:start; grid-column:2; grid-row:1/3; border:3px solid var(--text); box-shadow:var(--shadow); color:var(--ink)}
+@@ -72,0 +73,5 @@
++@media(forced-colors:active) {
++  input:checked + span::before {border:4px double Highlight}
++  .switch::after {forced-color-adjust:none; background:ButtonText}
++  .sheet {forced-color-adjust:none}
++}
+--- a/neobrutalism/DESIGN.md
++++ b/neobrutalism/DESIGN.md
+@@ -11 +11 @@
+-  paper: "#FFF4DB"
++  paper: "#F3E8CC"
+@@ -92,0 +93,4 @@
++
++## Print record
++
++The print stays on its original cream substrate in each appearance. Keep the source field names Kelp, Oxide and Register. The supplied Register value is “1,000 × 740 pixels per plate”.

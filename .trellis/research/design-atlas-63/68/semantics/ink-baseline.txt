@@ -1,0 +1,18 @@
+**Fix the Plate B key and the revision notice before the next print run.** A printer can follow the pass numbers and choose either plate with the keyboard. The key gives conflicting ink information, and the production warning is easy to miss at both sizes.
+
+| Task | Judgment | Visible evidence at 1440×900 and 390×844 |
+|---|---|---|
+| Read the ink order | **Partial pass** | Passes 01 and 03 show marigold squares. Pass 02 shows a circle on iris. The key preserves the shapes but shows a **marigold circle** beside “B · Iris.” A printer following shape or text gets A → B → A. A printer matching ink by colour gets conflicting guidance. |
+| Choose a plate | **Pass** | On fresh load, Plate A was checked and its note named the first and third passes. `Tab` focused A. `→` checked B, moved the visible focus outline and marigold selection fill to B, and displayed “Iris · Mix before the second pass.” Both views stayed at the top. |
+| See the revision notice | **Fails text contrast** | The complete warning sits beneath the key, on one line at desktop and two at narrow width. At 32% opacity it measures about **2.62:1** against the plum panel, below the **4.5:1** target for its 16px text. |
+
+**Two small fixes would preserve the Nightjar Press look.** Remove the Plate B legend override so its circle inherits the existing iris token. Remove the notice opacity so the warning uses the existing paper-coloured text at full strength. Both changes are in [edition.css](/C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/semantics/ink/baseline/project/edition.css:2).
+
+**Keep** the plum surface, marigold press signature, Georgia job title, numbered shape sequence and notice placement. Keep the marigold fill on whichever radio is checked, including Plate B. The checked dot, label and mixing note identify the plate, exactly as [DESIGN.md](/C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/semantics/ink/baseline/project/DESIGN.md) specifies.
+
+The design-atlas mechanical scan covered the HTML and edition stylesheet and returned zero Floor, House or Reflex findings, warnings or waivers. The two issues above came from checking the rendered page against DESIGN.md. No project files changed.
+
+| Headless Edge captures | Initial state | After `Tab` then `→` |
+|---|---|---|
+| 1440×900 | [Plate A](/C:/Users/lyh/AppData/Local/Temp/nightjar-proof-hosvoq5n/1440-a.png) | [Plate B with focus](/C:/Users/lyh/AppData/Local/Temp/nightjar-proof-hosvoq5n/1440-b.png) |
+| 390×844 | [Plate A](/C:/Users/lyh/AppData/Local/Temp/nightjar-proof-hosvoq5n/390-a.png) | [Plate B with focus](/C:/Users/lyh/AppData/Local/Temp/nightjar-proof-hosvoq5n/390-b.png) |

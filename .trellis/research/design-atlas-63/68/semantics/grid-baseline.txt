@@ -1,0 +1,26 @@
+**Keep the repeated equipment rows and the desktop price alignment. Change the narrow price alignment and the way the page reports pick state.** At 1440px, staff can scan down the depot and rate columns, then act on the same row. At 390px, all the information still fits, but each price starts wherever its depot name ends. After an Inspect or an undo, the status line also loses the current pick-list summary.
+
+### What was visible
+
+I checked `comparison.html` in headless Edge with an empty pick list at both sizes. I scrolled `#records` to exactly 360 CSS pixels, then returned it to zero before testing the controls. The document itself stayed at scroll position zero.
+
+| Viewport | Top of `#records` | `#records` at 360px | Top recheck |
+|---|---|---|---|
+| 1440×900 | FE-01 through FE-13 readable, 157 words | FE-07 clipped at the top, FE-08 through FE-19 complete, FE-20 partly visible at the bottom. 153 fully visible words | FE-01 through FE-13, 157 words |
+| 390×844 | FE-01 through FE-07 readable, 92 words | FE-04’s name and Inspect button have scrolled away. FE-05 through FE-10 are complete, with part of FE-11 below. 85 fully visible words | FE-01 through FE-07, 92 words |
+
+Counts include the heading, introduction, status, record fields and button labels. Counting words with **any** visible fragment at the pane edges raises the two scrolled counts to 167 and 99 respectively.
+
+### Numbered design-atlas judgments
+
+| Rule | Judgment on this screen |
+|---|---|
+| **3 · Repeated tiles** | **Keep.** Each `.record` groups one instrument with its ID, depot, rate and controls. The common near-white surface and hairlines let staff follow a row across. Varying row widths or turning instruments into separate feature cards would break the comparison columns. |
+| **8, 9 · Sequence and separators** | **Keep.** The title introduces the directory, the live status sits above it, and the inventory follows immediately. Space separates the header from the work area. Inside `#records`, a consistent rule marks the end of each instrument. That repetition helps staff associate the correct price and Pick button. |
+| **58 · Visible word density** | **Over the guideline.** Both desktop samples exceed the skill’s roughly 80-word benchmark for a 900px screen. Most words are working data. For example, the first row spends 11 words identifying the instrument, giving its terms and offering two actions. **Change `header p` first** if reducing copy; deleting units, shrinking type or hiding records to meet the count would make comparison harder. |
+| **DA1, 54 · Explanatory copy and labels** | The introduction mostly describes what the visible rates and Pick buttons already communicate. “For a field visit” adds context but no hiring constraint. Removing the sentence would recover two lines at 390px. **Keep the status line.** “Pick list empty” carries a fact staff cannot infer from the seven visible records alone. |
+| **63, 66, 69 · Metadata and repetition** | **Keep** the plain `.specs` fields, `FE-` identifiers, “per day” units and row-local action labels. An ID identifies a record; “per day” qualifies that record’s price. Two instruments can share a depot or rate. Repeating those values at the point of choice is justified. Inspect repeats one record’s details in response to an explicit action. |
+| **DA2, DA3 · Readability and hierarchy** | **Keep** the Georgia title, bold instrument names, Segoe UI controls and visible hire terms specified in `DESIGN.md`. **Change narrow `.specs` alignment.** On desktop, the rates share a right edge. On narrow rows, FE-01’s `$16 per day` starts farther right than FE-03’s `$8 per day` because “North depot” is wider than “East depot.” Give `.rate` a consistent right edge within the text area and retain the stacked actions. The relevant breakpoint is `comparison.html:23–27`. |
+| **DA5 · Reversible actions** | **Keep the one-click toggle. Change the feedback.** At both widths, inspecting FE-01 displayed “FE-01: Pocket weather meter, North depot, $16 per day” and selected nothing. Pick selected only FE-01 and reported “FE-01 added to pick list.” A second click cleared it and reported “FE-01 removed from pick list.” The toggle worked, but the single `output` now describes the last event. Keep a current pick count or empty state visible alongside the latest inspection or action message (`comparison.html:37`, `directory.js:32–39`). |
+
+The supplied checker reported **0 Floor failures, 0 House failures, 0 Reflex findings, 0 warnings and 0 waivers** for `comparison.html` with the existing `DESIGN.md`. No waiver was rejected. Rule 58 is a separate rendered-content judgment. This was a read-only audit; no project files changed.

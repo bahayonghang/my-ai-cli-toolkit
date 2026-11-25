@@ -1,0 +1,320 @@
+{
+  "browser": "158.0.4370.33",
+  "desktop": {
+    "viewport": {
+      "innerWidth": 1440,
+      "innerHeight": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 908,
+      "scrollY": 0
+    },
+    "initial": {
+      "title": {
+        "x": 58,
+        "y": 186,
+        "width": 346,
+        "height": 189,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "103.68px",
+        "weight": "900",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "rendered_fonts": [
+          {
+            "familyName": "Arial Black",
+            "postScriptName": "Arial-Black",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ]
+      },
+      "description": {
+        "x": 58,
+        "y": 399,
+        "width": 385,
+        "height": 88,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "21px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "art": {
+        "x": 609,
+        "y": 201,
+        "width": 731,
+        "height": 541,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "15px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "live_caption": {
+        "x": 571,
+        "y": 781,
+        "width": 809,
+        "height": 52,
+        "font": "\"JetBrains Mono\", Consolas, monospace",
+        "fontSize": "15px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgb(251, 251, 249)",
+        "border": "3px"
+      },
+      "notes": {
+        "x": 58,
+        "y": 664,
+        "width": 438,
+        "height": 30,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "21px",
+        "weight": "800",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "dark_paper": {
+        "x": 1238,
+        "y": 20,
+        "width": 144,
+        "height": 44,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "15px",
+        "weight": "700",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgb(251, 251, 249)",
+        "border": "2px"
+      },
+      "oxide_target": {
+        "x": 288,
+        "y": 561,
+        "width": 94,
+        "height": 44,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "15px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      }
+    },
+    "states": {
+      "Both plates": {
+        "kelp_pixels": 56992,
+        "oxide_pixels": 21377,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "f9b7b84b37f919e2b037cce6aeecef65a9d1187a02069e5f4ee4ab7ac62ab257"
+      },
+      "Kelp": {
+        "kelp_pixels": 57108,
+        "oxide_pixels": 0,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "fd4339bd132344fcdc08ab375e650e0d2f443280d19a2f4f7fc4400bbcd0769c"
+      },
+      "Oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 21377,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "1bc6eaef18eb229b937a657469f01d9e517f12f629a4deef7281eb4f092e7896"
+      },
+      "keyboard_after_right": "<input type=\"radio\" name=\"plate\" value=\"oxide\" style=\"\">",
+      "dark_oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 21377,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "1bc6eaef18eb229b937a657469f01d9e517f12f629a4deef7281eb4f092e7896"
+      }
+    },
+    "appearance_surfaces": [
+      "rgb(251, 251, 249) / rgba(0, 0, 0, 0)",
+      "rgb(28, 41, 60) / rgba(0, 0, 0, 0)"
+    ],
+    "requested_scroll_y": 160,
+    "observed_scroll_y": 8,
+    "mobile_common_scroll_y": null,
+    "browser_errors": []
+  },
+  "small_controls": {
+    "dark_button_hover": "rgb(251, 251, 249)",
+    "dark_button_rest": "rgb(251, 251, 249)",
+    "dark_figure": {
+      "border": "rgb(251, 251, 249)",
+      "shadow": "rgb(251, 251, 249) 5px 5px 0px 0px"
+    },
+    "forced_colors_pressed_distinct": true
+  },
+  "mobile": {
+    "viewport": {
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 963,
+      "scrollY": 0
+    },
+    "initial": {
+      "title": {
+        "x": 16,
+        "y": 122,
+        "width": 358,
+        "height": 55,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "60.8px",
+        "weight": "900",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "rendered_fonts": [
+          {
+            "familyName": "Arial Black",
+            "postScriptName": "Arial-Black",
+            "isCustomFont": false,
+            "glyphCount": 9
+          }
+        ]
+      },
+      "description": {
+        "x": 16,
+        "y": 189,
+        "width": 312,
+        "height": 71,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "17px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "art": {
+        "x": 41,
+        "y": 416,
+        "width": 308,
+        "height": 228,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "15px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "live_caption": {
+        "x": 19,
+        "y": 666,
+        "width": 352,
+        "height": 52,
+        "font": "\"JetBrains Mono\", Consolas, monospace",
+        "fontSize": "15px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgb(251, 251, 249)",
+        "border": "3px"
+      },
+      "notes": {
+        "x": 16,
+        "y": 764,
+        "width": 358,
+        "height": 30,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "21px",
+        "weight": "800",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "dark_paper": {
+        "x": 230,
+        "y": 12,
+        "width": 144,
+        "height": 44,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "15px",
+        "weight": "700",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgb(251, 251, 249)",
+        "border": "2px"
+      },
+      "oxide_target": {
+        "x": 238,
+        "y": 323,
+        "width": 90,
+        "height": 44,
+        "font": "Inter, Arial, sans-serif",
+        "fontSize": "15px",
+        "weight": "400",
+        "colour": "rgb(28, 41, 60)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      }
+    },
+    "states": {
+      "Both plates": {
+        "kelp_pixels": 3055,
+        "oxide_pixels": 1765,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "c28972ca140cd83713f4428fb3d439cefd0f5973b92344f5adc7f0110e6db16e"
+      },
+      "Kelp": {
+        "kelp_pixels": 3059,
+        "oxide_pixels": 0,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "6f9494daaba8577a442177472c2b5a5f237332a6c8f67c75a3554a4de16531d2"
+      },
+      "Oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 1765,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "e119beb605a06b3dd34fcc5afac4f18f62683709da8e005db21648b5c11d4af3"
+      },
+      "keyboard_after_right": "<input type=\"radio\" name=\"plate\" value=\"oxide\" style=\"\">",
+      "dark_oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 1765,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "e119beb605a06b3dd34fcc5afac4f18f62683709da8e005db21648b5c11d4af3"
+      }
+    },
+    "appearance_surfaces": [
+      "rgb(251, 251, 249) / rgba(0, 0, 0, 0)",
+      "rgb(28, 41, 60) / rgba(0, 0, 0, 0)"
+    ],
+    "requested_scroll_y": 160,
+    "observed_scroll_y": 119,
+    "mobile_common_scroll_y": 8,
+    "browser_errors": []
+  }
+}

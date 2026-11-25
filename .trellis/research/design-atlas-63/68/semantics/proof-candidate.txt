@@ -1,0 +1,12 @@
+**No edits were needed.** The Nightjar Press proof desk already matches DESIGN.md for all three requested checks.
+
+- **Ink order.** Passes 01 and 03 pair a marigold field with a square. Pass 02 pairs an iris field with a circle. The key repeats both cues at both widths.
+- **Plate selection.** Starting at the top with Plate A selected, I pressed `Tab`, then `→`. Plate B gained the checked radio dot, marigold selection fill and visible focus outline. The mixing note changed to “Iris · Mix before the second pass.” Selected-label contrast measured **11.75:1**.
+- **Revision notice.** The full warning stays directly below the key, on one line at desktop and two at narrow width. Its text measured **12.35:1** against the plum panel. The notice and controls fit on screen throughout the keyboard check.
+
+| Viewport | Initial state | After `Tab`, `→` |
+|---|---|---|
+| 1440 × 900 | [Plate A capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-nbvowqbm/1440-plate-a.png) | [Plate B capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-nbvowqbm/1440-plate-b.png) |
+| 390 × 844 | [Plate A capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-nbvowqbm/390-plate-a.png) | [Plate B capture](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-nbvowqbm/390-plate-b.png) |
+
+Both checks ran in headless Edge. The design-atlas checker reported zero findings or waivers, and the independent visual review returned **ship**.

@@ -1,0 +1,28 @@
+--- a/notebook.css
++++ b/notebook.css
+@@ -34,0 +35,2 @@
++#seats { margin-block-start: .5rem; }
++#seat-error { margin-inline-start: .5rem; color: var(--accent); }
+--- a/workshop.html
++++ b/workshop.html
+@@ -16 +16 @@
+-      <p>Saturday, 10:00–12:00 · $18 per seat</p>
++      <p>Saturday, 10:00–12:00 · $18 per seat<br>Calendar date unavailable.</p>
+@@ -18 +18 @@
+-    <button id="reserve" type="button" aria-controls="booking" aria-expanded="false">Reserve a seat</button>
++    <button id="reserve" type="button" aria-controls="booking" aria-expanded="false">Preview seat reservation</button>
+@@ -22 +22,2 @@
+-      <input id="seats" type="number" min="1" max="4" value="1">
++      <input id="seats" type="number" min="1" max="4" value="1" required aria-describedby="seat-error">
++      <span id="seat-error" aria-live="polite"></span>
+@@ -27,0 +29,7 @@
++    const seats = document.querySelector('#seats');
++    const seatError = document.querySelector('#seat-error');
++    seats.addEventListener('input', () => {
++      const valid = seats.validity.valid;
++      seats.setAttribute('aria-invalid', String(!valid));
++      seatError.textContent = valid ? '' : 'Choose 1–4 seats';
++    });
+@@ -31 +39 @@
+-      document.querySelector('#seats').focus();
++      seats.focus();

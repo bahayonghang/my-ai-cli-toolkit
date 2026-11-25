@@ -1,0 +1,68 @@
+[
+  {
+    "mode": "light",
+    "plate": "Both plates",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "A cut-paper coast in two inks.",
+      "fg": "rgb(72, 89, 82)",
+      "bg": "rgb(245, 242, 233)",
+      "ratio": 6.64
+    }
+  },
+  {
+    "mode": "light",
+    "plate": "Kelp",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "A cut-paper coast in two inks.",
+      "fg": "rgb(72, 89, 82)",
+      "bg": "rgb(245, 242, 233)",
+      "ratio": 6.64
+    }
+  },
+  {
+    "mode": "light",
+    "plate": "Oxide",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "A cut-paper coast in two inks.",
+      "fg": "rgb(72, 89, 82)",
+      "bg": "rgb(245, 242, 233)",
+      "ratio": 6.64
+    }
+  },
+  {
+    "mode": "dark",
+    "plate": "Both plates",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "A cut-paper coast in two inks.",
+      "fg": "rgb(192, 198, 185)",
+      "bg": "rgb(24, 37, 33)",
+      "ratio": 9.07
+    }
+  },
+  {
+    "mode": "dark",
+    "plate": "Kelp",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "A cut-paper coast in two inks.",
+      "fg": "rgb(192, 198, 185)",
+      "bg": "rgb(24, 37, 33)",
+      "ratio": 9.07
+    }
+  },
+  {
+    "mode": "dark",
+    "plate": "Oxide",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "A cut-paper coast in two inks.",
+      "fg": "rgb(192, 198, 185)",
+      "bg": "rgb(24, 37, 33)",
+      "ratio": 9.07
+    }
+  }
+]

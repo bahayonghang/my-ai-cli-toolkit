@@ -1,0 +1,16 @@
+**Plate selection works at both sizes. Before the print run, correct the Plate B key and increase the revision notice’s contrast.** The pass order is readable from the numbers and shapes, but the key gives a printer conflicting colour information.
+
+| Task | Visible evidence at 1440×900 and 390×844 | Judgment |
+|---|---|---|
+| Read the ink order | Passes **01** and **03** are marigold with squares. Pass **02** is iris with a circle. The key correctly labels the circle **B · Iris**, but paints it marigold at both widths. | The sequence is **A → B → A**. Remove the Plate B colour override so its key inherits iris. Keep the numbers, shapes and ink names. [edition.css, line 2](./edition.css#L2) |
+| Choose a plate | Both views opened at the top with **Plate A** checked and “Marigold · Mix before the first and third passes.” Pressing `Tab`, then `→`, moved the checked dot and marigold fill to **Plate B**, drew a cream focus outline around B and changed the note to “Iris · Mix before the second pass.” | **Pass.** As specified in `DESIGN.md`, marigold on a control means *selected*. The label and radio dot identify the plate, and the outline shows keyboard focus. Keep all three cues. |
+| See the revision notice | “Revision proof only. Do not match production ink to this sheet.” sits below the key without scrolling. It occupies one line on desktop and two on narrow. At 32% opacity, its contrast against the panel is **2.62:1**, below the **4.5:1** target for this text. | A printer can overlook the instruction that determines whether this sheet can be used for ink matching. Keep its wording and position. Removing the opacity override restores the existing cream text at **12.35:1**. [edition.css, line 3](./edition.css#L3) |
+
+**Keep the Nightjar Press look.** The marigold signature identifies the press, the Georgia title identifies *Balcony at dusk*, and the plum surface ties the desk together. The full-width **14 px marigold stripe** above “Proof pass order” is the accent to quiet. It stays identical for both plates and encodes no pass, ink or selection. A thin muted rule would preserve the grouping while giving the actual ink swatches more prominence. [edition.css, line 4](./edition.css#L4)
+
+| Captured evidence | Initial state | After keyboard selection |
+|---|---|---|
+| Desktop · 1440×900 | [Plate A](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-lxhq9jg9/1440-A.png) | [Plate B](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-lxhq9jg9/1440-B.png) |
+| Narrow · 390×844 | [Plate A](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-lxhq9jg9/390-A.png) | [Plate B](C:/Users/lyh/AppData/Local/Temp/nightjar-proof-lxhq9jg9/390-B.png) |
+
+The design-atlas mechanical scan of `index.html` reported **0 failures, 0 reflex findings and 0 waivers**. The rendered checks exposed both issues in the linked stylesheet. No project files were changed.

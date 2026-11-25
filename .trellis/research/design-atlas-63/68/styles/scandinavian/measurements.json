@@ -1,0 +1,320 @@
+{
+  "browser": "158.0.4370.33",
+  "desktop": {
+    "viewport": {
+      "innerWidth": 1440,
+      "innerHeight": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollY": 0
+    },
+    "initial": {
+      "title": {
+        "x": 902,
+        "y": 174,
+        "width": 421,
+        "height": 74,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "72px",
+        "weight": "500",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "rendered_fonts": [
+          {
+            "familyName": "Segoe UI Semibold",
+            "postScriptName": "SegoeUI-Semibold",
+            "isCustomFont": false,
+            "glyphCount": 9
+          }
+        ]
+      },
+      "description": {
+        "x": 902,
+        "y": 266,
+        "width": 414,
+        "height": 48,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "16px",
+        "weight": "400",
+        "colour": "rgb(72, 89, 82)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "art": {
+        "x": 160,
+        "y": 209,
+        "width": 629,
+        "height": 466,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "16px",
+        "weight": "400",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "live_caption": {
+        "x": 117,
+        "y": 728,
+        "width": 171,
+        "height": 20,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "14px",
+        "weight": "400",
+        "colour": "rgb(72, 89, 82)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "notes": {
+        "x": 902,
+        "y": 457,
+        "width": 421,
+        "height": 29,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "16px",
+        "weight": "600",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "dark_paper": {
+        "x": 1203,
+        "y": 24,
+        "width": 120,
+        "height": 44,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "14px",
+        "weight": "400",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgb(245, 242, 233)",
+        "border": "1px"
+      },
+      "oxide_target": {
+        "x": 1070,
+        "y": 385,
+        "width": 73,
+        "height": 44,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "14px",
+        "weight": "400",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "1px"
+      }
+    },
+    "states": {
+      "Both plates": {
+        "kelp_pixels": 27606,
+        "oxide_pixels": 12037,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "80bd64d3eea4c5f07b80c2214399d4358bb740d742e3262861afed481c2786f7"
+      },
+      "Kelp": {
+        "kelp_pixels": 27606,
+        "oxide_pixels": 0,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "9867c102ce53a7e702fc611156a27bd4304a5b31dcc79ffe6274e1ee597090f4"
+      },
+      "Oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 12112,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "1dec5e9e0912f31a04928364f841ffa76c7d41f493ce60479c5c3f90207814ee"
+      },
+      "keyboard_after_right": "<input type=\"radio\" name=\"plate\" value=\"oxide\" style=\"\">",
+      "dark_oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 12112,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "1dec5e9e0912f31a04928364f841ffa76c7d41f493ce60479c5c3f90207814ee"
+      }
+    },
+    "appearance_surfaces": [
+      "rgba(0, 0, 0, 0) / rgb(245, 242, 233)",
+      "rgba(0, 0, 0, 0) / rgb(24, 37, 33)"
+    ],
+    "requested_scroll_y": 160,
+    "observed_scroll_y": 0,
+    "mobile_common_scroll_y": null,
+    "browser_errors": []
+  },
+  "small_controls": {
+    "dark_button_hover": "rgb(192, 198, 185)",
+    "dark_button_rest": "rgb(239, 240, 230)",
+    "dark_figure": {
+      "border": "rgb(239, 240, 230)",
+      "shadow": "none"
+    },
+    "forced_colors_pressed_distinct": true
+  },
+  "mobile": {
+    "viewport": {
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 854,
+      "scrollY": 0
+    },
+    "initial": {
+      "title": {
+        "x": 20,
+        "y": 103,
+        "width": 350,
+        "height": 41,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "40px",
+        "weight": "500",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "rendered_fonts": [
+          {
+            "familyName": "Segoe UI Semibold",
+            "postScriptName": "SegoeUI-Semibold",
+            "isCustomFont": false,
+            "glyphCount": 9
+          }
+        ]
+      },
+      "description": {
+        "x": 20,
+        "y": 154,
+        "width": 350,
+        "height": 48,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "16px",
+        "weight": "400",
+        "colour": "rgb(72, 89, 82)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "art": {
+        "x": 36,
+        "y": 242,
+        "width": 318,
+        "height": 235,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "16px",
+        "weight": "400",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "live_caption": {
+        "x": 20,
+        "y": 504,
+        "width": 171,
+        "height": 20,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "14px",
+        "weight": "400",
+        "colour": "rgb(72, 89, 82)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "notes": {
+        "x": 20,
+        "y": 669,
+        "width": 350,
+        "height": 29,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "16px",
+        "weight": "600",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px"
+      },
+      "dark_paper": {
+        "x": 250,
+        "y": 14,
+        "width": 120,
+        "height": 44,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "14px",
+        "weight": "400",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgb(245, 242, 233)",
+        "border": "1px"
+      },
+      "oxide_target": {
+        "x": 188,
+        "y": 597,
+        "width": 73,
+        "height": 44,
+        "font": "\"Work Sans\", \"Segoe UI\", sans-serif",
+        "fontSize": "14px",
+        "weight": "400",
+        "colour": "rgb(28, 48, 45)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "1px"
+      }
+    },
+    "states": {
+      "Both plates": {
+        "kelp_pixels": 3348,
+        "oxide_pixels": 1914,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "0da9a727aa837b1890fe1a70a4930614f8875bcbf5dcccf8eb846f8d5beb8a6d"
+      },
+      "Kelp": {
+        "kelp_pixels": 3348,
+        "oxide_pixels": 0,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "f3e43813e99427a800df9c5dd55df4c6dc8a8e303aee633164ec3d8d79b475a6"
+      },
+      "Oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 1914,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "4d632d2afe1e2a0925de3fa4425f1bf07107e6a4a18bf711d47dd240a387a5e6"
+      },
+      "keyboard_after_right": "<input type=\"radio\" name=\"plate\" value=\"oxide\" style=\"\">",
+      "dark_oxide": {
+        "kelp_pixels": 0,
+        "oxide_pixels": 1914,
+        "paper": [
+          243,
+          232,
+          204
+        ],
+        "rgb_sha256": "4d632d2afe1e2a0925de3fa4425f1bf07107e6a4a18bf711d47dd240a387a5e6"
+      }
+    },
+    "appearance_surfaces": [
+      "rgba(0, 0, 0, 0) / rgb(245, 242, 233)",
+      "rgba(0, 0, 0, 0) / rgb(24, 37, 33)"
+    ],
+    "requested_scroll_y": 160,
+    "observed_scroll_y": 10,
+    "mobile_common_scroll_y": 8,
+    "browser_errors": []
+  }
+}
