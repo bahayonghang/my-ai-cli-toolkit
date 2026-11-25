@@ -1,0 +1,4 @@
+/* Inks for this edition of the proof desk. */
+.legend .plate-b { --plate: var(--iris); }
+.proof-notice { opacity: 1; }
+.order { border-block-start: 1px solid var(--rule); }

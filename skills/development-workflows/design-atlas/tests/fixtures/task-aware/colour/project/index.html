@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Check a Nightjar Press proof's ink order and mixing instructions.">
+  <title>Balcony at dusk · Nightjar Press</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --desk: #24162e;
+      --panel: #392846;
+      --paper: #fff4e7;
+      --marigold: #ffd061;
+      --iris: #c6a7ff;
+      --rule: #927a9e;
+    }
+    * { box-sizing: border-box; }
+    html, body { overflow-x: clip; }
+    body {
+      margin: 0; background: var(--desk); color: var(--paper);
+      font: 1rem/1.5 system-ui, sans-serif;
+    }
+    main { max-width: 58rem; margin: auto; padding: 2rem clamp(1rem, 4vw, 3rem); }
+    .signature { color: var(--marigold); font-weight: 700; }
+    h1 { font: normal clamp(2.5rem, 7vw, 5.5rem)/1 Georgia, serif; margin: 1rem 0 2rem; }
+    .order { background: var(--panel); padding: clamp(1rem, 4vw, 2rem); }
+    h2 { font-size: 1.25rem; margin: 0 0 1rem; }
+    .passes, .legend { display: flex; padding: 0; margin: 0; list-style: none; }
+    .passes { gap: .5rem; }
+    .passes li {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: 1.2rem 0; color: var(--desk); background: var(--plate); font-weight: 700;
+    }
+    .plate-a { --plate: var(--marigold); }
+    .plate-b { --plate: var(--iris); }
+    .marker { display: inline-block; width: .85em; height: .85em; background: var(--plate); }
+    .passes .marker { background: currentColor; }
+    .plate-b .marker { border-radius: 50%; }
+    .legend { flex-wrap: wrap; gap: .5rem 1.75rem; margin-top: .75rem; }
+    .legend li { display: flex; align-items: center; gap: .5rem; }
+    .proof-notice { margin: 1.5rem 0 0; color: var(--paper); }
+    fieldset { margin: 1.75rem 0 0; padding: 0; border: 0; }
+    legend { padding: 0; margin-bottom: .5rem; font-weight: 700; }
+    label {
+      display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
+      padding: .5rem .9rem; margin-right: .3rem; border: 1px solid var(--rule);
+    }
+    label:hover { border-color: var(--paper); }
+    label:active { border-color: var(--marigold); }
+    label:has(input:disabled) { color: var(--rule); cursor: default; }
+    input { accent-color: var(--desk); margin: 0; }
+    label:has(input:checked) { background: var(--marigold); color: var(--desk); }
+    label:has(input:focus-visible) { outline: 3px solid var(--paper); outline-offset: 3px; }
+    output { display: block; margin: .8rem 0 0; }
+  </style>
+  <link rel="stylesheet" href="edition.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="signature">Nightjar Press</div>
+      <h1>Balcony at dusk</h1>
+    </header>
+    <section class="order" aria-labelledby="order">
+      <h2 id="order">Proof pass order</h2>
+      <ol class="passes">
+        <li class="plate-a" aria-label="First pass, plate A"><span class="marker" aria-hidden="true"></span>01</li>
+        <li class="plate-b" aria-label="Second pass, plate B"><span class="marker" aria-hidden="true"></span>02</li>
+        <li class="plate-a" aria-label="Third pass, plate A"><span class="marker" aria-hidden="true"></span>03</li>
+      </ol>
+      <ul class="legend" aria-label="Plate key">
+        <li class="plate-a"><span class="marker" aria-hidden="true"></span>A · Marigold</li>
+        <li class="plate-b"><span class="marker" aria-hidden="true"></span>B · Iris</li>
+      </ul>
+      <p class="proof-notice">Revision proof only. Do not match production ink to this sheet.</p>
+    </section>
+    <fieldset>
+      <legend>Mixing notes</legend>
+      <label><input type="radio" name="plate" value="a" checked> Plate A</label>
+      <label><input type="radio" name="plate" value="b"> Plate B</label>
+    </fieldset>
+    <output aria-live="polite">Marigold · Mix before the first and third passes.</output>
+  </main>
+  <script>
+    const notes = {
+      a: 'Marigold · Mix before the first and third passes.',
+      b: 'Iris · Mix before the second pass.'
+    };
+    document.querySelector('fieldset').addEventListener('change', event => {
+      document.querySelector('output').textContent = notes[event.target.value];
+    });
+  </script>
+</body>
+</html>

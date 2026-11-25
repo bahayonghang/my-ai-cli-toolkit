@@ -41,7 +41,8 @@ Whole page (full-page screenshot and source)
    image crops, focus rings, hover and disabled states visible in the source.
 10. Did a change remove or hide information a visitor needs (a form label, an input limit, an error, a price,
    consent or legal text, a risk or irreversible-action warning, or a credit), including by moving it into a
-   hover-only tooltip?
+   hover-only tooltip? Check its prominence and contrast on the surface where it appears. For affected colours,
+   does the legend still identify the data, and can you tell which control is focused, selected or in error?
 
 Answer format (nothing before the first word)
 - First word: ship, fix, or rebuild.
