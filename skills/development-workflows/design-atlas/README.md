@@ -6,7 +6,7 @@
 
 A complete UI design skill: pick a design language from an offline catalog (automatically when the project has none), write it as the project-root `DESIGN.md`, build or restyle UI from it, and check the result against anti-AI-slop gates.
 
-目录共 202 个可见条目：84 个受真实产品启发的品牌、67 个通用风格、50 个材质主题（来自 hallmark）、1 个业务场景。
+目录共 203 个可见条目：84 个受真实产品启发的品牌、68 个通用风格、50 个材质主题（来自 hallmark）、1 个业务场景。用 `list --all` 可查看含旧 `style:riso` 的全部 204 项，其中有 69 个通用风格。
 
 ## 适用场景
 
@@ -80,6 +80,13 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 
 项目没有 `DESIGN.md`、用户也没点名条目时，skill 读取项目信号（package.json、README、已有 CSS token、依赖）和用户原话，按关键词（中英文）、流派、场景、配色兼容和依赖线索打分，同一视觉家族不会同时进入前三。默认直接取第 1 名继续实施，并在回复开头给出 Picks 块：选中理由、两个备选、怎么切换。用户要求比较时才停下来等选择。规则见 `references/routing.md`。
 
+## 北欧风格
+
+打开[离线参考页](assets/reference/scandinavian/index.html)，可以切换纸张明暗、查看套色版画和单张色版。界面保留纸本色，数据图例有色名和不同形状，图像保留原色。与 `style:minimal` 的通用留白、`style:spacious` 的宽间距、`theme:atelier` 的棉纸纹理及衬线标题相比，这个条目用同一无衬线字体和紧贴作品的记录形成层次。
+
+- 分别搜索「北欧」「斯堪的纳维亚」「Nordic」或「Scandinavian」均可找到 `style:scandinavian`。
+- 要求比较时先看候选，等你选定才写入。点名后用 `apply style:scandinavian --root .`；要求更简洁、去模板感或保留品牌时继续沿用现有外观。
+
 ## 轻盈毛玻璃的色板拨盘
 
 `style:airy-glass`（轻盈毛玻璃）的配色不是固定的浅绿。材质规则（底场上有三个色斑；纸不模糊，靠白描边、顶部内高光和一条柔影；至少两张纸直接落在底场上；只有下方有内容滚过的浮层才模糊，每屏最多 6 个；减少透明度时纸和浮层改为不透明）和 WCAG 2.2 AA 对比度门禁不变，底场两端、三个色斑和两个语义色由项目决定。每套色板有浅色和深色两组，`apply` 总是同时写出两组。参考画面在 `assets/reference/airy-glass/index.html`，带浅色和深色：它跟随系统外观，也可以在页面上手动切换。`apply` 默认按 `auto` 选择：
@@ -133,7 +140,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 | 媒体与消费科技 / Media & Consumer Tech | 16 | apple, spotify, theverge, wired |
 | 汽车 / Automotive | 7 | tesla, ferrari, bmw, renault |
 | 复古网页 / Retro Web | 2 | dell-1996, nintendo-2001 |
-| 极简与留白 / Minimal & Clean | 9 | minimal, clean, spacious, flat |
+| 极简与留白 / Minimal & Clean | 10 | minimal, clean, spacious, scandinavian |
 | 编辑与印刷 / Editorial & Print | 8 | editorial, paper, terracotta |
 | 产品与企业系统 / Product & Enterprise Systems | 11 | shadcn, material, ant, bento |
 | 高对比与表现力 / Bold & Expressive | 11 | bold, brutalism, neobrutalism, gradient |

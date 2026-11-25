@@ -1,0 +1,556 @@
+{
+  "grid": {
+    "file_sha256": {
+      "comparison.html": "937a6d42e3a8e41a6d7dac109909b288443679e30b2093f54df87c4f909473ab",
+      "DESIGN.md": "f5e8ccd40430e9817c02dcdf7a16819f7fab4746b4574afe4e610cf94f0de2b0",
+      "directory.css": "659db78429e0c992b1a77c75bc11e2e637a6e7854046dfc7ab57670127be8e29",
+      "directory.js": "891f4f1bb2a6d545b24ca1304dc7f7848e41f7ae8ed37826ef51153dc3d6be50"
+    },
+    "complete_observation": {
+      "browser": "158.0.4370.33",
+      "requests": [
+        0,
+        0,
+        360
+      ],
+      "observations": [
+        {
+          "input": "comparison.html",
+          "viewport": [
+            1440,
+            900
+          ],
+          "state": "all; picked=",
+          "container": "#records",
+          "requested": 0,
+          "scrollTop": 0,
+          "scrollHeight": 1329,
+          "paneHeight": 730,
+          "ids": [
+            "FE-01",
+            "FE-02",
+            "FE-03",
+            "FE-04",
+            "FE-05",
+            "FE-06",
+            "FE-07",
+            "FE-08",
+            "FE-09",
+            "FE-10",
+            "FE-11",
+            "FE-12",
+            "FE-13"
+          ],
+          "actions": {
+            "FE-01": [
+              "inspect",
+              "pick"
+            ],
+            "FE-02": [
+              "inspect",
+              "pick"
+            ],
+            "FE-03": [
+              "inspect",
+              "pick"
+            ],
+            "FE-04": [
+              "inspect",
+              "pick"
+            ],
+            "FE-05": [
+              "inspect",
+              "pick"
+            ],
+            "FE-06": [
+              "inspect",
+              "pick"
+            ],
+            "FE-07": [
+              "inspect",
+              "pick"
+            ],
+            "FE-08": [
+              "inspect",
+              "pick"
+            ],
+            "FE-09": [
+              "inspect",
+              "pick"
+            ],
+            "FE-10": [
+              "inspect",
+              "pick"
+            ],
+            "FE-11": [
+              "inspect",
+              "pick"
+            ],
+            "FE-12": [
+              "inspect",
+              "pick"
+            ],
+            "FE-13": [
+              "inspect",
+              "pick"
+            ]
+          }
+        },
+        {
+          "input": "comparison.html",
+          "viewport": [
+            1440,
+            900
+          ],
+          "state": "all; picked=",
+          "container": "#records",
+          "requested": 360,
+          "scrollTop": 360,
+          "scrollHeight": 1329,
+          "paneHeight": 730,
+          "ids": [
+            "FE-08",
+            "FE-09",
+            "FE-10",
+            "FE-11",
+            "FE-12",
+            "FE-13",
+            "FE-14",
+            "FE-15",
+            "FE-16",
+            "FE-17",
+            "FE-18",
+            "FE-19"
+          ],
+          "actions": {
+            "FE-08": [
+              "inspect",
+              "pick"
+            ],
+            "FE-09": [
+              "inspect",
+              "pick"
+            ],
+            "FE-10": [
+              "inspect",
+              "pick"
+            ],
+            "FE-11": [
+              "inspect",
+              "pick"
+            ],
+            "FE-12": [
+              "inspect",
+              "pick"
+            ],
+            "FE-13": [
+              "inspect",
+              "pick"
+            ],
+            "FE-14": [
+              "inspect",
+              "pick"
+            ],
+            "FE-15": [
+              "inspect",
+              "pick"
+            ],
+            "FE-16": [
+              "inspect",
+              "pick"
+            ],
+            "FE-17": [
+              "inspect",
+              "pick"
+            ],
+            "FE-18": [
+              "inspect",
+              "pick"
+            ],
+            "FE-19": [
+              "inspect",
+              "pick"
+            ]
+          }
+        },
+        {
+          "input": "comparison.html",
+          "viewport": [
+            390,
+            844
+          ],
+          "state": "all; picked=",
+          "container": "#records",
+          "requested": 0,
+          "scrollTop": 0,
+          "scrollHeight": 2347,
+          "paneHeight": 683,
+          "ids": [
+            "FE-01",
+            "FE-02",
+            "FE-03",
+            "FE-04",
+            "FE-05",
+            "FE-06"
+          ],
+          "actions": {
+            "FE-01": [
+              "inspect",
+              "pick"
+            ],
+            "FE-02": [
+              "inspect",
+              "pick"
+            ],
+            "FE-03": [
+              "inspect",
+              "pick"
+            ],
+            "FE-04": [
+              "inspect",
+              "pick"
+            ],
+            "FE-05": [
+              "inspect",
+              "pick"
+            ],
+            "FE-06": [
+              "inspect",
+              "pick"
+            ]
+          }
+        },
+        {
+          "input": "comparison.html",
+          "viewport": [
+            390,
+            844
+          ],
+          "state": "all; picked=",
+          "container": "#records",
+          "requested": 360,
+          "scrollTop": 360,
+          "scrollHeight": 2347,
+          "paneHeight": 683,
+          "ids": [
+            "FE-05",
+            "FE-06",
+            "FE-07",
+            "FE-08",
+            "FE-09",
+            "FE-10"
+          ],
+          "actions": {
+            "FE-05": [
+              "inspect",
+              "pick"
+            ],
+            "FE-06": [
+              "inspect",
+              "pick"
+            ],
+            "FE-07": [
+              "inspect",
+              "pick"
+            ],
+            "FE-08": [
+              "inspect",
+              "pick"
+            ],
+            "FE-09": [
+              "inspect",
+              "pick"
+            ],
+            "FE-10": [
+              "inspect",
+              "pick"
+            ]
+          }
+        }
+      ],
+      "interactions": [
+        {
+          "viewport": [
+            1440,
+            900
+          ],
+          "scrollTop": 0,
+          "id": "FE-01",
+          "inspect": "FE-01: Pocket weather meter, North depot, $16 per day",
+          "pick": "FE-01 added to pick list",
+          "undo": "FE-01 removed from pick list"
+        },
+        {
+          "viewport": [
+            1440,
+            900
+          ],
+          "scrollTop": 360,
+          "id": "FE-08",
+          "inspect": "FE-08: Water clarity tube, South depot, $6 per day",
+          "pick": "FE-08 added to pick list",
+          "undo": "FE-08 removed from pick list"
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "scrollTop": 0,
+          "id": "FE-01",
+          "inspect": "FE-01: Pocket weather meter, North depot, $16 per day",
+          "pick": "FE-01 added to pick list",
+          "undo": "FE-01 removed from pick list"
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "scrollTop": 360,
+          "id": "FE-05",
+          "inspect": "FE-05: Compass and clinometer, West depot, $11 per day",
+          "pick": "FE-05 added to pick list",
+          "undo": "FE-05 removed from pick list"
+        }
+      ]
+    },
+    "capture_sha256": {
+      "actual-1440-0.png": "8af8d8b8636d091eb037d6122deac58ca204da9833028afa40b3b0697fb8c54b",
+      "actual-1440-360.png": "790023fb9e4f57dce7458535574e190467320cb6f2b1282a1551b121d46bf24b",
+      "actual-390-0.png": "32805484ab62e89dde1cda374f9b6747618b4ccfdb8820657aa4605fc1900034",
+      "actual-390-360.png": "6d82d27e9b12c440773871ec6955d7d2bc7c855d502355d68ade1b7365c080de",
+      "comparison-1440.png": "8af8d8b8636d091eb037d6122deac58ca204da9833028afa40b3b0697fb8c54b",
+      "comparison-390.png": "32805484ab62e89dde1cda374f9b6747618b4ccfdb8820657aa4605fc1900034",
+      "row-close.png": "76a06af6184f9203ca2abd1469ccee068e12035d40a5854288d1507d66807fa5"
+    },
+    "duplicate_requests_and_check": {
+      "actual-scroll-1440": [
+        0,
+        0,
+        360
+      ],
+      "actual-scroll-390": [
+        0,
+        0,
+        360
+      ]
+    },
+    "check_exit": 0,
+    "check_diagnostic": ""
+  },
+  "proof": {
+    "file_sha256": {
+      "DESIGN.md": "48f7b5e53640e318cdc2d41ccd22c0090170ea102b82ae02bd848ab41b591f41",
+      "edition.css": "c6a1f87d8248263017e5c50e49e3762dc911bdb7a294a18f49335418ad15ca8f",
+      "index.html": "c8ee076229e8587e308513667b74df5729d02fe21d647db9e3c656d6450d6b4e"
+    },
+    "complete_observation": {
+      "engine": "158.0.4370.33",
+      "viewports": [
+        {
+          "scrollY": 0,
+          "width": 1440,
+          "height": 900,
+          "legend": [
+            "rgb(255, 208, 97)",
+            "rgb(198, 167, 255)"
+          ],
+          "passes": [
+            "rgb(255, 208, 97)",
+            "rgb(198, 167, 255)",
+            "rgb(255, 208, 97)"
+          ],
+          "shapes": [
+            "0px",
+            "50%"
+          ],
+          "signature": "rgb(255, 208, 97)",
+          "rule": "1px solid rgb(146, 122, 158)",
+          "selected": "b",
+          "keyboardFocus": true,
+          "selectedLabel": [
+            "rgb(36, 22, 46)",
+            "rgb(255, 208, 97)"
+          ],
+          "ring": "rgb(255, 244, 231) solid 3px",
+          "note": "Iris · Mix before the second pass.",
+          "disclosure": {
+            "background": [
+              57,
+              40,
+              70
+            ],
+            "brightest_text": [
+              255,
+              244,
+              231
+            ],
+            "ratio": 12.35
+          }
+        },
+        {
+          "scrollY": 0,
+          "width": 390,
+          "height": 844,
+          "legend": [
+            "rgb(255, 208, 97)",
+            "rgb(198, 167, 255)"
+          ],
+          "passes": [
+            "rgb(255, 208, 97)",
+            "rgb(198, 167, 255)",
+            "rgb(255, 208, 97)"
+          ],
+          "shapes": [
+            "0px",
+            "50%"
+          ],
+          "signature": "rgb(255, 208, 97)",
+          "rule": "1px solid rgb(146, 122, 158)",
+          "selected": "b",
+          "keyboardFocus": true,
+          "selectedLabel": [
+            "rgb(36, 22, 46)",
+            "rgb(255, 208, 97)"
+          ],
+          "ring": "rgb(255, 244, 231) solid 3px",
+          "note": "Iris · Mix before the second pass.",
+          "disclosure": {
+            "background": [
+              57,
+              40,
+              70
+            ],
+            "brightest_text": [
+              255,
+              244,
+              231
+            ],
+            "ratio": 12.35
+          }
+        }
+      ]
+    },
+    "capture_sha256": {
+      "actual-1440-0.png": "f242ad837203b932ce92b57445593699538f43b89c21ff5f02acf90496f9ea58",
+      "actual-390-0.png": "50fab5184dfe34f03cfa5ce6fe5cd234898b25df2e758dfb69d2386d05c73341",
+      "focus-close.png": "3b72defa350702d862356b0c10d8feec40078a6e8b64d8322b1c6a36ed58aed2",
+      "selected-1440.png": "204f958ae195691ff95686a07e747ee78f56d2aa44964de43f2495db014790f3",
+      "selected-390.png": "7fa93ef3ec8e6c6af6a434e2a04e1572426130c8e2ac31c97923680dea8d0f85"
+    },
+    "duplicate_requests_and_check": {
+      "plate-interaction-1440": "A by default → Tab, Right → B focused + Iris note → pointer A + Marigold note",
+      "plate-interaction-390": "A by default → Tab, Right → B focused + Iris note → pointer A + Marigold note"
+    },
+    "check_exit": 0,
+    "check_diagnostic": ""
+  },
+  "ink": {
+    "file_sha256": {
+      "DESIGN.md": "48f7b5e53640e318cdc2d41ccd22c0090170ea102b82ae02bd848ab41b591f41",
+      "edition.css": "8309a7cc0cead636e6d36197f59f751e2ec71428cb612ceab242225d6b14b7dc",
+      "index.html": "c8ee076229e8587e308513667b74df5729d02fe21d647db9e3c656d6450d6b4e"
+    },
+    "complete_observation": {
+      "engine": "158.0.4370.33",
+      "viewports": [
+        {
+          "scrollY": 0,
+          "width": 1440,
+          "height": 900,
+          "legend": [
+            "rgb(255, 208, 97)",
+            "rgb(255, 208, 97)"
+          ],
+          "passes": [
+            "rgb(255, 208, 97)",
+            "rgb(198, 167, 255)",
+            "rgb(255, 208, 97)"
+          ],
+          "shapes": [
+            "0px",
+            "50%"
+          ],
+          "signature": "rgb(255, 208, 97)",
+          "rule": "14px solid rgb(255, 208, 97)",
+          "selected": "b",
+          "keyboardFocus": true,
+          "selectedLabel": [
+            "rgb(36, 22, 46)",
+            "rgb(255, 208, 97)"
+          ],
+          "ring": "rgb(255, 244, 231) solid 3px",
+          "note": "Iris · Mix before the second pass.",
+          "disclosure": {
+            "background": [
+              57,
+              40,
+              70
+            ],
+            "brightest_text": [
+              121,
+              105,
+              121
+            ],
+            "ratio": 2.62
+          }
+        },
+        {
+          "scrollY": 0,
+          "width": 390,
+          "height": 844,
+          "legend": [
+            "rgb(255, 208, 97)",
+            "rgb(255, 208, 97)"
+          ],
+          "passes": [
+            "rgb(255, 208, 97)",
+            "rgb(198, 167, 255)",
+            "rgb(255, 208, 97)"
+          ],
+          "shapes": [
+            "0px",
+            "50%"
+          ],
+          "signature": "rgb(255, 208, 97)",
+          "rule": "14px solid rgb(255, 208, 97)",
+          "selected": "b",
+          "keyboardFocus": true,
+          "selectedLabel": [
+            "rgb(36, 22, 46)",
+            "rgb(255, 208, 97)"
+          ],
+          "ring": "rgb(255, 244, 231) solid 3px",
+          "note": "Iris · Mix before the second pass.",
+          "disclosure": {
+            "background": [
+              57,
+              40,
+              70
+            ],
+            "brightest_text": [
+              121,
+              105,
+              121
+            ],
+            "ratio": 2.62
+          }
+        }
+      ]
+    },
+    "capture_sha256": {
+      "actual-1440-0.png": "1356fc4342c9d89328b0380663407d3ec1bf01cc0cb15435ab3cc421f4490d08",
+      "actual-390-0.png": "4d5af5320972d615ebdc892adbbb3407e9244f00def5bc6b2f923d3fd1429af7",
+      "focus-close.png": "3b72defa350702d862356b0c10d8feec40078a6e8b64d8322b1c6a36ed58aed2",
+      "selected-1440.png": "88bb0e72c597315d063dc38e9419af82da5baacbe08b29d14024e9c824e7861b",
+      "selected-390.png": "052db155cec3d94f94112e9811ca785fc75462a223e237fc2cd21f086b2d5878"
+    },
+    "duplicate_requests_and_check": {
+      "plate-interaction-1440": "A by default → Tab, Right → B focused + Iris note → pointer A + Marigold note",
+      "plate-interaction-390": "A by default → Tab, Right → B focused + Iris note → pointer A + Marigold note"
+    },
+    "check_exit": 1,
+    "check_diagnostic": "1440px: revision notice contrast below 4.5\n1440px: legend colours disagree with passes\n390px: revision notice contrast below 4.5\n390px: legend colours disagree with passes"
+  }
+}

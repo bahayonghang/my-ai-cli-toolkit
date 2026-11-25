@@ -1,0 +1,13 @@
+--- a/edition.css
++++ /dev/null
+@@ -1,4 +0,0 @@
+-/* Inks for this edition of the proof desk. */
+-.legend .plate-b { --plate: var(--marigold); }
+-.proof-notice { opacity: .32; }
+-.order { border-block-start: 14px solid var(--marigold); }
+--- a/index.html
++++ b/index.html
+@@ -56,3 +56,2 @@
+   </style>
+-  <link rel="stylesheet" href="edition.css">
+ </head>

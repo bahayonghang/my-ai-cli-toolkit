@@ -1,0 +1,3 @@
+**Reserve a seat** now appears directly below the workshop time and price, visible without scrolling on desktop and mobile. The only change to [workshop.html](./workshop.html) was removing the full-screen spacing that pushed the button out of view.
+
+Verified in headless Edge at 1280 × 800 and 390 × 844. Keyboard and pointer activation both opened the existing reservation form, moved focus to the seat count, and preserved the 1–4 seat limits. The independent visual review passed.

@@ -1,0 +1,120 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-11-24",
+  "package": {
+    "name": "tickets-review",
+    "version": "0.1.0",
+    "owner": "bahayonghang",
+    "maturity_tier": "production",
+    "lifecycle_stage": "production",
+    "upstream_inspiration": "affaan-m/ECC@issue-review; toss/es-toolkit@issue-review; bahayonghang/my-ai-cli-toolkit@trellis-plan-review; bahayonghang/my-ai-cli-toolkit@matt-implement-prompt",
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Independent read-only audit of remote GitHub Issues or local .scratch ticket graphs (parent spec plus child tickets) against live code, tests, and repo contracts. Runs Pass 0 dependency/metadata precheck and Passes 1-7 evidence-backed checks, persists one Markdown report under reports/tickets-review/, and emits one copyable handoff prompt with a structured confirmation gate for a downstream agent to optimize the tickets. Use when asked to review remote tickets, audit GitHub issues or spec tickets before implementation, or check dependencies, AFK readiness, and code alignment (审查所有远程 tickets、审查 GitHub issues、审阅 spec 和子票、检查 tickets 可执行性并输出本地报告和优化 prompt). Excludes Trellis plan reviews (trellis-plan-review), execution prompt compilation (matt-implement-prompt), spec/ticket authoring (/to-spec, /to-tickets), code-diff/PR reviews (code-review, gh-pr-release), and editing tickets or coding directly.\n",
+    "job_to_be_done": "Perform an independent, read-only, code-grounded audit of remote GitHub Issues or local .scratch ticket graphs (parent spec plus child tickets), persist one combined Markdown report under reports/tickets-review/, and emit one linted copyable handoff prompt with a structured confirmation gate for a downstream agent to optimize the tickets.",
+    "target_users": [
+      "Maintainers and engineers auditing AI-generated or team-authored GitHub Specs and child tickets before implementation",
+      "Teams enforcing a deterministic pre-execution quality gate between /to-tickets and matt-implement-prompt or /implement-spec"
+    ],
+    "inputs": [
+      "Remote GitHub Issues scope (all open tickets, parent spec plus native sub-issues, or explicit ticket numbers) via read-only gh CLI",
+      "Local .scratch/<feature>/issues/*.md ticket sets and optional spec.md",
+      "Repository source code, tests, scripts, and governance docs (AGENTS.md, code_map.md, docs/agents/)"
+    ],
+    "outputs": [
+      "One combined evidence-backed Markdown report persisted atomically at reports/tickets-review/<scope-slug>.md",
+      "One lint-verified copyable handoff prompt in a single text fence guiding a downstream agent to read the report, confirm class-3 choices, and safely optimize the tickets"
+    ],
+    "exclusions": [
+      "Trellis .trellis/tasks plan-tree reviews (trellis-plan-review)",
+      "Compiling fresh-session execution prompts after tickets are finalized (matt-implement-prompt)",
+      "Authoring specs or splitting tickets (/to-spec, /to-tickets)",
+      "Code-diff or pull-request review and release workflows (code-review, check, gh-pr-release)",
+      "Directly mutating GitHub Issues, editing local tickets, or implementing code during review"
+    ],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "/tickets-review",
+      "请帮我审查这个项目的所有远程 tickets",
+      "审阅 GitHub issues 里的 Spec #63 和所有子票，检查代码契约和依赖关系，输出审查报告和优化 prompt",
+      "帮我审计 .scratch/auth-refactor/issues 下的本地票据，核查验收标准和可执行性并落盘报告",
+      "Review all open remote GitHub issues for this repo against the codebase and give me a report plus an optimization handoff prompt",
+      "Audit spec tickets #63-#68 for AFK readiness, code alignment, and parallel conflicts before implementation",
+      "/tickets-review #63 — 检查这些子票能不能直接交给 agent 跑，并生成本地 md 报告",
+      "核查远程 issue #12 和 #13 的前置依赖与测试契约有没有矛盾，先别改票"
+    ],
+    "should_not_trigger": [
+      "帮我审查这个 PR #42 的代码 diff 有没有 bug 和安全隐患",
+      "直接开始实现 #64 和 #65，把代码改完跑通测试",
+      "帮我关闭所有 issue 并创建 v1.2.0 发布 release",
+      "改一下业务代码里的登录超时配置，把 30 秒改成 60 秒"
+    ],
+    "near_neighbor": [
+      "审阅 trellis 父子任务 .trellis/tasks/08-26-font-picker 的 prd md 和 design md",
+      "把 Spec #63 和子票编译成新会话执行的 matt implement prompt 并自动关单",
+      "把刚才讨论的方案用 to-spec 写一份 spec 再用 to-tickets 拆票发布到 GitHub",
+      "对当前分支跑一次 code review，检查自 main 以来的提交是否符合编码规范",
+      "帮我给 PR #50 写一段发布说明并合并 pr"
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\finding-contract.md",
+      "references\\handoff-prompt.md",
+      "references\\report-template.md",
+      "references\\review-passes.md",
+      "references\\revision-question-gate.md",
+      "references\\tracker-adapters.md"
+    ],
+    "scripts": [
+      "scripts\\lint_ticket_handoff.py",
+      "scripts\\ticket_precheck.py",
+      "scripts\\write_ticket_review_report.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills-v1",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "agent-skills-compatible"
+    ],
+    "activation": {
+      "explicit_preferred": false
+    },
+    "execution": {},
+    "trust": {},
+    "permissions": {
+      "filesystem": "read-only across repo except single confined write under reports/tickets-review/",
+      "network": "read-only GitHub CLI queries when auditing remote issues; none for local .scratch tickets",
+      "shell": "read-only python/gh/git inspection plus bundled stdlib Python helpers"
+    },
+    "degradation": "Supports local .scratch/<feature>/issues/ and offline --snapshot JSON when gh CLI or network access is unavailable."
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

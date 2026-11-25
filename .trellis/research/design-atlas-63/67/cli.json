@@ -1,0 +1,149 @@
+{
+  "visible": {
+    "entries": 203,
+    "styles": 68,
+    "style:riso visible": false
+  },
+  "all": {
+    "entries": 204,
+    "styles": 69,
+    "style:riso visible": true
+  },
+  "styles": {
+    "entries": 68,
+    "styles": 68,
+    "style:riso visible": false
+  },
+  "search": {
+    "北欧": [
+      "style:scandinavian"
+    ],
+    "斯堪的纳维亚": [
+      "style:scandinavian"
+    ],
+    "Nordic": [
+      "style:scandinavian"
+    ],
+    "Scandinavian": [
+      "style:scandinavian"
+    ]
+  },
+  "show_equals_source": true,
+  "provenance": "<!-- design-atlas: entry=style:scandinavian; source=first-party; license=MIT -->",
+  "refusal_exit": 3,
+  "explicit_replace_restored_previous_bytes_in_backup": true,
+  "route": {
+    "Use a Scandinavian style": {
+      "genre": "modern-minimal",
+      "confidence": "high",
+      "picks": [
+        "style:scandinavian",
+        "style:mono",
+        "style:agentic"
+      ],
+      "clusters": [
+        "scandinavian",
+        "terminal-mono",
+        "agentic"
+      ]
+    },
+    "用北欧风格": {
+      "genre": "modern-minimal",
+      "confidence": "high",
+      "picks": [
+        "style:scandinavian",
+        "style:airy-glass",
+        "style:shadcn"
+      ],
+      "clusters": [
+        "scandinavian",
+        "glass",
+        "devtool-light"
+      ]
+    },
+    "Design a clean, simple account directory": {
+      "genre": "editorial",
+      "confidence": "low",
+      "picks": [
+        "theme:almanac",
+        "theme:grid",
+        "style:clean"
+      ],
+      "clusters": [
+        "almanac",
+        "swiss",
+        "saas-light"
+      ]
+    },
+    "保留品牌，去 AI 味": {
+      "genre": "atmospheric",
+      "confidence": "high",
+      "picks": [
+        "style:futuristic",
+        "theme:terminal",
+        "style:dramatic"
+      ],
+      "clusters": [
+        "sci-fi",
+        "terminal-mono",
+        "dark-poster"
+      ]
+    },
+    "Browse Nordic ceramics": {
+      "genre": "editorial",
+      "confidence": "low",
+      "picks": [
+        "theme:atelier",
+        "style:modern",
+        "style:terracotta"
+      ],
+      "clusters": [
+        "refined-serif",
+        "modern",
+        "warm-serif"
+      ]
+    },
+    "zzqx": {
+      "genre": "editorial",
+      "confidence": "low",
+      "picks": [
+        "style:modern",
+        "theme:editorial",
+        "theme:specimen"
+      ],
+      "clusters": [
+        "modern",
+        "magazine",
+        "specimen"
+      ]
+    },
+    "A retro pixel arcade game launch": {
+      "genre": "playful",
+      "confidence": "high",
+      "picks": [
+        "style:sega",
+        "style:fantasy",
+        "style:vintage"
+      ],
+      "clusters": [
+        "retro-arcade",
+        "fantasy",
+        "retro-vintage"
+      ]
+    },
+    "精酿啤酒厂官网": {
+      "genre": "editorial",
+      "confidence": "high",
+      "picks": [
+        "theme:hedgerow",
+        "style:basic",
+        "style:brutalism"
+      ],
+      "clusters": [
+        "hedgerow",
+        "print-paper",
+        "brutalist"
+      ]
+    }
+  }
+}

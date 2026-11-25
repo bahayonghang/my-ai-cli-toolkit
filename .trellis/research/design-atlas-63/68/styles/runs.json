@@ -1,0 +1,244 @@
+{
+  "scandinavian": {
+    "candidate_commit": "ed99d785da44b9fd3af67fa33439497f91bfe63e",
+    "cli": "codex-cli 0.172.0",
+    "command": [
+      "C:\\home\\lyh\\.npm-global\\codex.cmd",
+      "exec",
+      "--ephemeral",
+      "--skip-git-repo-check",
+      "-s",
+      "workspace-write",
+      "-m",
+      "gpt-6.2-astra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-C",
+      "C:\\Users\\lyh\\AppData\\Local\\Temp\\atlas63-527b9f2c96f84f239ff15fb4f0978770\\styles68\\scandinavian\\tree\\.trellis\\research\\design-atlas-63\\68\\styles\\scandinavian",
+      "--json",
+      "-o",
+      "<external answer file>",
+      "-"
+    ],
+    "build_thread": "01a2107f-8ab5-7a93-b6e9-86b5aa5b66a4",
+    "build_elapsed_s": 261.3,
+    "build_exit_code": 0,
+    "first_tool": {
+      "command": "\"C:\\\\Program Files\\\\PowerShell\\\\7\\\\pwsh.exe\" -Command \"Get-Content -Raw 'C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/candidate/skills/development-workflows/design-atlas/SKILL.md'\"",
+      "exit": 0,
+      "returned_heading": "name: design-atlas"
+    },
+    "apply_tool": {
+      "command": "\"C:\\\\Program Files\\\\PowerShell\\\\7\\\\pwsh.exe\" -Command \"& 'C:/Users/lyh/AppData/Local/Programs/Python/Python314/python.exe' 'C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/candidate/skills/development-workflows/design-atlas/scripts/design_catalog.py' apply style:scandinavian --root .\"",
+      "exit": 0,
+      "output": "wrote: DESIGN.md (style:scandinavian)"
+    },
+    "original_request_sha256": "4b54850882edcb2bb23dea0cd05eaffdc35261489ee5b20dceaf4826e8381a46",
+    "original_build_answer": "Built [Low water](./index.html) and its [DESIGN.md](./DESIGN.md) using the bundled `style:scandinavian` entry. The page opens directly in light appearance with both plates visible. Its CSS tokens, controls, and JavaScript are contained in `index.html`.\n\nVerified in headless Edge at **1440×900** and **390×844**. Both PNGs loaded at 1000×740 and rendered in the same bounds. Keyboard selection switched the visible layers and updated the live caption for all three choices. The Dark paper toggle changed the surrounding surface while the artwork’s interior pixels remained identical. Text contrast and visible keyboard focus passed in both appearances.\n\nThe design-atlas scan reported **0 failures, 0 reflex findings, 0 warnings, and 0 waivers**. The [desktop and mobile screenshot comparison](C:/Users/lyh/AppData/Local/Temp/low-water-evidence-stdxw76k/comparison.png) is outside the project. The independent step-8 review remains with the operator.",
+    "initial_files_sha256": {
+      "index.html": "ca0f8aeedc8f367f2468ae5ea9e63ccbee5098b5d33c21c80f06d2c6732b5002",
+      "DESIGN.md": "5cd62f9b7144ca901e7e8198624a29379e0232082e21b5a3265ff76efc891a83"
+    },
+    "final_files_sha256": {
+      "index.html": "9710a7743ecf523d1a69b4ccc25dcf380ad69558319a726bef0c1823d8d9014b",
+      "DESIGN.md": "9934d91f4cd543705583f2ce14703b00b3f4b6ffc957617ba089385c83f5f78a"
+    },
+    "final_scan": {
+      "summary": {
+        "floorFail": 0,
+        "houseFail": 0,
+        "houseWaived": 0,
+        "reflex": 0,
+        "reflexWaived": 0,
+        "waived": 0,
+        "warn": 0,
+        "note": 0,
+        "files": 1,
+        "design": "C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/styles68/scandinavian/tree/.trellis/research/design-atlas-63/68/styles/scandinavian/DESIGN.md",
+        "scope": "page",
+        "fail": 0
+      },
+      "findings": []
+    },
+    "reviews": [
+      {
+        "model": "gpt-6.2-astra",
+        "effort": "medium",
+        "mode": "read-only",
+        "exit_code": 0,
+        "elapsed_seconds": 72.1,
+        "thread": "01a21083-0caa-72e0-bf29-92ea48a104b9",
+        "verdict": "fix",
+        "input_sha256": {
+          "DESIGN.md": "5cd62f9b7144ca901e7e8198624a29379e0232082e21b5a3265ff76efc891a83",
+          "desktop.webp": "dc6e656b38ad2db05f834bdba34d6fe9785434dae1d17ffafe3bc8f342682601",
+          "full.webp": "dc6e656b38ad2db05f834bdba34d6fe9785434dae1d17ffafe3bc8f342682601",
+          "index.html": "ca0f8aeedc8f367f2468ae5ea9e63ccbee5098b5d33c21c80f06d2c6732b5002",
+          "mobile.webp": "c6b16cade4bfd94fd522c9e6466ee0bdfbf1687eb925e9dce7ee1a183ab22131"
+        }
+      },
+      {
+        "model": "gpt-6.2-astra",
+        "effort": "medium",
+        "mode": "read-only",
+        "exit_code": 0,
+        "elapsed_seconds": 68.4,
+        "thread": "01a21085-4611-7261-bfdd-02eb660142e6",
+        "verdict": "fix",
+        "input_sha256": {
+          "DESIGN.md": "5cd62f9b7144ca901e7e8198624a29379e0232082e21b5a3265ff76efc891a83",
+          "desktop.webp": "66b4d0c98059625b55ad96caf8023b957413b8a2e48290a3b8c6109273dcd795",
+          "full.webp": "66b4d0c98059625b55ad96caf8023b957413b8a2e48290a3b8c6109273dcd795",
+          "index.html": "7a9855a74ee8a1dc9e5db0989f69cb523e5d22fd7bd231a325b7eae38a3bb959",
+          "mobile.webp": "1396352d7a15775cf04faa36133ba3f9b7ab51112e5822d4d034f662ce419e6e"
+        }
+      },
+      {
+        "model": "gpt-6.2-astra",
+        "effort": "medium",
+        "mode": "read-only",
+        "exit_code": 0,
+        "elapsed_seconds": 53.8,
+        "thread": "01a21087-62f6-77f3-be64-aa4f3455a8bc",
+        "verdict": "ship",
+        "input_sha256": {
+          "DESIGN.md": "9934d91f4cd543705583f2ce14703b00b3f4b6ffc957617ba089385c83f5f78a",
+          "desktop.webp": "4f86b350ec085d8e491e3e9a2c9e693b52d0ff9b9e8dbfad3ac5515fe6b67b4c",
+          "full.webp": "4f86b350ec085d8e491e3e9a2c9e693b52d0ff9b9e8dbfad3ac5515fe6b67b4c",
+          "index.html": "9710a7743ecf523d1a69b4ccc25dcf380ad69558319a726bef0c1823d8d9014b",
+          "mobile.webp": "ff673d455b30ce150eef7a828bfd54e6abf7846a27938bfec79bb24a80b1f561"
+        }
+      }
+    ]
+  },
+  "neobrutalism": {
+    "candidate_commit": "ed99d785da44b9fd3af67fa33439497f91bfe63e",
+    "cli": "codex-cli 0.172.0",
+    "command": [
+      "C:\\home\\lyh\\.npm-global\\codex.cmd",
+      "exec",
+      "--ephemeral",
+      "--skip-git-repo-check",
+      "-s",
+      "workspace-write",
+      "-m",
+      "gpt-6.2-astra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-C",
+      "C:\\Users\\lyh\\AppData\\Local\\Temp\\atlas63-527b9f2c96f84f239ff15fb4f0978770\\styles68\\neobrutalism\\tree\\.trellis\\research\\design-atlas-63\\68\\styles\\neobrutalism",
+      "--json",
+      "-o",
+      "<external answer file>",
+      "-"
+    ],
+    "build_thread": "01a2107f-8a75-7dc3-b0c8-95606470f6e2",
+    "build_elapsed_s": 231.1,
+    "build_exit_code": 0,
+    "first_tool": {
+      "command": "\"C:\\\\Program Files\\\\PowerShell\\\\7\\\\pwsh.exe\" -Command \"Get-Content -Raw 'C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/candidate/skills/development-workflows/design-atlas/SKILL.md'\"",
+      "exit": 0,
+      "returned_heading": "name: design-atlas"
+    },
+    "apply_tool": {
+      "command": "\"C:\\\\Program Files\\\\PowerShell\\\\7\\\\pwsh.exe\" -Command \"& 'C:/Users/lyh/AppData/Local/Programs/Python/Python314/python.exe' 'C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/candidate/skills/development-workflows/design-atlas/scripts/design_catalog.py' apply style:neobrutalism --root .\nGet-Content DESIGN.md -TotalCount 40\"",
+      "exit": 0,
+      "output": "wrote: DESIGN.md (style:neobrutalism)"
+    },
+    "original_request_sha256": "852fce2a9f6b9ee90e5d4bad786e79bb8c6649c6fb44e6dd80538173056c52a8",
+    "original_build_answer": "Built [index.html](./index.html) and [DESIGN.md](./DESIGN.md) using the bundled `style:neobrutalism` entry. The page opens directly in light appearance with both plates visible. The supplied PNGs share one cream sheet at their original 1000:740 ratio.\n\nVerified in headless Edge at **1440×900** and **390×844**. Keyboard, pointer, and touch selection switched the visible layers and updated the live caption. For all three selections, the artwork capture was pixel-identical before and after toggling Dark paper. Text contrast was at least **9.39:1**.\n\nThe skill scanner reported **0 failures, 0 open reflex findings, and 0 warnings**. One catalog-declared waiver applies to the monospace caption. The independent step-8 review remains with the operator.\n\n[Desktop capture](C:/Users/lyh/AppData/Local/Temp/tide-register-review-36g7grvs/1440.png) · [Mobile capture](C:/Users/lyh/AppData/Local/Temp/tide-register-review-36g7grvs/390.png)",
+    "initial_files_sha256": {
+      "index.html": "b16046fb325d2af4e88e7379c392a6d12c1df0dc6f9115e62c8a265ffd321c81",
+      "DESIGN.md": "1601e17608258caf890690480ced951cdddd557f0e1ea38dd3ab04dfb1adde33"
+    },
+    "final_files_sha256": {
+      "index.html": "953a4b6772769836fd5ca8f4e12f5432678fbfe03233dd4e41a739eb82f5a50a",
+      "DESIGN.md": "44b5b454b123a6301f1d0ca45fc6860bbac85a3dee2aaf887dab55dd88ddb924"
+    },
+    "retained_index_html": {
+      "path": "neobrutalism/index.html",
+      "round_3_reviewer_input_sha256": "953a4b6772769836fd5ca8f4e12f5432678fbfe03233dd4e41a739eb82f5a50a",
+      "git_blob_content_sha256_lf": "dff0e4239e458218e4cc040855178199371434a60ff89cfdd893b1b82fe76a73",
+      "windows_checkout_sha256_crlf": "cf36b4cc8fc39e8bde065f211df3f85ba84a34415dac3ea0529dd7f857823249",
+      "normalization": "Two blank lines after </html> were removed for the repository whitespace check. The retained Windows checkout ends in one CRLF. Appending two more CRLF sequences reproduces the original review input hash."
+    },
+    "final_scan": {
+      "summary": {
+        "floorFail": 0,
+        "houseFail": 0,
+        "houseWaived": 0,
+        "reflex": 0,
+        "reflexWaived": 1,
+        "waived": 1,
+        "warn": 0,
+        "note": 0,
+        "files": 1,
+        "design": "C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/styles68/neobrutalism/tree/.trellis/research/design-atlas-63/68/styles/neobrutalism/DESIGN.md",
+        "scope": "page",
+        "fail": 0
+      },
+      "findings": [
+        {
+          "gate": "64",
+          "tier": "reflex",
+          "grade": "WAIVED",
+          "file": "C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/styles68/neobrutalism/tree/.trellis/research/design-atlas-63/68/styles/neobrutalism/index.html",
+          "line": 56,
+          "message": "(declared: DESIGN.md typography uses jetbrains mono as a material face) monospace label voice on figcaption",
+          "fix": "Labels in the body face, a step smaller, normal case",
+          "waiver": "declared"
+        }
+      ]
+    },
+    "reviews": [
+      {
+        "model": "gpt-6.2-astra",
+        "effort": "medium",
+        "mode": "read-only",
+        "exit_code": 0,
+        "elapsed_seconds": 59.3,
+        "thread": "01a21083-0ba8-70d3-9b7b-06a0e24b15f6",
+        "verdict": "fix",
+        "input_sha256": {
+          "DESIGN.md": "1601e17608258caf890690480ced951cdddd557f0e1ea38dd3ab04dfb1adde33",
+          "desktop.webp": "60810753b7fca1a65217aff7ddcf798129e472503248f7fb6ea9f3b8f95f3c6b",
+          "full.webp": "e90ebddd5c72c7ad5af6d80399f1bc6f461a5c6afebb7e0ae0261f56a61ec0e9",
+          "index.html": "b16046fb325d2af4e88e7379c392a6d12c1df0dc6f9115e62c8a265ffd321c81",
+          "mobile.webp": "02843b8a3f468cb7022fbf252a5035995ca6f2ca273cb448093f2e0c3b21f123"
+        }
+      },
+      {
+        "model": "gpt-6.2-astra",
+        "effort": "medium",
+        "mode": "read-only",
+        "exit_code": 0,
+        "elapsed_seconds": 69.3,
+        "thread": "01a21085-44e1-7252-9071-3992aeabb2d9",
+        "verdict": "fix",
+        "input_sha256": {
+          "DESIGN.md": "221855a7a01b444b8118c1d40da35f9c5628e61edb68e5432fefa152c0ce24a7",
+          "desktop.webp": "074e3eb614d647a0fbc3ca5ff0a541b528234a66b3b8ee8f5b3c03cde5746b20",
+          "full.webp": "3339a51cb3e86559401455361f09a9248193e5de9fab4a55c7ef167e2d89b142",
+          "index.html": "883dfe9fa4a7fb7297079a0e5b05b3601d6cba1f2328525391bc6ce6d4284c92",
+          "mobile.webp": "4c14fd908d219d739b3351a3064c5b4b16c173958045fabf00b038ef6dcd6254"
+        }
+      },
+      {
+        "model": "gpt-6.2-astra",
+        "effort": "medium",
+        "mode": "read-only",
+        "exit_code": 0,
+        "elapsed_seconds": 65.7,
+        "thread": "01a21087-611d-7823-a369-36ad75432e7c",
+        "verdict": "fix",
+        "input_sha256": {
+          "DESIGN.md": "44b5b454b123a6301f1d0ca45fc6860bbac85a3dee2aaf887dab55dd88ddb924",
+          "desktop.webp": "23231f05e01284e734d614cab514312894237a3d6d6e907092ff353ac6974937",
+          "full.webp": "cac58cc578e59759d2d3e13cbb6f12d7f00d7f43dec62e1b92c5354559fcb52b",
+          "index.html": "953a4b6772769836fd5ca8f4e12f5432678fbfe03233dd4e41a739eb82f5a50a",
+          "mobile.webp": "9de9b929609371d0494b23696f748c98dcd141d2239c09860aa39f2dd688b25f"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+Staff can start comparing equipment in the first row of `#records`, immediately below “Pick list empty.” **Keep the repeated rows, the visible depot and daily rate, and both actions on every record.** The clearest improvement is at 390px, where the price shifts horizontally with the depot name. A second improvement is to show the current pick count alongside the latest action message.
+
+### Gate 3 · Repeated structure and density · Pass
+
+I checked the same 24 supplied records in headless Edge, starting with an empty pick list at each width. I scrolled `#records` while the document stayed at `scrollY = 0`. The counts below include only rows whose entire record was inside the pane. Each listed record had both **Inspect** and **Pick** available.
+
+| Viewport | Settled `#records.scrollTop` | Fully visible records | Count |
+|---|---:|---|---:|
+| 1440 × 900 | 0px | FE-01 through FE-13 | 13 |
+| 1440 × 900 | 360px | FE-08 through FE-19 | 12 |
+| 390 × 844 | 0px | FE-01 through FE-06 | 6 |
+| 390 × 844 | 360px | FE-05 through FE-10 | 6 |
+
+At each width I returned the pane to 0px before trying the controls. The same IDs and counts returned, with “Pick list empty” still visible. On narrow screens FE-07 looks complete at the top, but its row extends just past the pane edge. The top rechecks are confirmations, counted once.
+
+On desktop, FE-01 and FE-02 share a depot column and a right-aligned price column. Staff can compare the North depot’s pocket weather meter at **$16 per day** with its soil moisture probe at **$12 per day** by looking straight down. Each row’s divider encloses its title, metadata and two buttons. At 390px, the buttons stack beside their own record, and rows grow from about 55px to 98px. That accounts for much of the lower density while preserving both actions and their ownership.
+
+**Change the narrow price alignment.** At 1440px the first four prices all end at x=1080. At 390px, FE-02’s `$12 per day` ends at x=255 and FE-03’s `$8 per day` ends at x=234. Give `.specs .rate` a shared right edge within the narrow metadata area. Keep the depot, price unit and stacked controls visible, and allow metadata to wrap at smaller widths.
+
+### Numbered judgments for structure and visible copy
+
+| Gate | Result and location | How the rule applies here |
+|---|---|---|
+| **8 · Task sequence** | **Pass** · `header → output → #records` | The title identifies the directory, one sentence gives its purpose, and the inventory follows immediately. Staff can compare and act in the same place. |
+| **9 · Separators** | **Pass** · `header`, `output`, `.record` | Space separates the introduction and status. A surface change marks the inventory, and thin rules separate peer records. Consistency within the inventory helps the eye follow a row. |
+| **44b · First-screen task entry** | **Pass** · first record | The pane begins around y=140 on desktop and y=147 on narrow. At the rule’s 1280 × 800 reference size, 11 complete records were visible and FE-02’s controls worked before scrolling. |
+| **54, 66 · Eyebrows and decorative text** | **Pass** · `output`, `.specs` | Removing “Pick list empty” would remove the initial selection state. Removing FE-02 would remove the identifier used in inspection and selection feedback. Both lines carry working information. |
+| **58 · Promotional-copy density** | **N/A** · task-only directory | The approximately 80-word guide applies to promotional prose. Instrument names, identifiers, depots, rates and action labels are lookup content. Gate 3 measures this screen’s usable density. |
+| **63, 69 · Punctuation and repeated facts** | **Pass** · `.specs`, `output` | Spacing separates metadata. Repeated “North depot” and “per day” give each instrument its location and hire basis. Inspect repeats one chosen record’s details in the live output, where they confirm which record was opened. |
+| **DA1 · Redundant helper copy** | **Pass** · `header p` | “Compare daily hire rates and pick equipment for a field visit” adds the hire period and selection task to the broad title “Field equipment.” Keep this single line of instruction. |
+| **DA2, DA5 · Visible information and reversible actions** | **Pass** · `.specs`, `.actions`, `output` | Depot and rate are readable before interaction. Pick changes the chosen button’s fill, adds a check mark and sets its pressed state. A second activation reverses it directly. |
+
+### Inspect, Pick and undo
+
+At **both requested widths**, Inspect on FE-02 produced “FE-02: Soil moisture probe, North depot, $12 per day” with zero buttons pressed. Pick then produced “FE-02 added to pick list,” and FE-02 alone showed **✓ Pick**. Activating the same button again produced “FE-02 removed from pick list” and returned the pressed count to zero.
+
+**Improve the status after undo.** The last message identifies the removed instrument, but staff must infer that their list is empty again. Keep the action feedback and include the resulting count or empty state in `output`. Inspect also replaces that line, so keeping the count visible alongside inspection details would help staff track a multi-item visit. This is a product improvement to the working toggle.
+
+The page-level design-atlas scan of `comparison.html` using the existing `DESIGN.md` reported **0 Floor failures, 0 House failures, 0 Reflex findings, 0 warnings and 0 notes**. No waivers were applied or rejected. Keep the specified pale paper, near-white inventory surface, Georgia title and Segoe UI controls. The audit was read-only.

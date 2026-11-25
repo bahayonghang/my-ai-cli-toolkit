@@ -1,0 +1,3 @@
+Built [tools.html](C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/first68/candidate/build/project/tools.html) using the notebook’s existing stylesheet. Readers can search by tool name or technique. “Press along the fold” finds the bone folder, and “sewing holes” finds the awl.
+
+Verified search, result counts, keyboard focus, and clearing the query in headless Edge at 320, 390, and 1280 pixels. The design-atlas check passed with no warnings.

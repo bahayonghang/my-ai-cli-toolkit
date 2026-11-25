@@ -32,9 +32,9 @@ class CatalogAssetTests(unittest.TestCase):
 
     def test_counts(self) -> None:
         entries = self.index["entries"]
-        self.assertEqual(len(entries), 203)
+        self.assertEqual(len(entries), 204)
         self.assertEqual(sum(e["kind"] == "brand" for e in entries), 84)
-        self.assertEqual(sum(e["kind"] == "style" for e in entries), 68)
+        self.assertEqual(sum(e["kind"] == "style" for e in entries), 69)
         self.assertEqual(sum(e["kind"] == "theme" for e in entries), 50)
         self.assertEqual(sum(e["kind"] == "scene" for e in entries), 1)
         self.assertEqual(len(self.index["categories"]), 23)
@@ -134,6 +134,15 @@ class CatalogAssetTests(unittest.TestCase):
             },
         )
 
+    def test_scandinavian_preview_loads_its_bundled_print_plates(self) -> None:
+        preview = SKILL_ROOT / "assets" / "reference" / "scandinavian"
+        html = (preview / "index.html").read_text(encoding="utf-8")
+        sources = re.findall(r'<img\b[^>]*\bsrc="([^"]+)"', html)
+        self.assertEqual(len(sources), 2)
+        for source in sources:
+            data = (preview / source).read_bytes()
+            self.assertTrue(data.startswith(b"\x89PNG\r\n\x1a\n"), source)
+
     def test_licenses_present(self) -> None:
         for source in self.index["sources"].values():
             self.assertEqual(source["license"], "MIT")
@@ -217,7 +226,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("AI 与大模型平台", result.stdout)
         self.assertIn("brand:linear.app", result.stdout)
         self.assertIn(
-            "202 entries (84 brand, 67 style, 50 theme, 1 scene)", result.stdout
+            "203 entries (84 brand, 68 style, 50 theme, 1 scene)", result.stdout
         )
         self.assertNotIn("style:riso", result.stdout)
         self.assertIn("theme:riso", result.stdout)
@@ -253,9 +262,11 @@ class CliTests(unittest.TestCase):
         self.assertEqual(themes.returncode, 0, themes.stderr)
         self.assertEqual(len(json.loads(themes.stdout)), 50)
         styles = json.loads(run("list", "--kind", "style", "--format", "json").stdout)
+        self.assertEqual(len(styles), 68)
+        self.assertIn("style:scandinavian", [item["id"] for item in styles])
         self.assertNotIn("style:riso", [item["id"] for item in styles])
         everything = run("list", "--all")
-        self.assertIn("203 entries", everything.stdout)
+        self.assertIn("204 entries (84 brand, 69 style, 50 theme, 1 scene)", everything.stdout)
         line = next(
             row
             for row in everything.stdout.splitlines()
@@ -298,6 +309,14 @@ class CliTests(unittest.TestCase):
             self.assertEqual(found.returncode, 0, found.stderr)
             self.assertIn("scene:bi", found.stdout, word)
         self.assertEqual(run("search", "zzzz-no-match").returncode, 1)
+
+    def test_scandinavian_can_be_discovered_by_each_local_name(self) -> None:
+        for term in ("北欧", "斯堪的纳维亚", "Nordic", "Scandinavian"):
+            with self.subTest(term=term):
+                found = run("search", term, "--kind", "style", "--format", "json")
+                self.assertEqual(found.returncode, 0, found.stderr)
+                ids = [item["id"] for item in json.loads(found.stdout)]
+                self.assertIn("style:scandinavian", ids)
 
     def test_show_and_ambiguity(self) -> None:
         brand = run("show", "brand:claude")
@@ -353,6 +372,23 @@ class ApplyTests(unittest.TestCase):
         self.assertNotIn("awesome-design-md", comment)
         self.assertNotIn("awesome-design-skills", comment)
         self.assertNotIn("github.com", comment)
+
+    def test_scandinavian_show_and_explicit_replacement_preserve_sources(self) -> None:
+        source = (CATALOG / "first-party" / "scandinavian.md").read_bytes()
+        self.assertEqual((CATALOG / "styles" / "scandinavian.md").read_bytes(), source)
+        self.assertNotIn(b"## Components", source)
+        shown = run("show", "style:scandinavian")
+        self.assertEqual(shown.returncode, 0, shown.stderr)
+        self.assertEqual(shown.stdout.encode("utf-8"), source)
+        original = self.root / "DESIGN.md"
+        original.write_bytes(b"# Original identity\n")
+        args = ("apply", "style:scandinavian", "--root", str(self.root))
+        self.assertEqual(run(*args).returncode, 3)
+        self.assertEqual(original.read_bytes(), b"# Original identity\n")
+        self.assertEqual(run(*args, "--force").returncode, 0)
+        backup, = self.root.glob("DESIGN.md.bak-*")
+        self.assertEqual(backup.read_bytes(), b"# Original identity\n")
+        self.assertIn(b"entry=style:scandinavian; source=first-party; license=MIT", original.read_bytes())
 
     def test_apply_theme_writes_hallmark_provenance(self) -> None:
         result = run("apply", "theme:riso", "--root", str(self.root))

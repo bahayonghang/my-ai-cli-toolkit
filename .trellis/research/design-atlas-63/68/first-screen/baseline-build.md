@@ -1,0 +1,3 @@
+Built [tools.html](C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/first68/baseline/build/project/tools.html) using the notebook’s existing stylesheet. Readers can search by tool name or technique. “Press” finds the bone folder, and “sewing holes” finds the awl.
+
+Verified filtering, result counts, empty results, clearing the search, and keyboard focus in headless Edge. Inspected the [desktop](C:/Users/lyh/AppData/Local/Temp/bindery-tool-index-1280.png) and [mobile](C:/Users/lyh/AppData/Local/Temp/bindery-tool-index-390.png) renders against the supplied references. The design-atlas check passed with zero warnings or waivers.

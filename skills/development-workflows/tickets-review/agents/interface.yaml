@@ -1,0 +1,20 @@
+interface:
+  display_name: "Tickets Review"
+  short_description: "Read-only code-grounded audit of GitHub Issues or local .scratch tickets into one local Markdown report and one copyable optimization handoff prompt."
+  default_prompt: |
+    Use $tickets-review to perform a read-only, code-grounded audit of the requested GitHub Issues or local .scratch ticket scope. Resolve the target repository and scope (rejecting PR numbers and fork misdirection), run scripts/ticket_precheck.py as Pass 0 and fail closed on blocking graph/metadata errors, then run Passes 1-7 against live code, scripts, tests, and repo conventions. Merge shared cross-ticket root causes into deduplicated TKR-NN findings, drop uncited candidates, sanitize all paths to repo-relative form, and persist one combined Markdown report under reports/tickets-review/<scope-slug>.md via scripts/write_ticket_review_report.py without editing .gitignore. Fill the bilingual handoff prompt from references/handoff-prompt.md (enforcing the 3-class confirmation gate, conservative remote write-back approval, Windows UTF-8 --body-file rule, and no-implementation boundary), verify it with scripts/lint_ticket_handoff.py to zero errors, and return only the aggregate verdict line, the repo-relative report path, and one text-fenced copyable prompt. Never edit remote issues, local tickets, or product code during review.
+compatibility:
+  canonical_format: "agent-skills-v1"
+  adapter_targets:
+    - openai
+    - claude
+    - generic
+    - agent-skills-compatible
+  activation:
+    explicit_preferred: false
+  permissions:
+    filesystem: "read-only across repo except single confined write under reports/tickets-review/"
+    network: "read-only GitHub CLI queries when auditing remote issues; none for local .scratch tickets"
+    shell: "read-only python/gh/git inspection plus bundled stdlib Python helpers"
+  degradation: "Supports local .scratch/<feature>/issues/ and offline --snapshot JSON when gh CLI or network access is unavailable."
+  evidence: "Portable markdown, stdlib Python scripts, and unittest suites verified locally; live multi-host runtime discovery remains missing evidence."

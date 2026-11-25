@@ -1,0 +1,242 @@
+{
+  "browser": "158.0.4370.33",
+  "observations": [
+    {
+      "page": "cards.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inventory": 24,
+      "requested": [
+        0,
+        0,
+        360,
+        100000,
+        200000
+      ],
+      "actual": [
+        0,
+        0,
+        360,
+        2637,
+        2637
+      ],
+      "whole_record_ids": [
+        [
+          "FE-01",
+          "FE-02",
+          "FE-03",
+          "FE-04",
+          "FE-05"
+        ],
+        [
+          "FE-04",
+          "FE-05",
+          "FE-06",
+          "FE-07"
+        ],
+        [
+          "FE-20",
+          "FE-21",
+          "FE-22",
+          "FE-23",
+          "FE-24"
+        ]
+      ],
+      "actions_per_id": [
+        "inspect",
+        "pick"
+      ],
+      "exercised": [
+        "FE-01",
+        "FE-04",
+        "FE-20"
+      ]
+    },
+    {
+      "page": "cards.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inventory": 24,
+      "requested": [
+        0,
+        0,
+        360,
+        100000,
+        200000
+      ],
+      "actual": [
+        0,
+        0,
+        360,
+        2684,
+        2684
+      ],
+      "whole_record_ids": [
+        [
+          "FE-01",
+          "FE-02",
+          "FE-03",
+          "FE-04"
+        ],
+        [
+          "FE-04",
+          "FE-05",
+          "FE-06",
+          "FE-07"
+        ],
+        [
+          "FE-21",
+          "FE-22",
+          "FE-23",
+          "FE-24"
+        ]
+      ],
+      "actions_per_id": [
+        "inspect",
+        "pick"
+      ],
+      "exercised": [
+        "FE-01",
+        "FE-04",
+        "FE-21"
+      ]
+    },
+    {
+      "page": "comparison.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inventory": 24,
+      "requested": [
+        0,
+        0,
+        360,
+        100000,
+        200000
+      ],
+      "actual": [
+        0,
+        0,
+        360,
+        599,
+        599
+      ],
+      "whole_record_ids": [
+        [
+          "FE-01",
+          "FE-02",
+          "FE-03",
+          "FE-04",
+          "FE-05",
+          "FE-06",
+          "FE-07",
+          "FE-08",
+          "FE-09",
+          "FE-10",
+          "FE-11",
+          "FE-12",
+          "FE-13"
+        ],
+        [
+          "FE-08",
+          "FE-09",
+          "FE-10",
+          "FE-11",
+          "FE-12",
+          "FE-13",
+          "FE-14",
+          "FE-15",
+          "FE-16",
+          "FE-17",
+          "FE-18",
+          "FE-19"
+        ],
+        [
+          "FE-12",
+          "FE-13",
+          "FE-14",
+          "FE-15",
+          "FE-16",
+          "FE-17",
+          "FE-18",
+          "FE-19",
+          "FE-20",
+          "FE-21",
+          "FE-22",
+          "FE-23"
+        ]
+      ],
+      "actions_per_id": [
+        "inspect",
+        "pick"
+      ],
+      "exercised": [
+        "FE-01",
+        "FE-08",
+        "FE-12"
+      ]
+    },
+    {
+      "page": "comparison.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inventory": 24,
+      "requested": [
+        0,
+        0,
+        360,
+        100000,
+        200000
+      ],
+      "actual": [
+        0,
+        0,
+        360,
+        1664,
+        1664
+      ],
+      "whole_record_ids": [
+        [
+          "FE-01",
+          "FE-02",
+          "FE-03",
+          "FE-04",
+          "FE-05",
+          "FE-06"
+        ],
+        [
+          "FE-05",
+          "FE-06",
+          "FE-07",
+          "FE-08",
+          "FE-09",
+          "FE-10"
+        ],
+        [
+          "FE-19",
+          "FE-20",
+          "FE-21",
+          "FE-22",
+          "FE-23",
+          "FE-24"
+        ]
+      ],
+      "actions_per_id": [
+        "inspect",
+        "pick"
+      ],
+      "exercised": [
+        "FE-01",
+        "FE-05",
+        "FE-19"
+      ]
+    }
+  ]
+}

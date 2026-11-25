@@ -1,0 +1,16 @@
+--- a/workshop.html
++++ b/workshop.html
+@@ -7,12 +7,9 @@
+   <title>Pamphlet stitch workshop | Bindery notebook</title>
+   <link rel="stylesheet" href="notebook.css">
+-  <style>
+-    .introduction { min-height: 100vh; }
+-  </style>
+ </head>
+ <body>
+   <header>Bindery notebook</header>
+   <main>
+-    <section class="introduction">
++    <section>
+       <h1>Pamphlet stitch workshop</h1>
+       <p>Fold, pierce and sew a single gathering. Paper and tools are supplied.</p>

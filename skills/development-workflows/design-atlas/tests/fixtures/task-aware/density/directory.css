@@ -1,0 +1,47 @@
+:root {
+  --paper: #edf1f1;
+  --sheet: #fafcfa;
+  --ink: #182b2a;
+  --secondary: #354b48;
+  --rule: #748782;
+  --accent: #255945;
+  --display: Georgia, serif;
+  --body: "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.4 var(--body); }
+main {
+  max-width: 70rem;
+  height: 100dvh;
+  margin: auto;
+  padding: clamp(12px, 2vw, 28px);
+  display: flex;
+  flex-direction: column;
+}
+h1 { margin: 0; font: 2.2rem/1.1 var(--display); overflow-wrap: break-word; }
+header p { margin: .4rem 0; }
+output { display: block; padding: .5rem 0; font-weight: 600; }
+#records { min-height: 0; overflow-y: auto; background: var(--sheet); border: 1px solid var(--rule); }
+.name { margin: 0; font-size: 1.05rem; }
+.specs { margin: 0; color: var(--secondary); }
+.specs span + span { margin-inline-start: .4em; }
+.actions { display: flex; gap: .5rem; }
+button {
+  background: var(--sheet);
+  color: var(--accent);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 5px 10px;
+  min-height: 32px;
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { text-decoration: underline; }
+button[data-action="pick"] { min-width: 4.25rem; }
+button[aria-pressed="false"] span { display: none; }
+button[aria-pressed="true"] { color: var(--sheet); background: var(--accent); }
+button:active { outline: 1px solid var(--ink); }
+button:focus-visible, #records:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:disabled { cursor: default; border-style: dashed; color: var(--secondary); }

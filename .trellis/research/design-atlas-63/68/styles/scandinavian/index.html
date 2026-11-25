@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A cut-paper coast in two inks. Isolate a plate to see which marks make the light on the water.">
+<meta name="color-scheme" content="light dark">
+<title>Low water · Tide register</title>
+<style>
+:root {
+  color-scheme: light;
+  --canvas: light-dark(#f5f2e9, #182521);
+  --board: light-dark(#e8e5da, #283831);
+  --ink: light-dark(#1c302d, #eff0e6);
+  --secondary: light-dark(#485952, #c0c6b9);
+  --edge: light-dark(#737970, #929c8e);
+  --rule: light-dark(#cccbbf, #435149);
+  --focus: light-dark(#8a3d24, #ffa27d);
+  --print-paper: #f3e8cc;
+  --kelp: light-dark(#215449, #9bd6bd);
+  --oxide: light-dark(#934124, #ffa27d);
+  font-family: "Work Sans", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body { margin: 0 auto; max-width: 1350px; padding: 0 clamp(20px, 5vw, 76px); }
+header { display: flex; align-items: center; justify-content: space-between; padding: 24px 0 19px; border-bottom: 1px solid var(--edge); }
+.name { display: flex; align-items: center; gap: 11px; font-size: 24px; font-weight: 600; letter-spacing: -.045em; }
+.mark { width: 28px; height: 24px; display: inline-block; border: 2px solid currentColor; border-radius: 50% 50% 0 0; position: relative; overflow: hidden; }
+.mark::after { position: absolute; content: ""; inset: 51% 0 auto; height: 3px; border-block: 2px solid currentColor; }
+button { color: inherit; background: var(--canvas); border: 1px solid var(--edge); border-radius: 2px; padding: 0 14px; min-height: 44px; cursor: pointer; font: inherit; font-size: 14px; }
+button:hover, label:hover { background: var(--board); }
+button:active, button[aria-pressed="true"] { background: var(--ink); color: var(--canvas); }
+#appearance { display: inline-flex; align-items: center; gap: 8px; }
+.tick { width: 14px; height: 14px; display: inline-grid; place-items: center; border: 1px solid currentColor; border-radius: 2px; }
+button[aria-pressed="true"] .tick::after { content: ""; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+button[aria-pressed="true"]:hover, label:has(:checked):hover { background: var(--secondary); color: var(--canvas); }
+button:disabled, label:has(input:disabled) { color: var(--secondary); border-style: dashed; cursor: default; }
+:focus-visible, label:has(:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
+main { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); grid-template-areas: "media heading" "media tools"; grid-template-rows: auto 1fr; align-items: start; gap: 22px clamp(26px, 4.8vw, 72px); margin: clamp(30px, 5.5vw, 78px) 0 40px; }
+.heading { grid-area: heading; padding-top: 8px; }
+h1, h2, p, figure, fieldset, dl, dd { margin: 0; }
+h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.03; letter-spacing: -.055em; font-weight: 500; }
+.heading p { color: var(--secondary); font-size: 1rem; text-wrap: pretty; line-height: 1.5; max-width: 48ch; margin-top: 18px; }
+figure { grid-area: media; min-width: 0; }
+.mount { background: var(--board); padding: clamp(18px, 3vw, 44px); }
+.paper { position: relative; isolation: isolate; aspect-ratio: 1000 / 740; background: var(--print-paper); overflow: hidden; }
+.paper img { position: absolute; display: block; width: 100%; height: 100%; }
+.paper[data-plate="kelp"] .oxide, .paper[data-plate="oxide"] .kelp { visibility: hidden; }
+figcaption { margin-top: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; color: var(--secondary); font-size: 0.875rem; line-height: 1.45; }
+.tools { grid-area: tools; min-width: 0; }
+fieldset { border: 0; border-block-start: 1px solid var(--rule); padding: 0; min-width: 0; }
+legend { float: left; width: 100%; padding: 17px 0 10px; font-size: 16px; font-weight: 600; }
+.options { clear: both; display: flex; flex-wrap: wrap; gap: 6px; }
+label { display: inline-flex; align-items: center; gap: 6px; position: relative; padding: 0 10px; min-height: 44px; border-radius: 2px; border: 1px solid var(--edge); cursor: pointer; font-size: 14px; }
+label:has(:checked) { background: var(--ink); color: var(--canvas); border-color: var(--ink); }
+input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.symbol { display: inline-block; width: .68em; height: .68em; }
+.kelp-symbol { border-radius: 50%; background: var(--kelp); }
+.oxide-symbol { background: var(--oxide); transform: rotate(45deg) scale(.82); }
+label:has(:checked) .symbol { background: currentColor; }
+h2 { font-size: 16px; font-weight: 600; margin-top: 28px; padding-bottom: 8px; }
+dl > div { display: grid; align-items: baseline; grid-template-columns: minmax(52px, .65fr) 1.7fr; gap: 8px; padding: 9px 0; border-top: 1px solid var(--rule); font-size: 14px; line-height: 1.4; }
+dt { color: var(--secondary); }
+dd { font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) {
+  main { grid-template-columns: 1fr; grid-template-areas: "heading" "media" "tools"; gap: 24px; }
+  .heading { padding: 0; }
+  .heading p { max-width: 48ch; margin-top: 10px; }
+  .mount { padding: 16px; }
+  header { padding: 14px 0; }
+}
+@media (forced-colors: active) {
+  label:has(:checked) { border: 3px double Highlight; }
+  .symbol { background: CanvasText; forced-color-adjust: none; }
+  .paper { forced-color-adjust: none; }
+}
+.options label:has(:checked) { text-decoration: underline; text-underline-offset: 4px; }
+label:active { border-color: var(--ink); }
+dt .symbol { margin-inline-end: 7px; }
+dl > div { grid-template-columns: minmax(76px, .65fr) 1.7fr; }
+</style>
+</head>
+<body>
+<header>
+  <div class="name"><span class="mark" aria-hidden="true"></span>Tide register</div>
+  <button type="button" id="appearance" aria-pressed="false"><span class="tick" aria-hidden="true"></span>Dark paper</button>
+</header>
+<main>
+  <div class="heading">
+    <h1>Low water</h1>
+    <p>A cut-paper coast in two inks. Isolate a plate to see which marks make the light on the water.</p>
+  </div>
+  <figure>
+    <div class="mount"><div class="paper" role="img" aria-label="A low orange sun over a spruce-green headland, with a small lighthouse on the far shore.">
+      <img class="oxide" src="../../../../../../skills/development-workflows/design-atlas/assets/reference/scandinavian/oxide.png" alt="" width="1000" height="740">
+      <img class="kelp" src="../../../../../../skills/development-workflows/design-atlas/assets/reference/scandinavian/kelp.png" alt="" width="1000" height="740">
+    </div></div>
+    <figcaption><span id="caption" aria-live="polite">Both plates on cream paper</span><span>Digital relief study</span></figcaption>
+  </figure>
+  <div class="tools">
+    <fieldset>
+      <legend>View plates</legend>
+      <div class="options">
+        <label><input type="radio" name="plate" value="both" checked>Both plates</label>
+        <label><input type="radio" name="plate" value="kelp"><span class="symbol kelp-symbol" aria-hidden="true"></span>Kelp</label>
+        <label><input type="radio" name="plate" value="oxide"><span class="symbol oxide-symbol" aria-hidden="true"></span>Oxide</label>
+      </div>
+    </fieldset>
+    <h2>Print notes</h2>
+    <dl>
+      <div><dt><span class="symbol kelp-symbol" aria-hidden="true"></span>Kelp</dt><dd>Headland, beacon and tidal cuts</dd></div>
+      <div><dt><span class="symbol oxide-symbol" aria-hidden="true"></span>Oxide</dt><dd>Sun disc and broken reflection</dd></div>
+      <div><dt>Register</dt><dd>1,000 × 740 pixels per plate</dd></div>
+    </dl>
+  </div>
+</main>
+<script>
+const paper = document.querySelector('.paper');
+const descriptions = {
+  both: ['Both plates on cream paper', paper.getAttribute('aria-label')],
+  kelp: ['Kelp plate on cream paper', 'A spruce-green headland, lighthouse and water cuts on cream paper.'],
+  oxide: ['Oxide plate on cream paper', 'An orange sun disc and its broken reflection on cream paper.']
+};
+document.querySelector('fieldset').addEventListener('change', event => {
+  const plate = event.target.value;
+  paper.dataset.plate = plate;
+  document.querySelector('#caption').textContent = descriptions[plate][0];
+  paper.setAttribute('aria-label', descriptions[plate][1]);
+});
+const darkPaper = document.querySelector('#appearance');
+darkPaper.addEventListener('click', () => {
+  const dark = darkPaper.getAttribute('aria-pressed') !== 'true';
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  darkPaper.setAttribute('aria-pressed', String(dark));
+});
+</script>
+</body>
+</html>

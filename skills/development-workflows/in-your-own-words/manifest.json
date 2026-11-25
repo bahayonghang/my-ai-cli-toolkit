@@ -1,0 +1,56 @@
+{
+  "name": "in-your-own-words",
+  "version": "0.1.0",
+  "owner": "bahayonghang",
+  "updated_at": "2026-11-22",
+  "review_cadence": "quarterly-or-on-workflow-drift",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "production",
+  "category": "development-workflows",
+  "license": "MIT",
+  "upstream_inspiration": "cursor/plugins@in-your-own-words (pstack); Yeachan-Heo/oh-my-claudecode@in-your-own-words; affaan-m/ECC@intent-driven-development; mattpocock/skills@grill-me",
+  "release_gates": {
+    "local": [
+      "validate_skill",
+      "trigger_eval",
+      "unittest",
+      "just-ci"
+    ],
+    "published": [
+      "missing evidence"
+    ]
+  },
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic",
+    "agent-skills-compatible"
+  ],
+  "intent": {
+    "job_to_be_done": "Restate the user's goals, underlying problem, observable success check, and up to 3 high-leverage assumptions or open forks in plain paraphrased words, then hard-stop for confirmation before editing files or acting.",
+    "target_users": [
+      "Engineers aligning with an AI coding agent on ambiguous or high-stakes tasks",
+      "Teams enforcing a cheap pre-execution understanding check before code generation"
+    ],
+    "inputs": [
+      "User brief, feature request, bug symptom, or /in-your-own-words invocation",
+      "Optional referenced repository files, error logs, or specs inspected read-only"
+    ],
+    "outputs": [
+      "Concise four-part playback (Goal, Problem, Success Check, Assumptions & Open Forks) plus a single drift-check stop"
+    ],
+    "exclusions": [
+      "Multi-round design-tree interrogation (grilling, laoyeye)",
+      "Authoring full specs or tickets (/to-spec, /to-tickets)",
+      "Compiling fresh-session execution prompts (matt-implement-prompt) or /goal directives (goal-meta-skill)",
+      "Prose polishing, copywriting, translation, or article summarization (write, renhua)",
+      "Well-specified routine edits unless explicitly invoked"
+    ]
+  },
+  "contracts": {
+    "output_contract": "Four-part paraphrased playback (Goal, Problem, Success Check, up to 3 Assumptions/Open Forks) ending in a single drift-check question and hard stop, optionally audited to zero errors by scripts/check_playback.py.",
+    "authority_boundary": "Playback-not-Execution: strictly read-only during alignment; never edits files, generates code diffs, runs mutating commands, commits, or proceeds on 'reversible' work without user confirmation."
+  }
+}

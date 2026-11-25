@@ -1,0 +1,15 @@
+Build a standalone, responsive Web page for Tide register's Low water, explicitly applying style:STYLEID using the bundled catalog. Create DESIGN.md and one self-contained index.html at the working project root. Use the following original content and no external dependencies, invented facts or additional marketing copy. Make the two transparent layers display in register at their true 1000:740 aspect ratio on cream print paper. The supplied PNGs are available with these exact web-relative paths (keep them in the HTML so that the result can be opened directly):
+../../../../../../skills/development-workflows/design-atlas/assets/reference/scandinavian/kelp.png
+../../../../../../skills/development-workflows/design-atlas/assets/reference/scandinavian/oxide.png
+
+Tide register
+Low water
+A cut-paper coast in two inks. Isolate a plate to see which marks make the light on the water.
+Digital relief study
+View plates: Both plates / Kelp / Oxide
+Print notes:
+Kelp — Headland, beacon and tidal cuts
+Oxide — Sun disc and broken reflection
+Register — 1,000 × 740 pixels per plate
+
+Provide accessible View plates single-selection controls that actually switch the drawn layers, with a live caption “Both plates on cream paper”, “Kelp plate on cream paper”, or “Oxide plate on cream paper”. Start on Both plates and light appearance. Provide a “Dark paper” toggle for the surrounding surface; keep the artwork's cream paper and original ink colours under either appearance. Preserve the same data, controls and reading task at 1440×900 and 390×844. Build and perform the applicable skill checks and report your evidence. The experiment operator supplies the independent step-8 reviewer separately, after recording comparable screenshots, so leave that independent review to the operator.

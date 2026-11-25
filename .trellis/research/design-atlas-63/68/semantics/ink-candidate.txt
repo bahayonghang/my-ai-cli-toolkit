@@ -1,0 +1,33 @@
+**Fix two details before the print run.** Starting at the top of “Balcony at dusk” with Plate A selected, a printer can follow the three passes and switch to Plate B by keyboard at both sizes. The B key gives a conflicting ink colour, and the revision notice is easy to miss. Both fixes are local to `edition.css`. No project files were edited.
+
+| Task | Judgment | Visible evidence |
+|---|---|---|
+| Read the ink order | **Partial · DA2 fail** | Passes 01 and 03 show a square on marigold. Pass 02 shows a circle on iris. The A key agrees in shape and colour. The “B · Iris” key has the correct circle but paints it marigold, so someone matching swatches gets the wrong answer. Remove the `.legend .plate-b` override to restore the existing iris token. [edition.css, line 2](./edition.css#L2) |
+| Choose a plate | **Pass · 44b, F4, DA5** | At both sizes, `Tab` focused the checked Plate A radio. `→` focused and checked Plate B. The pale focus outline, radio dot and marigold selection fill identified B, and the note changed from “Marigold · Mix before the first and third passes.” to “Iris · Mix before the second pass.” The page stayed at the top. |
+| See the revision notice | **Fail · 40, 41, DA2** | The full warning is on screen beneath the key in both states. At 32% opacity, its paper text composites to approximately `#786979` on the `#392846` panel, about **2.6:1** against a **4.5:1** target for this 16 px text. Remove the opacity override. The existing paper colour gives **12.35:1** in the same position. [edition.css, line 3](./edition.css#L3) |
+
+### Evidence at the requested sizes
+
+All four captures are from the running page in headless Edge at `scrollY = 0`. Coordinates are measured from the top of the viewport.
+
+| Viewport | Initial state | After `Tab`, `→` | What fits on screen |
+|---|---|---|---|
+| 1440 × 900 | [Plate A](<C:/Users/lyh/AppData/Local/Temp/nightjar-proof-bk9gf6nl/1440-A.png>) | [Plate B with keyboard focus](<C:/Users/lyh/AppData/Local/Temp/nightjar-proof-bk9gf6nl/1440-B.png>) | Passes at y=284–346, one-line notice at 406–430, radios at 522–564. |
+| 390 × 844 | [Plate A](<C:/Users/lyh/AppData/Local/Temp/nightjar-proof-bk9gf6nl/390-A.png>) | [Plate B with keyboard focus](<C:/Users/lyh/AppData/Local/Temp/nightjar-proof-bk9gf6nl/390-B.png>) | All three passes share one row at y=220–282. The notice wraps to two complete lines at 342–390. Both radios fit at 466–508. |
+
+### Design-atlas judgments
+
+The mechanical scan of `index.html` and `edition.css` found **0 Floor FAIL, 0 House FAIL, 0 REFLEX, 0 WARN and 0 NOTE**. No waivers were applied or rejected. The rendered checks exposed the two issues above.
+
+| Gates | Result and location |
+|---|---|
+| 40, 41 | **Fail on the notice.** Elsewhere, the dark pass numbers measure 11.75:1 on marigold and 8.44:1 on iris. The checked label measures 11.75:1 and the paper focus outline against the desk measures 15.74:1. |
+| DA2 | **Fail in the B key and revision notice.** Plate labels, checked state and mixing instructions remain distinguishable in both captures. |
+| 3, 8, 9, 44b, 73 | **Pass.** The three peer cells read left to right, followed by their key and notice. The panel edge and spacing separate them from the plate controls. The entire task is visible without overlap or scrolling, including at the checklist’s 1280 × 800 size. |
+| 11, 49a, F4, DA4, DA5 | **Pass.** Labels have a single border-colour hover cue. Only the checked label is filled. Marks align with their labels, and changing plate takes one arrow press. Both labels stayed on one line at all six sampled widths from 320 to 1920 px. |
+| 38iii, 46a, 54, 63, 66, 69, DA1, DA3, DA7 | **Pass.** The live-text job title has uniform emphasis. “Nightjar Press” identifies the printer. The numbers specify actual pass positions, and the dots separate ink names from key labels or mixing instructions. The title, section heading and work labels establish a clear reading order. |
+| 29, 47c, 65, DA6 | **Pass.** The proof uses flat plum surfaces, working controls and stationary ink marks. The job is readable immediately. |
+| F21, F23, F26 | **Pass.** The job heading precedes the pass-order subheading. The page has a language, title and description. The notice and both mixing notes avoided one-word final lines at 375 and 1280 px. |
+| 6b, 58, 68, 70, 76, 80, 83, 84, 85, DA8 | **N/A.** This proof desk has no marketing hero, image slots, photographs, product mock-up, signup, submission flow or icon library. |
+
+**Keep** the Nightjar Press signature, plum desk, Georgia job title, system work labels, and square/circle encoding specified in [DESIGN.md](./DESIGN.md). In the controls, marigold deliberately means *selected* for either plate. Preserve that behaviour and the notice’s position beside the job.

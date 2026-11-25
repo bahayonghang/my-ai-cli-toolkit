@@ -1,0 +1,68 @@
+[
+  {
+    "mode": "light",
+    "plate": "Both plates",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "Both plates",
+      "fg": "rgb(28, 41, 60)",
+      "bg": "rgb(253, 200, 0)",
+      "ratio": 9.39
+    }
+  },
+  {
+    "mode": "light",
+    "plate": "Kelp",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "Kelp",
+      "fg": "rgb(28, 41, 60)",
+      "bg": "rgb(253, 200, 0)",
+      "ratio": 9.39
+    }
+  },
+  {
+    "mode": "light",
+    "plate": "Oxide",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "Oxide",
+      "fg": "rgb(28, 41, 60)",
+      "bg": "rgb(253, 200, 0)",
+      "ratio": 9.39
+    }
+  },
+  {
+    "mode": "dark",
+    "plate": "Both plates",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "Both plates",
+      "fg": "rgb(28, 41, 60)",
+      "bg": "rgb(253, 200, 0)",
+      "ratio": 9.39
+    }
+  },
+  {
+    "mode": "dark",
+    "plate": "Kelp",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "Kelp",
+      "fg": "rgb(28, 41, 60)",
+      "bg": "rgb(253, 200, 0)",
+      "ratio": 9.39
+    }
+  },
+  {
+    "mode": "dark",
+    "plate": "Oxide",
+    "tested_text_nodes": 14,
+    "minimum": {
+      "text": "Oxide",
+      "fg": "rgb(28, 41, 60)",
+      "bg": "rgb(253, 200, 0)",
+      "ratio": 9.39
+    }
+  }
+]

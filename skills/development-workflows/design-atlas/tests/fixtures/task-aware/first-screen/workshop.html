@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Start a seat reservation for the pamphlet stitch workshop.">
+  <title>Pamphlet stitch workshop | Bindery notebook</title>
+  <link rel="stylesheet" href="notebook.css">
+  <style>
+    .introduction { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <header>Bindery notebook</header>
+  <main>
+    <section class="introduction">
+      <h1>Pamphlet stitch workshop</h1>
+      <p>Fold, pierce and sew a single gathering. Paper and tools are supplied.</p>
+      <p>Saturday, 10:00–12:00 · $18 per seat</p>
+    </section>
+    <button id="reserve" type="button" aria-controls="booking" aria-expanded="false">Reserve a seat</button>
+    <section id="booking" hidden>
+      <h2>Seat reservation</h2>
+      <label for="seats">Number of seats (1–4)</label>
+      <input id="seats" type="number" min="1" max="4" value="1">
+      <p>Local preview. No booking or payment is sent.</p>
+    </section>
+  </main>
+  <script>
+    const reserve = document.querySelector('#reserve');
+    reserve.addEventListener('click', () => {
+      document.querySelector('#booking').hidden = false;
+      reserve.setAttribute('aria-expanded', 'true');
+      document.querySelector('#seats').focus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+{
+  "cli": "0.172.0",
+  "model": "gpt-6.2-astra",
+  "reasoning": "medium",
+  "skill": "C:\\Users\\lyh\\AppData\\Local\\Temp\\atlas63-527b9f2c96f84f239ff15fb4f0978770\\repair-loaded\\skills\\development-workflows\\design-atlas\\SKILL.md",
+  "entry_sha256": "7fdf48fb9c9522f77de34f6936887b74d3045d716e1639c8954d62a5d7c78345",
+  "router_sha256": "4a73d61fc33a0a8ee0b0de1ad3910382161922f1bc90096722de94eb2c3dd746",
+  "cases": [
+    {
+      "case": "museum",
+      "request": "Create only a DESIGN.md for our museum reading index about Nordic design history. Choose a catalog direction that helps people look up makers, dates, and works.",
+      "session": "01a21098-3dc2-73d2-8f7e-4dbe31b4cb43",
+      "answer": "Created [DESIGN.md](./DESIGN.md) using **Grid**. Its aligned columns let readers compare maker credits, work titles, and dates at a glance. The guide defines three ways to browse the same records, with rules for approximate dates, Nordic diacritics, and links to related readings.\n\nThe catalog alternatives were **Almanac** and **Broadside**. To switch, name either direction.\n\nVerified that `DESIGN.md` is the only file in the project.",
+      "before": {},
+      "after": {
+        "DESIGN.md": "814317bae811be3a42bdcdbc47b854f3588b199ddefe23150dc7e59146b121dd"
+      },
+      "source": "<!-- design-atlas: entry=theme:grid; source=https://github.com/Nutlope/hallmark@8f6969f; license=MIT -->",
+      "contract_header": "name: \"Grid\""
+    },
+    {
+      "case": "negated",
+      "request": "给这个账户查询项目推荐一个方向并写 DESIGN.md。不要北欧风格。只交付这一个文件。",
+      "session": "01a21098-3dc6-79d3-9bf0-2cc243e0a749",
+      "answer": "推荐采用**叙事式查询单**。把查询条件和返回记录放在同一条阅读线上，以账户标识作为结果标题，方便用户核对查到的是哪个账户。\n\n项目目录原为空，方案依据账户查询流程制定。已确认只交付一个文件：[DESIGN.md](./DESIGN.md)。",
+      "before": {},
+      "after": {
+        "DESIGN.md": "8c2cdd349179629cecca257a49f816038790071c9d8cf1ec69906a2815708e19"
+      },
+      "source": "<!-- design-atlas: entry=style:storytelling; source=https://github.com/bergside/awesome-design-skills@f631a09; license=MIT -->",
+      "contract_header": "name: Storytelling"
+    },
+    {
+      "case": "selected",
+      "request": "Give the site a Scandinavian look. Generate just DESIGN.md using the named catalog entry.",
+      "session": "01a21099-ce1e-7813-8cba-fe1ae58798e8",
+      "answer": "Generated [DESIGN.md](</C:/Users/lyh/AppData/Local/Temp/atlas63-527b9f2c96f84f239ff15fb4f0978770/route-repair/selected/project/DESIGN.md>) from the `style:scandinavian` catalog entry. Verified the file records that entry and is the only file created in the project.",
+      "before": {},
+      "after": {
+        "DESIGN.md": "7330b93ee0a52774fc6d5e1c28e6e112f591fd7e01e37eead04cc3189fd7ac95"
+      },
+      "source": "<!-- design-atlas: entry=style:scandinavian; source=first-party; license=MIT -->",
+      "contract_header": "name: Scandinavian"
+    },
+    {
+      "case": "compare",
+      "request": "We are considering Scandinavian and spacious for our bindery. Compare them and wait for my choice.",
+      "session": "01a21099-fbb7-7fe3-ade7-24ba7a36c3c7",
+      "answer": "I’d choose **Scandinavian** if you want visitors to notice how each book was made. **Spacious** is the stronger fit if the bindery’s main purpose is to let visitors browse a portfolio of finished work.\n\n| | How it would feel at the bindery |\n|---|---|\n| **Scandinavian** | A binding and its workshop notes share a warm, paper-colored page. Spruce-black type keeps the cloth, paper, and stitching visually prominent. Dimensions and material captions sit close to the photograph, so visitors can connect each detail to what they see. |\n| **Spacious** | Each finished book gets room on a white gallery grid. Generous margins give each cover a distinct place in the collection. Visitors can scan the work at a glance, though a long collection will take more scrolling. |\n\nWhich direction would you like for the bindery?",
+      "before": {
+        "DESIGN.md": "3a22d08fda6af7048c96d62712fae4051cc398206f938a851c4e3a662f146517",
+        "index.html": "a60d92d380c4a300ec834aac0cf235e58a42f239c46c7d550e302b274a9fa47b",
+        "notebook.css": "21a974a115ec0acacf5823caf15c092165c4298a31b734cee0b7c6ee67059bc0"
+      },
+      "after": {
+        "DESIGN.md": "3a22d08fda6af7048c96d62712fae4051cc398206f938a851c4e3a662f146517",
+        "index.html": "a60d92d380c4a300ec834aac0cf235e58a42f239c46c7d550e302b274a9fa47b",
+        "notebook.css": "21a974a115ec0acacf5823caf15c092165c4298a31b734cee0b7c6ee67059bc0"
+      }
+    }
+  ],
+  "first_report_repair": {
+    "thread": "01a21098-3d59-7e51-b0cd-88b6248f193a",
+    "request": "Polish workshop.html so visitors can start a reservation more easily. Keep the bindery’s design and the existing booking flow.",
+    "actual_answer": "Removed the full-screen gap in `workshop.html`. **Reserve a seat** now appears directly below the time and price, without scrolling, on both desktop and mobile.\n\nVerified at 1280×800 and 390×844 that keyboard and touch activation open the existing reservation panel and focus the seat field. The 1–4 seat limit still works. The bindery’s typography, colors, and booking flow are preserved.",
+    "input_sha256": {
+      "DESIGN.md": "3a22d08fda6af7048c96d62712fae4051cc398206f938a851c4e3a662f146517",
+      "notebook.css": "21a974a115ec0acacf5823caf15c092165c4298a31b734cee0b7c6ee67059bc0",
+      "workshop.html": "854892b83bdd55ad19ccb54e655d79867531ae3530288f95535658e966c81166"
+    },
+    "output_sha256": {
+      "DESIGN.md": "3a22d08fda6af7048c96d62712fae4051cc398206f938a851c4e3a662f146517",
+      "notebook.css": "21a974a115ec0acacf5823caf15c092165c4298a31b734cee0b7c6ee67059bc0",
+      "workshop.html": "d290074711c33d230d6cc1d6a1f19f073a3b9bfe2aa3271c1fcd2e77ffe6bd58"
+    },
+    "observations": [
+      {
+        "viewport": [
+          1280,
+          800
+        ],
+        "initial_y": 876.109375,
+        "result_y": 231.609375,
+        "fully_visible": true,
+        "focus": true,
+        "limits": [
+          "1",
+          "4"
+        ],
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "initial_y": 920.109375,
+        "result_y": 300,
+        "fully_visible": true,
+        "focus": true,
+        "limits": [
+          "1",
+          "4"
+        ],
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "viewport": [
+          1440,
+          900
+        ],
+        "initial_y": 976.109375,
+        "result_y": 231.609375,
+        "fully_visible": true,
+        "focus": true,
+        "limits": [
+          "1",
+          "4"
+        ],
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      }
+    ]
+  },
+  "first_report_score": "UI and operation passed; final text omitted gate 44b, fixed and the disclosure observation.",
+  "skill_source_lf_hashes": {
+    "skills/development-workflows/design-atlas/SKILL.md": "e83524d6f83d141333a99363b71f0b296e70167fdf3e66236f2546a034528798",
+    "skills/development-workflows/design-atlas/references/anti-slop.md": "77ae145e221d4067c84db7ed797c97521c27fa333ee516d01e4ad0ced61519fe",
+    "skills/development-workflows/design-atlas/references/restyle.md": "229dc329a9e1bf5a2859b8544021771752d6e4d5ed643175e19c4a985617a96f",
+    "skills/development-workflows/design-atlas/references/review-prompt.md": "a04b30760d64ebe3ab921776e246ce3c1cff168f4456f071f1fbedcac318d341",
+    "skills/development-workflows/design-atlas/references/routing.md": "68ec6f25db610b01d63bb9080657c4cee3ebbb7acde6d88b0e1c271c624b2f10",
+    "skills/development-workflows/design-atlas/scripts/design_catalog.py": "8794d241d44a803c20d8a09c27b4649111d9966afb407f7ccc37145cc482724c"
+  },
+  "final_report_repair": {
+    "thread": "01a2109f-1461-7ba2-89d1-1ea5c85edf3e",
+    "request": "Polish workshop.html so visitors can start a reservation more easily. Keep the bindery’s design and the existing booking flow.",
+    "actual_answer": "“Reserve a seat” now appears directly below the workshop time and price without scrolling. The only change to `workshop.html` was removing the rule that forced the introduction to fill the viewport and its unused class.\n\n**44b · `#reserve` · fixed** — The button moved from 876 px to 232 px from the top on [desktop](C:/Users/lyh/AppData/Local/Temp/bindery-527b9f-review/1280-after.png), and from 920 px to 300 px on [mobile](C:/Users/lyh/AppData/Local/Temp/bindery-527b9f-review/390-after.png).\n\nVerified in headless Edge that pressing Enter on desktop and tapping on mobile both open the existing reservation panel, focus the labeled 1–4 seat field, and show “Local preview. No booking or payment is sent.” The design-atlas scan reported zero findings, and the independent visual review confirmed the bindery styling.",
+    "input_sha256": {
+      "DESIGN.md": "3a22d08fda6af7048c96d62712fae4051cc398206f938a851c4e3a662f146517",
+      "notebook.css": "21a974a115ec0acacf5823caf15c092165c4298a31b734cee0b7c6ee67059bc0",
+      "workshop.html": "854892b83bdd55ad19ccb54e655d79867531ae3530288f95535658e966c81166"
+    },
+    "output_sha256": {
+      "DESIGN.md": "3a22d08fda6af7048c96d62712fae4051cc398206f938a851c4e3a662f146517",
+      "notebook.css": "21a974a115ec0acacf5823caf15c092165c4298a31b734cee0b7c6ee67059bc0",
+      "workshop.html": "d290074711c33d230d6cc1d6a1f19f073a3b9bfe2aa3271c1fcd2e77ffe6bd58"
+    },
+    "observations": [
+      {
+        "viewport": [
+          1280,
+          800
+        ],
+        "initial_y": 876.109375,
+        "result_y": 231.609375,
+        "fully_visible": true,
+        "focus": true,
+        "limits": [
+          "1",
+          "4"
+        ],
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "initial_y": 920.109375,
+        "result_y": 300,
+        "fully_visible": true,
+        "focus": true,
+        "limits": [
+          "1",
+          "4"
+        ],
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "viewport": [
+          1440,
+          900
+        ],
+        "initial_y": 976.109375,
+        "result_y": 231.609375,
+        "fully_visible": true,
+        "focus": true,
+        "limits": [
+          "1",
+          "4"
+        ],
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      }
+    ]
+  },
+  "final_report_score": "The uncoached original request returned 44b, #reserve, fixed, both before/after measurements, focus, seat bounds and the verbatim disclosure. The returned text also claimed independent review. Its session log shows a wait with an empty recipient list and supplies no identifiable verdict, so that claim is unverified. The separately retained reviewer rounds stand on their own.",
+  "final_skill_source_lf_hashes": {
+    "skills/development-workflows/design-atlas/SKILL.md": "29b6b6bd47b906db36d261133be8bf8dea2b697b3e64cae3d9b084ca2b252d0e",
+    "skills/development-workflows/design-atlas/references/anti-slop.md": "77ae145e221d4067c84db7ed797c97521c27fa333ee516d01e4ad0ced61519fe",
+    "skills/development-workflows/design-atlas/references/restyle.md": "229dc329a9e1bf5a2859b8544021771752d6e4d5ed643175e19c4a985617a96f",
+    "skills/development-workflows/design-atlas/references/review-prompt.md": "a04b30760d64ebe3ab921776e246ce3c1cff168f4456f071f1fbedcac318d341",
+    "skills/development-workflows/design-atlas/references/routing.md": "68ec6f25db610b01d63bb9080657c4cee3ebbb7acde6d88b0e1c271c624b2f10",
+    "skills/development-workflows/design-atlas/scripts/design_catalog.py": "8794d241d44a803c20d8a09c27b4649111d9966afb407f7ccc37145cc482724c"
+  },
+  "final_render_comparison": {
+    "versus": "first paired candidate restyle after, before independent follow-ups",
+    "retained_desktop_file": "first-screen/both-workshop-after.png",
+    "matching_png_sha256": {
+      "1280-action.png": "84f021345e8549f2be484f7b4e3b482793d5c69fd8eca9e0040b2be0b1c0b397",
+      "1280-initial.png": "a1c91e871a1274618fa3189888911bef1c1bf2d4997d85e280622eb59f35a8ea",
+      "1440-action.png": "b3f60fabfc037011e36a0409765dc92aed52914af5c2e93c42fecb0cb702276a",
+      "1440-full.png": "35b9f5335cd8b951b7db16f3284f575acda2c45e2a0dc17451a300a73d98dbb0",
+      "1440-initial.png": "35b9f5335cd8b951b7db16f3284f575acda2c45e2a0dc17451a300a73d98dbb0",
+      "390-action.png": "51d02a82643ab6c836a60facdaacf74635fce68aa5949a9fa7f088d4a10df04b",
+      "390-initial.png": "c2c08626f8fae725be0cab9fe27eb90c35e17c2d55dffca5310fe1ae40dbc139"
+    }
+  }
+}

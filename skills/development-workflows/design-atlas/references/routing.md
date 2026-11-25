@@ -55,11 +55,13 @@ text counts at half weight, so the user's words win.
 | --- | --- |
 | No DESIGN.md, nothing named (default) | Run `route`, take #1, run `apply`, show the Picks block, continue implementing. Do not wait. |
 | `confidence: low` | Still take #1 and continue. Say the match is weak in the Picks block and list the signals used. |
-| User asks to compare, or "recommend a few" / "给我几个选择" | Show the top 3 from `route --n 3` with one reason each, then wait for a choice. |
+| User asks to compare, or "recommend a few" / "给我几个选择" | Use `show` for the named candidates or `route --n 3` for open-ended options. Compare their materials and wait for a choice. |
 | User names a scene and also a brand or style | Do not route. List the candidates and wait (existing rule). |
 | User names one brand, style, theme, or scene | Do not route. `show` / `apply` that entry. |
 | Headless or batch run (no one to answer) | Take #1. Do not ask. |
 | DESIGN.md already exists | Do not route. Implement from it unless the user asked to change it. |
+
+For `style:scandinavian`, a named request or a selection after comparison authorizes application. Show its offline reference when comparing. An unnamed mood, project keywords, genre or reroll alone cannot select it.
 
 ## Picks block
 

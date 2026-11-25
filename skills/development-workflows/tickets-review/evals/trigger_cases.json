@@ -1,0 +1,149 @@
+{
+  "note": "tickets-review 0.1.0 trigger boundary. Covers remote GitHub Issues, spec+sub-issue ticket graphs, and local .scratch ticket audits with report persistence and optimization handoff prompts, while excluding trellis-plan-review, matt-implement-prompt, /to-spec, /to-tickets, code-review, gh-pr-release, and direct ticket editing or implementation.",
+  "recommended_threshold": 0.49,
+  "description_required_concepts": [
+    "ticket_scope",
+    "review_action",
+    "artifact_handoff"
+  ],
+  "positive_concepts": {
+    "ticket_scope": [
+      "tickets",
+      "ticket",
+      "github issues",
+      "github issue",
+      "remote tickets",
+      "remote issues",
+      "spec tickets",
+      "scratch",
+      "远程 tickets",
+      "远程 ticket",
+      "远程 issue",
+      "所有远程 tickets",
+      "子票",
+      "票据"
+    ],
+    "review_action": [
+      "review",
+      "audit",
+      "check",
+      "verify",
+      "审查",
+      "审阅",
+      "审计",
+      "检查",
+      "复核",
+      "核查"
+    ],
+    "artifact_handoff": [
+      "report",
+      "handoff",
+      "prompt",
+      "optimize",
+      "readiness",
+      "dependencies",
+      "报告",
+      "优化",
+      "可执行性",
+      "依赖",
+      "落盘"
+    ],
+    "slash_name": [
+      "tickets review"
+    ]
+  },
+  "negative_patterns": [
+    "trellis",
+    "prd md",
+    "design md",
+    "matt implement",
+    "implement spec",
+    "to spec",
+    "to tickets",
+    "拆票",
+    "写一份 spec",
+    "code review",
+    "pr review",
+    "review this pr",
+    "审查这个 pr",
+    "合并 pr",
+    "发布 release",
+    "直接开始实现",
+    "帮我关闭所有 issue",
+    "改一下业务代码"
+  ],
+  "should_trigger": [
+    {
+      "text": "/tickets-review",
+      "family": "slash-bare"
+    },
+    {
+      "text": "请帮我审查这个项目的所有远程 tickets",
+      "family": "zh-all-remote-tickets"
+    },
+    {
+      "text": "审阅 GitHub issues 里的 Spec #63 和所有子票，检查代码契约和依赖关系，输出审查报告和优化 prompt",
+      "family": "zh-spec-subissues-with-handoff"
+    },
+    {
+      "text": "帮我审计 .scratch/auth-refactor/issues 下的本地票据，核查验收标准和可执行性并落盘报告",
+      "family": "zh-local-scratch-tickets"
+    },
+    {
+      "text": "Review all open remote GitHub issues for this repo against the codebase and give me a report plus an optimization handoff prompt",
+      "family": "en-all-remote-issues"
+    },
+    {
+      "text": "Audit spec tickets #63-#68 for AFK readiness, code alignment, and parallel conflicts before implementation",
+      "family": "en-spec-tickets-audit"
+    },
+    {
+      "text": "/tickets-review #63 — 检查这些子票能不能直接交给 agent 跑，并生成本地 md 报告",
+      "family": "bilingual-slash-spec"
+    },
+    {
+      "text": "核查远程 issue #12 和 #13 的前置依赖与测试契约有没有矛盾，先别改票",
+      "family": "zh-read-only-ticket-check"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "帮我审查这个 PR #42 的代码 diff 有没有 bug 和安全隐患",
+      "family": "pr-diff-review"
+    },
+    {
+      "text": "直接开始实现 #64 和 #65，把代码改完跑通测试",
+      "family": "direct-implementation"
+    },
+    {
+      "text": "帮我关闭所有 issue 并创建 v1.2.0 发布 release",
+      "family": "close-issues-and-release"
+    },
+    {
+      "text": "改一下业务代码里的登录超时配置，把 30 秒改成 60 秒",
+      "family": "routine-code-edit"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "审阅 trellis 父子任务 .trellis/tasks/08-26-font-picker 的 prd md 和 design md",
+      "family": "trellis-plan-review"
+    },
+    {
+      "text": "把 Spec #63 和子票编译成新会话执行的 matt implement prompt 并自动关单",
+      "family": "matt-implement-prompt"
+    },
+    {
+      "text": "把刚才讨论的方案用 to-spec 写一份 spec 再用 to-tickets 拆票发布到 GitHub",
+      "family": "to-spec-and-to-tickets"
+    },
+    {
+      "text": "对当前分支跑一次 code review，检查自 main 以来的提交是否符合编码规范",
+      "family": "code-review-branch"
+    },
+    {
+      "text": "帮我给 PR #50 写一段发布说明并合并 pr",
+      "family": "gh-pr-release"
+    }
+  ]
+}

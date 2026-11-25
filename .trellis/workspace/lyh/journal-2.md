@@ -485,3 +485,26 @@ Topics: [.trellis/research/design-atlas-gpui-material.md](../../research/design-
 ### Status
 
 [OK] **Completed**
+
+
+## Session 82: design-atlas 0.8.0 按页面任务判定与渲染对照
+<!-- trellis-session: v=2 fp=f499dbe62df0f042 -->
+
+**Date**: 2026-11-24
+**Task**: design-atlas 0.8.0 按页面任务判定与渲染对照
+**Branch**: `codex/design-atlas-68`
+
+### Summary
+
+同一设备目录的旧版审查将任务文字计入营销字数。候选版按任务判定不适用，并用完整可见记录、操作及实际滚动位置核对密度。原始调用与 Web 截图收录在 .trellis/research/design-atlas-63/68/report.md；无原生 GPUI 目标。
+Topics: [.trellis/spec/guides/skill-authoring-conventions.md](../../spec/guides/skill-authoring-conventions.md)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ed99d785da44b9fd3af67fa33439497f91bfe63e` | merge(design-atlas): 合并按任务审查与北欧风格目录 |
+
+### Status
+
+[OK] **Completed**

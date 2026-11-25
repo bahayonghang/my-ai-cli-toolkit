@@ -1,6 +1,6 @@
 ---
 name: design-atlas
-description: "UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates. Use when the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格. Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), 3D scene or SVG asset work, code animation or video, or backend work."
+description: "Offline UI catalog of 203 design languages (84 brands, 68 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates. Use when the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a product (Linear, Vercel, Stripe, Apple), use a look such as minimal, Scandinavian / 北欧, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格. Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), 3D scene or SVG asset work, code animation or video, or backend work."
 category: development-workflows
 tags:
   - design-system
@@ -10,7 +10,7 @@ tags:
   - design-tokens
   - accessibility
   - anti-ai-slop
-version: 0.7.0
+version: 0.8.0
 argument-hint: "[entry-id | style request | audit <path>]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
@@ -66,10 +66,10 @@ Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`.
 1. **Classify the request.** List or compare only → stop after step 3 output. `audit <path>` → the Audit branch below. Restyle or de-template an existing page → the Restyle branch below. Build new UI → continue to step 2.
 2. **Check for an existing design source.** If the project root has `DESIGN.md` (any letter case), implement from it and skip to step 6. Replace it only when the user asks for a different design; then use `apply --force`, which keeps a timestamped backup.
 3. **Select an entry.**
-   - The user names a brand, style, theme, or scene → `show` it.
+   - The user asks to use a brand, style, theme, or scene → `show` it. Treat a style mentioned as the subject of the content or as an exclusion as part of the brief.
    - The user names BI, 经营分析, 数据看板, or another business scene → `route` or `list --kind scene`; the scene wins.
    - The user names a scene and also a brand or style → list those candidates and wait for a choice. Do not merge two entry bodies into one `DESIGN.md`.
-   - The user asks to compare or for a few options → `route --n 3`, give one reason each, and wait.
+   - The user asks to compare → `show` each named candidate; for open-ended options use `route --n 3`. Give one reason each and wait for a choice. `style:scandinavian` is opt-in. Offer its offline preview at `<skill-dir>/assets/reference/scandinavian/index.html` when requested. A generic request for simplicity, de-templating or brand preservation keeps the existing design.
    - Otherwise (a mood, audience, industry, or no hint) → run `signals` and `route` with the user's words, **take #1 without waiting**, then put the Picks block (chosen entry and one-line reason, 2 alternates, how to switch) at the top of the reply and continue. On `confidence: low` still take #1, say the match is weak, and list the signals used. Headless runs take #1 and do not ask. Rules and template: `references/routing.md`.
    - For a list request, print the grouped `list` output (or a filtered part) and stop.
 4. **Write `DESIGN.md`.** Run `apply` with the project root. Do not hand-copy entry files; `apply` adds the provenance comment and handles overwrite protection. `style:airy-glass` has a colourway dial: `apply` picks its colours from the project's accent token, then from content keywords (pass the user's words as `--prompt`), then falls back to `mint`. It always writes the light group and the dark group together, each with its measured contrast table. Copy the printed `palette:` line into the Picks block. Pass `--palette` only when the user names a colourway or a hue.
@@ -88,15 +88,15 @@ If the user wants a different look, use `route` / `apply`, with `--force` when `
 If a reference names attributes to borrow, customize `DESIGN.md` and list each one; a faithful recreation routes to `image-to-ui-skill`.
 Keep business logic, data, routes, form semantics, the Keep list, and the dependency set.
 Fix Floor findings, then what blocks the main task, then House, Reflex, and Finish. Change only the few things with the largest effect.
-Verify before and after at the same viewport, then Workflow steps 7–8, apply step 9 when the source is a `brand:*` entry, and report what changed, what stayed, and what is unverified.
+Repeat the task with the same data, starting state and viewport. Complete Workflow steps 7–8 and, for a `brand:*` entry, step 9. In the final report give each changed judgement its gate ID, location and result, with the before/after observation for `fixed`. State what stayed and what is unverified.
 
 ### Audit branch: `audit <path>`
 
-Report only; change no files.
+Keep the audited project byte-for-byte unchanged. Return findings in the reply or save requested evidence outside the project. Start the report with the user’s task and where it starts on screen.
 
 1. Run `node "<skill-dir>/scripts/slop_check.mjs" <path> --json` (`--scope component` for a component directory, `--scope app` for an app shell; `--design <file>` when `DESIGN.md` is not above `<path>`). On exit 2 with `no scannable files`, report that the mechanical gates did not run and walk every gate in `references/anti-slop.md` section 3 by hand; do not report a pass.
-2. Walk the judged checklist in `references/anti-slop.md` section 6 against the source, and screenshots if a running page is available.
-3. Report the summary line, findings grouped by tier (Floor, House, Reflex) with file:line and the fix, judged items that fail, waivers in force, and any rejected waiver. Include a Keep section listing required information and deliberate choices to leave alone. Never conclude that the page was AI-generated. Offer fixes as a list the user can approve; do not apply them.
+2. Walk the judged checklist in `references/anti-slop.md` section 6 using its result format. Observe the initial viewport before any scroll, then try the relevant search, reading path or primary action. For a native app use its window. Record missing observations as `unverified`.
+3. Report the summary line, findings grouped by tier (Floor, House, Reflex) with file:line and the fix, judged results with their locations and evidence, waivers in force, and any rejected waiver. Include a Keep section listing required information and deliberate choices to leave alone. Never conclude that the page was AI-generated. In the final report, label each judged finding even when it also appears in the prose summary. For example: `44b · #checkout · fail: top 836px at scrollY 0, viewport 1280 × 800`. Identify product observations outside the checklist separately. Offer fixes the user can approve.
 
 ## Anti-slop Floor
 
@@ -134,4 +134,8 @@ Every page this skill builds must pass `references/anti-slop.md`.
 
 ## Output
 
-Report: the Picks block or the named entry and reason, the colourway and its reason when the entry has a dial, `DESIGN.md` path (and backup path if any), customizations, changed files, token layer location, runtime verification with screenshot paths, the `slop_check` summary line, waivers in force, the review verdict, and remaining gaps.
+For a build, report the Picks block or named entry and reason, the colourway choice when applicable, `DESIGN.md` and any backup path, customizations, changed files, and token layer location.
+
+For audit and restyle, include one line in the **final reply** for each judged finding: `gate ID · location · result — observed evidence`. For a correction, write `fixed` and give the before/after observation under the same conditions. Example: `40 · .notice · fixed — warning text rose from 2.6:1 to 6.1:1 on the plum panel.` Add a Keep line naming the information and behavior you verified at the point of use, including any disclosure shown by an action you exercised.
+
+Include runtime checks with screenshot paths, the `slop_check` summary, waivers and gaps. Attribute an independent verdict to the reviewer's actual response and give its session or evidence location. If that response is unavailable, report `自检，非独立复核` and describe what you checked yourself.
