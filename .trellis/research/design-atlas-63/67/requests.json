@@ -1,0 +1,100 @@
+{
+  "runner": "Claude Code noninteractive, --permission-mode acceptEdits; Read, Glob, Grep, Bash; separate clean project for each case, same session resumed after comparison. Full answer text below with absolute project and skill paths normalized.",
+  "request_prefix": "使用 <skill-dir>/SKILL.md 中的 design-atlas。项目目录是 <project-root>。",
+  "fixture_files": {
+    "index.html": "<!doctype html><html lang=\"en\"><title>Market index</title><body><main><h1>Market index</h1><p>Read today&rsquo;s table by district.</p></main></body></html>",
+    "DESIGN.md": "# Coastline identity\nKeep the blue wordmark (#143d73), bold type and labelled chart series.\n"
+  },
+  "comparison_observation": "Directory enumerated empty after the compare answer and before sending the selected follow-up.",
+  "earlier_incomplete_runs": "Two initial Codex CLI calls exited 1 during workspace routing discovery before model output. A longer first read-only audit request exceeded the 260 s process budget; the plain control below requested only the design decision.",
+  "cases": [
+    {
+      "case": "named",
+      "prompt": "请为印刷目录采用北欧风格，生成一份项目 DESIGN.md。现在只需要设计规范。",
+      "model": [
+        "anyrouter-top/claude-fable-5-2"
+      ],
+      "session": "252da96e-6549-4d5d-9bcc-e79d1c9729bc",
+      "files_before_sha256": {},
+      "files_after_sha256": {
+        "DESIGN.md": "7330b93ee0a52774fc6d5e1c28e6e112f591fd7e01e37eead04cc3189fd7ac95"
+      },
+      "design_provenance": "<!-- design-atlas: entry=style:scandinavian; source=first-party; license=MIT -->",
+      "answer": "已按 design-atlas 把北欧风格（`style:scandinavian`）写成项目的 `DESIGN.md`，内容是目录条目原文，没有做任何定制；按你的要求只出规范，没有实现页面，也没有跑运行验证和 anti-slop 检查。\n\n- **文件**：`<project-root>\\DESIGN.md`。项目目录原本为空，没有覆盖任何东西，也没有备份文件。\n- **为什么合适**：这个条目本身就是为“物件与其记录同处一页”设计的，和印刷目录的图版加说明结构对得上。\n- **色彩**：暖纸色底 `#F5F2E9`，云杉黑文字 `#1C302D`，两个数据系列色为墨绿 `#215449` 和赤陶 `#934124`，浅色和深色两组都带对比度表。\n- **字体**：Work Sans，标题中等字重、大小写混排，尺寸数值用等宽数字对齐。\n- **版式**：物件占大栏，记录在旁对齐；记录内间距 8px，组间 24px，章节 48px；圆角 2–4px。\n- **对印刷品的约束**：不给产品照片或作品染色以迎合页面，保留原始裁切、承印物和油墨色相；系列标记要配形状或图案，保证单色复制时可辨。\n\n有一点需要你知道：这份规范是按屏幕界面写的（px 单位、深色模式、焦点环、悬停状态）。如果“印刷目录”指的是实际付印的纸质品，它还缺 mm/pt 尺寸、出血、CMYK 色值这类印刷参数，需要再定制；如果指的是在屏幕上展示印刷品的目录页面，现在就可以直接用。"
+    },
+    {
+      "case": "compare",
+      "prompt": "我们在做版画目录。请比较 Scandinavian、minimal、spacious 和 atelier，看版画及读图注时会有什么不同？先让我选。",
+      "model": [
+        "anyrouter-top/claude-fable-5-2"
+      ],
+      "session": "601582f9-8e0b-495e-9b69-0276fab16a7f",
+      "files_before_sha256": {},
+      "files_after_sha256": {},
+      "design_provenance": null,
+      "answer": "四个条目都读完了。项目目录是空的，没有 `DESIGN.md`，我也还没写任何文件，等你选。\n\n我的推荐是 **1. Scandinavian**：四个里只有它明文规定不改动作品的裁切、纸色和墨色，并且让图注紧贴版画。\n\n| | 看版画 | 读图注 | 要留意 |\n| --- | --- | --- | --- |\n| **1. `style:scandinavian`** 北欧 | 暖纸色底 `#F5F2E9`。版画占大栏，画框跟随作品自身比例。保留原始裁切、纸基和墨色，深色模式下也不变。 | 图注 14px、行高 1.45，离作品 8px，组与组之间 24px。尺寸等数值用等宽数字对齐在同一条边上。 | 有浅色和深色两套。不放通用主按钮，因为任务是看和读。 |\n| **2. `style:minimal`** 极简 | 灰白底 `#F4F4F1`、近黑字，Inter 48px 标题。条目没有任何图片规定。 | 没有图注规定。可用的小字只有 12px 等宽大写标签，间距档位 4–32px。 | 只是一组 token，版画怎么摆、图注怎么排都要我们自己定。 |\n| **3. `style:spacious`** 宽松 | 纯白底 `#FFFFFF`，8pt 网格，留白最多。条目没有图片规定。 | 没有图注规定。留白规则会把图注和作品拉开。 | 主色是亮蓝 `#3B82F6`，辅色紫。我的判断：纯白会让版画的纸色显脏，蓝按钮会和墨色抢眼。 |\n| **4. `theme:atelier`** 工坊 | 石灰纸色底。主图做成装裱的版画：棉纸卡纸、细斜边、左上方打光。页面背后有一层缓慢流动的 WebGL 光雾。 | 展签式图注：作品名用墨色，材料和编号用灰色。版数用铅笔色写在画下方，前面留一道手写横线。标题是 Sentient 细体衬线。 | 氛围最强，实现也最重。它对图片有暖调、降对比、降饱和的处理，会改变版画的颜色。它还不允许两张同尺寸的图并排，等大网格的目录页会受限。字体走外部 CDN。 |\n\n- **选 1**：目录以查阅为主，读者要对照作品看尺寸、版次、纸张。\n- **选 4**：目录更像一本展览图录，愿意为气氛多花实现成本；选它的话我建议对版画本身关掉调色处理。\n- **选 2 或 3**：只想要一个干净的底子；这两个对版画和图注没有规定，要我们自己补。\n\nScandinavian 有离线预览，可以直接在浏览器打开：\n`<skill-dir>/assets/reference/scandinavian/index.html`\n\nAtelier 的预览图没有随包附带，只有[在线版](https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/atelier.jpg)。Minimal 和 Spacious 没有预览。\n\n回复编号或条目名，我就写入 `DESIGN.md` 并开始做目录页。"
+    },
+    {
+      "case": "selected",
+      "prompt": "我选刚才比较过的北欧方案。把这个选择写成项目 DESIGN.md，页面先不做。",
+      "model": [
+        "anyrouter-top/claude-fable-5-2"
+      ],
+      "session": "601582f9-8e0b-495e-9b69-0276fab16a7f",
+      "files_before_sha256": {},
+      "files_after_sha256": {
+        "DESIGN.md": "7330b93ee0a52774fc6d5e1c28e6e112f591fd7e01e37eead04cc3189fd7ac95"
+      },
+      "design_provenance": "<!-- design-atlas: entry=style:scandinavian; source=first-party; license=MIT -->",
+      "answer": "北欧方案已写成项目的 `DESIGN.md`，页面没有做，也没有改动其他文件。\n\n- **条目**：`style:scandinavian`（北欧风格 · Scandinavian），按你在比较后的选择应用。\n- **文件**：`<project-root>\\DESIGN.md`。目录原本是空的，没有覆盖任何东西，所以没有备份文件。\n- **内容**：条目原文，没有做任何定制。这个条目没有色板选项，浅色和深色两套颜色及其对比度表都在文件里。\n\n之后要做目录页时，直接说一声，我会按这份 `DESIGN.md` 实施。"
+    },
+    {
+      "case": "generic",
+      "prompt": "我们要做简洁的账户查询页。请按目录推荐的方向为项目创建 DESIGN.md，先只交付这一份文件。",
+      "model": [
+        "anyrouter-top/claude-fable-5-2"
+      ],
+      "session": "a8abb252-2be2-4947-8049-bd4fe309a78e",
+      "files_before_sha256": {},
+      "files_after_sha256": {
+        "DESIGN.md": "eafa473d41f4d0916606521773ab03e545c8b5cf6ecd1512266017752f22ee6a"
+      },
+      "design_provenance": "<!-- design-atlas: entry=style:cafe; source=https://github.com/bergside/awesome-design-skills@f631a09; license=MIT -->",
+      "answer": "`DESIGN.md` 已创建，按目录路由的第 1 名 `style:cafe` 写入；本次只交付这一份文件，没有做页面实现。\n\n```text\nPicks\n- Chosen: style:cafe (Cafe) — 仅体裁默认项命中（editorial），暖色纸面、极简干净的版式。\n- Alternates: 2. theme:manifesto (Manifesto) · 3. theme:garden (Garden)\n- 匹配度：低（依据：仅提示词；项目目录为空，无 package.json、README、CSS token），建议确认，或直接点名其他条目。\n- Switch: 说「换成 2」/「换成 3」，或点名任意条目；DESIGN.md 会用 --force 替换并保留备份。\n```\n\n- **匹配度低的含义**：「简洁的账户查询页」没有命中任何关键词，三个候选都只靠默认体裁得分（各 2 分），第 1 名是并列后按哈希决出的。Cafe 是咖啡馆式的暖棕调，和账户查询这类工具页不一定对味。\n- **文件内容**：主色 `#5D4432`、纸面 `#F9F7F5`、文字 `#3E2B1E`，字体 Poppins 加 JetBrains Mono 标签，圆角 4/8px，间距阶 2/4/8/12/16/24/32/48。\n- **未做的事**：没有按「账户查询页」定制条目内容，也没有跑对比度检查、页面验证和 anti-slop 检查，这些属于实现阶段。\n\n文件位置：`<project-root>\\DESIGN.md`"
+    },
+    {
+      "case": "plain",
+      "prompt": "这个查阅页有点 AI 味。我只想保留原来的外观去掉模板感。先告诉我会沿用哪套设计，一句话就好，先别改文件。",
+      "model": [
+        "anyrouter-top/claude-fable-5-2"
+      ],
+      "session": "9323e128-e882-45a6-a73f-b12a6fcaa29b",
+      "files_before_sha256": {
+        "index.html": "0cce0162095a7abe0f123be6fa11cd106e96e7b27c0cc244a91c862053347303"
+      },
+      "files_after_sha256": {
+        "index.html": "0cce0162095a7abe0f123be6fa11cd106e96e7b27c0cc244a91c862053347303"
+      },
+      "design_provenance": null,
+      "answer": "沿用页面现有的外观本身，不从目录里换新主题：项目里没有 `DESIGN.md`，`index.html` 也没有任何 CSS（只有标题和一段文字，走浏览器默认样式），所以动手时我会把这套现状原样记录成 `DESIGN.md` 作为设计依据。"
+    },
+    {
+      "case": "brand",
+      "prompt": "我们想让现有索引页更简洁。先按已有 DESIGN.md 判断哪些地方值得改，继续保留品牌色和现有设计，先发建议。",
+      "model": [
+        "anyrouter-top/claude-fable-5-2"
+      ],
+      "session": "2f5aa4b3-fc22-476c-82ac-6eb97cf5ccb8",
+      "files_before_sha256": {
+        "index.html": "0cce0162095a7abe0f123be6fa11cd106e96e7b27c0cc244a91c862053347303",
+        "DESIGN.md": "564e29bcb0cc28d7bf1c60a732154c16a263093ab8577ed9a37556550b8bb737"
+      },
+      "files_after_sha256": {
+        "DESIGN.md": "564e29bcb0cc28d7bf1c60a732154c16a263093ab8577ed9a37556550b8bb737",
+        "index.html": "0cce0162095a7abe0f123be6fa11cd106e96e7b27c0cc244a91c862053347303"
+      },
+      "design_provenance": null,
+      "answer": "**结论：这个索引页已经没有可删的东西，“更简洁”这个方向基本无活可干。** 值得改的反而是另一头：`DESIGN.md` 要保留的三样东西，页面上一样都没有。以下只是建议，我没有改任何文件。\n\n## 现状\n\n- **`index.html`**：只有一行，一个 `<h1>Market index</h1>` 加一句 `Read today's table by district.`，没有任何 CSS、脚本、图片。\n- **`DESIGN.md`**：只有两行，要求保留蓝色字标（`#143d73`）、粗体字和带标签的图表序列。\n- **机械检查**（`slop_check.mjs`）：1 个 Floor FAIL（gate 34，`html`/`body` 没有 `overflow-x: clip`），0 House，0 Reflex。\n\n## 值得改的地方（按优先级）\n\n1. **先确认文件对不对。** 导语让人“按区读今天的表”，但页面上没有表，也没有图表和字标。要么这是个占位文件，要么内容在别处加载。这决定后面所有建议是否成立。\n2. **品牌色没落地。** `#143d73` 在页面上一次都没出现。建议建一个颜色 token，用在字标或标题上；它在白底上的对比度约 10.8:1（我手算的），做正文色也够。\n3. **补 `<meta name=\"viewport\">`。** 现在没有，手机上会按桌面宽度缩小渲染。\n4. **补 `overflow-x: clip`。** 这是脚本唯一的发现，一行 CSS；目前页面没有宽内容，实际风险低。\n5. **补 meta description。** 属于收尾项（F23），`lang` 和 `<title>` 已有。\n\n## 建议不动的\n\n- 标题和导语各说一件事，没有重复，不删。\n- 不加卡片、装饰、动效或新依赖。\n- 不指定字体：`DESIGN.md` 只写了“粗体”，没点名字体，现在是浏览器默认字体，这个由你们定。\n- 不替你们编表格数据、图表序列或字标文字。\n\n## 八个维度\n\n| 维度 | 现状 | 建议 |\n| --- | --- | --- |\n| 字体 | 两级字号（浏览器默认 h1 和 p），阅读顺序清楚 | 保留 |\n| 留白 | 只有浏览器默认边距 | 保留；有了表格再定间距 |\n| 层级 | h1 领头，无竞争元素 | 保留 |\n| 颜色 | 黑字白底，品牌蓝缺席 | 改（第 2 条） |\n| 动效 | 无 | 保留 |\n| 微交互 | 没有可交互控件 | 不适用 |\n| 响应式 | 缺 viewport | 改（第 3 条） |\n| 原创性 | 没有模板化的部分 | 保留 |\n\n## 未验证\n\n我只读了源码并跑了脚本，没有在浏览器里截图，也没有实测 320–1920 宽度。逐项清单里涉及图片、表单、按钮、卡片的条目都因页面没有这些元素而不适用。\n\n## 需要你确认\n\n- `index.html` 是完整的索引页吗？表格和图表应该在这一页，还是在别处？\n- 字标的文字是什么（是 “Coastline” 吗），有没有现成的素材？\n\n如果这就是完整页面，我建议只做第 2–5 条，改动在十行以内。"
+    }
+  ]
+}

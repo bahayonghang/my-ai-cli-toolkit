@@ -31,3 +31,5 @@ skills/development-workflows/design-atlas/assets/catalog/** text eol=lf
 # design-atlas reference pages are compared with palettes.json and screenshots.
 # Pin LF so core.autocrlf=true checkouts keep the committed bytes.
 skills/development-workflows/design-atlas/assets/reference/** text eol=lf
+# Preserve the signature and compressed bytes of locally bundled reference artwork.
+skills/development-workflows/design-atlas/assets/reference/**/*.png binary

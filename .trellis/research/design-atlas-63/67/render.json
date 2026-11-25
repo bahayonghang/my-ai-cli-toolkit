@@ -1,0 +1,133 @@
+{
+  "engine": "Microsoft Edge 158.0.4370.33",
+  "fixed_viewport": [
+    1180,
+    760
+  ],
+  "device_scale_factor": 1,
+  "source": "file:// offline context; original local PNG plates",
+  "css_bounds_x_y_w_h": {
+    "gallery": {
+      ".paper": [
+        355,
+        267,
+        470,
+        348
+      ],
+      "fieldset": [
+        205,
+        684,
+        311,
+        162
+      ],
+      "dl": [
+        554,
+        730,
+        421,
+        116
+      ]
+    },
+    "register": {
+      ".paper": [
+        79,
+        258,
+        509,
+        376
+      ],
+      "fieldset": [
+        644,
+        250,
+        477,
+        75
+      ],
+      "dl": [
+        644,
+        389,
+        477,
+        146
+      ]
+    },
+    "sheet": {
+      ".paper": [
+        94,
+        184,
+        562,
+        416
+      ],
+      "fieldset": [
+        749,
+        338,
+        372,
+        93
+      ],
+      "dl": [
+        749,
+        488,
+        372,
+        116
+      ]
+    }
+  },
+  "contrast_ratio_canvas_mount": {
+    "dark": {
+      "ink": [
+        13.79,
+        10.75
+      ],
+      "secondary": [
+        9.07,
+        7.07
+      ],
+      "edge": [
+        5.56,
+        4.33
+      ],
+      "a": [
+        9.62,
+        7.5
+      ],
+      "b": [
+        8.09,
+        6.3
+      ],
+      "focus": [
+        8.09,
+        6.3
+      ]
+    },
+    "light": {
+      "ink": [
+        12.42,
+        11.03
+      ],
+      "secondary": [
+        6.64,
+        5.89
+      ],
+      "edge": [
+        3.99,
+        3.54
+      ],
+      "a": [
+        7.72,
+        6.86
+      ],
+      "b": [
+        6.21,
+        5.51
+      ],
+      "focus": [
+        6.76,
+        6.0
+      ]
+    }
+  },
+  "interactions": [
+    "Tab to appearance and Space toggles paper",
+    "Artwork interior pixel-for-pixel identical on light and dark paper (2px crop excludes fractional layout edges)",
+    "ArrowRight isolates each plate and updates caption and image description",
+    "390x844 has no horizontal overflow; touch-sized plate control changes print",
+    "Fresh load follows dark system preference"
+  ],
+  "external_requests": []
+}

@@ -1,0 +1,24 @@
+{
+  "baseline": "14255fb1",
+  "clean_checkouts": {
+    "awesome-design-md": "3b605329240ce735b510037cca322f1831fdd7f8",
+    "awesome-design-skills": "f631a09b4fcc0166f2e2c1a8c81906ef680c57e8"
+  },
+  "hallmark_commit_preserved": "8f6969f8922caabde9de1784959eae11ddf68073",
+  "first": [
+    "themes: kept (no --hallmark), 50 entries",
+    "brands=84 styles=69 themes=50 scenes=1 files_written=2 files_removed=0"
+  ],
+  "files_changed_from_existing_catalog_with_new_inputs": [
+    "index.json",
+    "styles/scandinavian.md"
+  ],
+  "second": [
+    "themes: kept (no --hallmark), 50 entries",
+    "brands=84 styles=69 themes=50 scenes=1 files_written=0 files_removed=0"
+  ],
+  "second_pass_bytes_and_timestamps_unchanged": 216,
+  "distribution_matches_rebuilt_tree": true,
+  "all_existing_index_entries_unchanged": true,
+  "first_party_and_distributed_sha256": "81d455618b3607c47a813ed7997d0a61a43ad5a3b5cc6200d61e4e6a36d433e2"
+}

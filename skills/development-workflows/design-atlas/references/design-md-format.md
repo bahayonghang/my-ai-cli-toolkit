@@ -6,7 +6,7 @@ Use this file when you read a catalog entry, customize a project `DESIGN.md`, or
 
 | `format` in `index.json` | Count | How to read tokens |
 | --- | --- | --- |
-| `stitch` | 142 | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
+| `stitch` | 143 | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
 | `theme` | 50 | `theme:*` entries from hallmark. Stitch-shaped YAML frontmatter with OKLCH color strings, an `x-theme` block, and the original `:root` CSS block under `## Colors`. See section 1.1. |
 | `legacy` | 11 | No frontmatter. Brand entries keep tokens in numbered sections such as "2. Color Palette & Roles" and "3. Typography Rules". `scene:*` entries also use `legacy`. |
 

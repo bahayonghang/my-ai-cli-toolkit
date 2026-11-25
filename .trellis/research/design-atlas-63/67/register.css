@@ -1,0 +1,12 @@
+/* Alternate study: a horizontal heading above a compact ruled specimen register. */
+@media (min-width: 761px) {
+  main { grid-template-areas: "heading heading" "media tools"; grid-template-columns: 1.15fr 1fr; gap: 24px 36px; margin-top: 32px; }
+  .heading { display: flex; align-items: end; justify-content: space-between; gap: 48px; padding: 0 0 20px; border-bottom: 1px solid var(--edge); }
+  .heading p { margin: 0; max-width: 38ch; }
+  .mount { padding: 20px; }
+  .tools { padding-top: 12px; }
+  fieldset { border-top: 0; }
+  legend { padding-top: 0; }
+  h2 { margin-top: 35px; }
+  dl > div { padding: 14px 0; }
+}

@@ -4,11 +4,11 @@
 
 ## 用途概览
 
-UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates.
+Offline UI catalog of 203 design languages (84 brands, 68 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates.
 
 ## 触发场景
 
-- the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格
+- the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a product (Linear, Vercel, Stripe, Apple), use a look such as minimal, Scandinavian / 北欧, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格
 - Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), 3D scene or SVG asset work, code animation or video, or backend work
 
 ## 元数据
@@ -31,7 +31,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | 目录 | 1 | 配套 agent |
-| `skills/development-workflows/design-atlas/assets` | 目录 | 215 | 素材资源 |
+| `skills/development-workflows/design-atlas/assets` | 目录 | 220 | 素材资源 |
 | `skills/development-workflows/design-atlas/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/design-atlas/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/development-workflows/design-atlas/references` | 目录 | 11 | 引用资料 |

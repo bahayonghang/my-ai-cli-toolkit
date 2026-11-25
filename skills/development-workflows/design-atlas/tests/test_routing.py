@@ -91,6 +91,17 @@ class FixtureRoutingTests(RoutingBase):
                 top = result["picks"][0]["id"]
                 self.assertIn(top, accept, json.dumps(result["picks"], ensure_ascii=False))
 
+    def test_scandinavian_requires_a_named_style_in_the_request(self) -> None:
+        for prompt in ("Use a Scandinavian style", "Nordic", "用北欧风格", "用斯堪的纳维亚风格"):
+            with self.subTest(prompt=prompt):
+                self.assertEqual(self.route(prompt)["picks"][0]["id"], "style:scandinavian")
+
+        signals = {"project": {"description": "A Nordic design and Scandinavian furniture collection"}}
+        for prompt in ("简洁一点", "去 AI 味，保留品牌", "Browse Nordic ceramics", "zzqx"):
+            with self.subTest(prompt=prompt):
+                result = self.route(prompt, n=200, signals=signals)
+                self.assertNotIn("style:scandinavian", [pick["id"] for pick in result["picks"]])
+
     def test_law_firm_routes_to_editorial_or_modern_minimal(self) -> None:
         for prompt in ("律所官网", "Website for a law firm"):
             with self.subTest(prompt=prompt):

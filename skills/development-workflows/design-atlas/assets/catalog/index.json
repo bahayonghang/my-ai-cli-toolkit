@@ -1874,6 +1874,18 @@
       "upstream_path": "skills/roku/DESIGN.md + skills/roku/SKILL.md"
     },
     {
+      "id": "style:scandinavian",
+      "kind": "style",
+      "slug": "scandinavian",
+      "name": "北欧风格 · Scandinavian",
+      "category": "style-minimal-clean",
+      "description": "斯堪的纳维亚设计用纸色、清晰字级和紧凑的图注衬托原始材料。Nordic functionalism brings objects and their working notes onto the same sheet.",
+      "format": "stitch",
+      "path": "styles/scandinavian.md",
+      "source": "first-party",
+      "upstream_path": "assets/catalog/first-party/scandinavian.md"
+    },
+    {
       "id": "style:sega",
       "kind": "style",
       "slug": "sega",

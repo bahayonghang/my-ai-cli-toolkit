@@ -1,0 +1,12 @@
+/* Alternate study: centre the object with its caption, then read the tools below. */
+@media (min-width: 761px) {
+  main { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: "heading" "media" "tools"; max-width: 770px; gap: 22px; margin: 24px auto 40px; }
+  .heading { text-align: center; }
+  .heading h1 { font-size: 48px; }
+  .heading p { max-width: 68ch; margin: 10px auto 0; }
+  .mount { padding: 18px; display: grid; place-items: center; }
+  .paper { width: 470px; max-width: 100%; }
+  .tools { display: grid; grid-template-columns: 1fr 1.35fr; gap: 0 38px; }
+  fieldset { grid-row: span 2; }
+  h2 { margin: 0; border-top: 1px solid var(--rule); padding-top: 16px; }
+}
