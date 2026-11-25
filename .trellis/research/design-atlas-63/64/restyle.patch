@@ -1,0 +1,18 @@
+--- a/workshop.html
++++ b/workshop.html
+@@ -6,14 +6,11 @@
+   <meta name="description" content="Start a seat reservation for the pamphlet stitch workshop.">
+   <title>Pamphlet stitch workshop | Bindery notebook</title>
+   <link rel="stylesheet" href="notebook.css">
+-  <style>
+-    .introduction { min-height: 100vh; }
+-  </style>
+ </head>
+ <body>
+   <header>Bindery notebook</header>
+   <main>
+-    <section class="introduction">
++    <section>
+       <h1>Pamphlet stitch workshop</h1>
+       <p>Fold, pierce and sew a single gathering. Paper and tools are supplied.</p>
+       <p>Saturday, 10:00–12:00 · $18 per seat</p>

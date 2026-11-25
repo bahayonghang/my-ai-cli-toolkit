@@ -1,0 +1,45 @@
+--- /dev/null
++++ b/tools.html
+@@ -0,0 +1,42 @@
++<!doctype html>
++<html lang="en">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width,initial-scale=1">
++  <meta name="description" content="Look up bindery tools by name or technique.">
++  <title>Tool index | Bindery notebook</title>
++  <link rel="stylesheet" href="notebook.css">
++</head>
++<body>
++  <header>Bindery notebook</header>
++  <main>
++    <h1>Tool index</h1>
++    <label for="query">Search tools by name or technique</label>
++    <input id="query" type="search">
++    <p id="count" role="status">2 tools</p>
++    <article data-techniques="folding creasing">
++      <h2>Bone folder</h2>
++      <p><strong>Fold the sheets.</strong> Bring the corners together, then press along the fold with a bone folder.</p>
++    </article>
++    <article data-techniques="piercing">
++      <h2>Awl</h2>
++      <p><strong>Pierce the sewing holes.</strong> Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.</p>
++    </article>
++  </main>
++  <script>
++    const query = document.querySelector('#query');
++    const tools = [...document.querySelectorAll('article')];
++    const status = document.querySelector('#count');
++    query.addEventListener('input', () => {
++      const terms = query.value.toLowerCase().split(/\s+/).filter(Boolean);
++      for (const tool of tools) {
++        const text = (tool.textContent + ' ' + tool.dataset.techniques).toLowerCase();
++        tool.hidden = !terms.every(term => text.includes(term));
++      }
++      const count = tools.filter(tool => !tool.hidden).length;
++      status.textContent = count === 0 ? 'No matching tools. Try another name or technique.'
++        : count === 1 ? '1 tool' : count + ' tools';
++    });
++  </script>
++</body>
++</html>

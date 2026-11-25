@@ -88,15 +88,15 @@ If the user wants a different look, use `route` / `apply`, with `--force` when `
 If a reference names attributes to borrow, customize `DESIGN.md` and list each one; a faithful recreation routes to `image-to-ui-skill`.
 Keep business logic, data, routes, form semantics, the Keep list, and the dependency set.
 Fix Floor findings, then what blocks the main task, then House, Reflex, and Finish. Change only the few things with the largest effect.
-Verify before and after at the same viewport, then Workflow steps 7–8, apply step 9 when the source is a `brand:*` entry, and report what changed, what stayed, and what is unverified.
+Repeat the task with the same data, starting state and viewport. Complete Workflow steps 7–8 and, for a `brand:*` entry, step 9. In the final report give each changed judgement its gate ID, location and result, with the before/after observation for `fixed`. State what stayed and what is unverified.
 
 ### Audit branch: `audit <path>`
 
-Report only; change no files.
+Keep the audited project byte-for-byte unchanged. Return findings in the reply or save requested evidence outside the project. Start the report with the user’s task and where it starts on screen.
 
 1. Run `node "<skill-dir>/scripts/slop_check.mjs" <path> --json` (`--scope component` for a component directory, `--scope app` for an app shell; `--design <file>` when `DESIGN.md` is not above `<path>`). On exit 2 with `no scannable files`, report that the mechanical gates did not run and walk every gate in `references/anti-slop.md` section 3 by hand; do not report a pass.
-2. Walk the judged checklist in `references/anti-slop.md` section 6 against the source, and screenshots if a running page is available.
-3. Report the summary line, findings grouped by tier (Floor, House, Reflex) with file:line and the fix, judged items that fail, waivers in force, and any rejected waiver. Include a Keep section listing required information and deliberate choices to leave alone. Never conclude that the page was AI-generated. Offer fixes as a list the user can approve; do not apply them.
+2. Walk the judged checklist in `references/anti-slop.md` section 6 using its result format. Observe the initial viewport before any scroll, then try the relevant search, reading path or primary action. For a native app use its window. Record missing observations as `unverified`.
+3. Report the summary line, findings grouped by tier (Floor, House, Reflex) with file:line and the fix, judged results with their locations and evidence, waivers in force, and any rejected waiver. Include a Keep section listing required information and deliberate choices to leave alone. Never conclude that the page was AI-generated. In the final report, label each judged finding even when it also appears in the prose summary. For example: `44b · #checkout · fail: top 836px at scrollY 0, viewport 1280 × 800`. Identify product observations outside the checklist separately. Offer fixes the user can approve.
 
 ## Anti-slop Floor
 

@@ -1,0 +1,333 @@
+{
+  "index": {
+    "thread": "01a2106d-9e20-7bb1-b68e-c947da018529",
+    "request": "Audit index.html for me. Readers look up binding techniques here. Please include the checklist IDs for the first screen and keep the project as it is.",
+    "sha256": {
+      "before": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "index.html": "f59214437bfd605720e686307ee9c70220e590ac061c31462e8ba931e813fc5a",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd"
+      },
+      "after": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "index.html": "f59214437bfd605720e686307ee9c70220e590ac061c31462e8ba931e813fc5a",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd"
+      }
+    },
+    "changes": [],
+    "browser": "158.0.4370.33",
+    "observations": [
+      {
+        "route": "/index.html",
+        "viewport": [
+          1280,
+          800
+        ],
+        "scroll0": 0,
+        "searchBounds": {
+          "x": 304,
+          "y": 165.609375,
+          "width": 205.375,
+          "height": 38.78125
+        },
+        "start": "Bench notes\nSearch notes\n\n3 notes\n\nFold the sheets\n\nBring the corners together, then press along the fold with a bone folder.\n\nPierce the sewing holes\n\nSeat the folded sheets in a cradle. Guide the awl through the marks on the fold.\n\nTrim the thread\n\nLeave a tail long enough to tie off inside the last gathering.",
+        "filtered": "Bench notes\nSearch notes\n\n1 note\n\nPierce the sewing holes\n\nSeat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "restored": true
+      },
+      {
+        "route": "/index.html",
+        "viewport": [
+          390,
+          844
+        ],
+        "scroll0": 0,
+        "searchBounds": {
+          "x": 32,
+          "y": 165.609375,
+          "width": 205.375,
+          "height": 38.78125
+        },
+        "start": "Bench notes\nSearch notes\n\n3 notes\n\nFold the sheets\n\nBring the corners together, then press along the fold with a bone folder.\n\nPierce the sewing holes\n\nSeat the folded sheets in a cradle. Guide the awl through the marks on the fold.\n\nTrim the thread\n\nLeave a tail long enough to tie off inside the last gathering.",
+        "filtered": "Bench notes\nSearch notes\n\n1 note\n\nPierce the sewing holes\n\nSeat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "restored": true
+      },
+      {
+        "route": "/index.html",
+        "viewport": [
+          1440,
+          900
+        ],
+        "scroll0": 0,
+        "searchBounds": {
+          "x": 384,
+          "y": 165.609375,
+          "width": 205.375,
+          "height": 38.78125
+        },
+        "start": "Bench notes\nSearch notes\n\n3 notes\n\nFold the sheets\n\nBring the corners together, then press along the fold with a bone folder.\n\nPierce the sewing holes\n\nSeat the folded sheets in a cradle. Guide the awl through the marks on the fold.\n\nTrim the thread\n\nLeave a tail long enough to tie off inside the last gathering.",
+        "filtered": "Bench notes\nSearch notes\n\n1 note\n\nPierce the sewing holes\n\nSeat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "restored": true
+      }
+    ]
+  },
+  "workshop": {
+    "thread": "01a2106d-9e17-78c0-bab2-7c8c975660bd",
+    "request": "Audit workshop.html. Visitors use this local preview to start a seat reservation and choose a quantity. Tell me where the page gets in their way and leave the files as they are.",
+    "sha256": {
+      "before": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd",
+        "workshop.html": "1f897df04ed2d3325cc650a09e0a49d0f26ea883e8e45c379b0ccbe1b28b812d"
+      },
+      "after": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd",
+        "workshop.html": "1f897df04ed2d3325cc650a09e0a49d0f26ea883e8e45c379b0ccbe1b28b812d"
+      }
+    },
+    "changes": [],
+    "browser": "158.0.4370.33",
+    "observations": [
+      {
+        "route": "/workshop.html",
+        "viewport": [
+          1280,
+          800
+        ],
+        "scroll0": 0,
+        "controlBounds": {
+          "x": 304,
+          "y": 876.109375,
+          "width": 124.21875,
+          "height": 38.78125
+        },
+        "fullyVisible": false,
+        "bookingHiddenBefore": true,
+        "expanded": "true",
+        "seatFocused": true,
+        "seatLimits": [
+          "1",
+          "4"
+        ],
+        "scrollAfter": 365,
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "route": "/workshop.html",
+        "viewport": [
+          390,
+          844
+        ],
+        "scroll0": 0,
+        "controlBounds": {
+          "x": 32,
+          "y": 920.109375,
+          "width": 124.21875,
+          "height": 38.78125
+        },
+        "fullyVisible": false,
+        "bookingHiddenBefore": true,
+        "expanded": "true",
+        "seatFocused": true,
+        "seatLimits": [
+          "1",
+          "4"
+        ],
+        "scrollAfter": 392,
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "route": "/workshop.html",
+        "viewport": [
+          1440,
+          900
+        ],
+        "scroll0": 0,
+        "controlBounds": {
+          "x": 384,
+          "y": 976.109375,
+          "width": 124.21875,
+          "height": 38.78125
+        },
+        "fullyVisible": false,
+        "bookingHiddenBefore": true,
+        "expanded": "true",
+        "seatFocused": true,
+        "seatLimits": [
+          "1",
+          "4"
+        ],
+        "scrollAfter": 365,
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      }
+    ]
+  },
+  "restyle": {
+    "thread": "01a2106f-5923-7570-9231-6d5c1c833d3d",
+    "request": "Polish workshop.html so visitors can start a reservation more easily. Keep the bindery’s design and the existing booking flow.",
+    "sha256": {
+      "before": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd",
+        "workshop.html": "1f897df04ed2d3325cc650a09e0a49d0f26ea883e8e45c379b0ccbe1b28b812d"
+      },
+      "after": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd",
+        "workshop.html": "f3f9d2d9742b9a580a336b1e8948fe9468112e91f039bcd3598e9a287caef8a2"
+      }
+    },
+    "changes": [
+      "workshop.html"
+    ],
+    "browser": "158.0.4370.33",
+    "observations": [
+      {
+        "route": "/workshop.html",
+        "viewport": [
+          1280,
+          800
+        ],
+        "scroll0": 0,
+        "controlBounds": {
+          "x": 304,
+          "y": 231.609375,
+          "width": 124.21875,
+          "height": 38.78125
+        },
+        "fullyVisible": true,
+        "bookingHiddenBefore": true,
+        "expanded": "true",
+        "seatFocused": true,
+        "seatLimits": [
+          "1",
+          "4"
+        ],
+        "scrollAfter": 0,
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "route": "/workshop.html",
+        "viewport": [
+          390,
+          844
+        ],
+        "scroll0": 0,
+        "controlBounds": {
+          "x": 32,
+          "y": 300,
+          "width": 124.21875,
+          "height": 38.78125
+        },
+        "fullyVisible": true,
+        "bookingHiddenBefore": true,
+        "expanded": "true",
+        "seatFocused": true,
+        "seatLimits": [
+          "1",
+          "4"
+        ],
+        "scrollAfter": 0,
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      },
+      {
+        "route": "/workshop.html",
+        "viewport": [
+          1440,
+          900
+        ],
+        "scroll0": 0,
+        "controlBounds": {
+          "x": 384,
+          "y": 231.609375,
+          "width": 124.21875,
+          "height": 38.78125
+        },
+        "fullyVisible": true,
+        "bookingHiddenBefore": true,
+        "expanded": "true",
+        "seatFocused": true,
+        "seatLimits": [
+          "1",
+          "4"
+        ],
+        "scrollAfter": 0,
+        "disclosure": "Seat reservation\nNumber of seats (1–4)\n\nLocal preview. No booking or payment is sent."
+      }
+    ]
+  },
+  "build": {
+    "thread": "01a2106f-6fd4-7581-9a74-c355b7f04f15",
+    "request": "Build tools.html from our existing DESIGN.md. Make a searchable tool index using the bone folder and awl from the bench notes. Include each tool’s technique so readers can look it up.",
+    "sha256": {
+      "before": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "index.html": "f59214437bfd605720e686307ee9c70220e590ac061c31462e8ba931e813fc5a",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd"
+      },
+      "after": {
+        "DESIGN.md": "f8047f109537ab07b0d824e2ada952e740c363f1a2f0fe0a24afe8fc86693bbf",
+        "index.html": "f59214437bfd605720e686307ee9c70220e590ac061c31462e8ba931e813fc5a",
+        "notebook.css": "4e62aa29f57fb9724f5e24652f05eb79a7e14b2d505b28b2697b3698530f45cd",
+        "tools.html": "856fdc7d83e5f0f7d66a10283679bacfaf2f24aff439244740c22bdf2fface52"
+      }
+    },
+    "changes": [
+      "tools.html"
+    ],
+    "browser": "158.0.4370.33",
+    "observations": [
+      {
+        "route": "/tools.html",
+        "viewport": [
+          1280,
+          800
+        ],
+        "scroll0": 0,
+        "searchBounds": {
+          "x": 304,
+          "y": 165.609375,
+          "width": 205.375,
+          "height": 38.78125
+        },
+        "start": "Tool index\nSearch tools by name or technique\n\n2 tools\n\nBone folder\n\nFold the sheets. Bring the corners together, then press along the fold with a bone folder.\n\nAwl\n\nPierce the sewing holes. Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "filtered": "Tool index\nSearch tools by name or technique\n\n1 tool\n\nAwl\n\nPierce the sewing holes. Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "restored": true
+      },
+      {
+        "route": "/tools.html",
+        "viewport": [
+          390,
+          844
+        ],
+        "scroll0": 0,
+        "searchBounds": {
+          "x": 32,
+          "y": 165.609375,
+          "width": 205.375,
+          "height": 38.78125
+        },
+        "start": "Tool index\nSearch tools by name or technique\n\n2 tools\n\nBone folder\n\nFold the sheets. Bring the corners together, then press along the fold with a bone folder.\n\nAwl\n\nPierce the sewing holes. Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "filtered": "Tool index\nSearch tools by name or technique\n\n1 tool\n\nAwl\n\nPierce the sewing holes. Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "restored": true
+      },
+      {
+        "route": "/tools.html",
+        "viewport": [
+          1440,
+          900
+        ],
+        "scroll0": 0,
+        "searchBounds": {
+          "x": 384,
+          "y": 165.609375,
+          "width": 205.375,
+          "height": 38.78125
+        },
+        "start": "Tool index\nSearch tools by name or technique\n\n2 tools\n\nBone folder\n\nFold the sheets. Bring the corners together, then press along the fold with a bone folder.\n\nAwl\n\nPierce the sewing holes. Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "filtered": "Tool index\nSearch tools by name or technique\n\n1 tool\n\nAwl\n\nPierce the sewing holes. Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.",
+        "restored": true
+      }
+    ]
+  }
+}

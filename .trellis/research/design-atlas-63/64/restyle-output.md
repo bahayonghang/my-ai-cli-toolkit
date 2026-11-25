@@ -1,0 +1,3 @@
+“Reserve a seat” now appears directly below the workshop time and price on desktop and mobile. I removed the full-screen spacing from `workshop.html`, preserving the bindery’s styling and existing booking flow.
+
+Verified in headless Edge at [1280 × 800](C:/Users/lyh/AppData/Local/Temp/bindery-review-_an_m73d/1280.png) and [390 × 844](C:/Users/lyh/AppData/Local/Temp/bindery-review-_an_m73d/390.png). The button is visible without scrolling at both sizes. Keyboard activation and a mobile tap each opened the reservation preview and focused the seat-count field.

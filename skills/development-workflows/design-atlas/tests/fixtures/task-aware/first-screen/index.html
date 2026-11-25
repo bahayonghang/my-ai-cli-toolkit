@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Look up three workshop bench notes by operation or tool.">
+  <title>Bench notes | Bindery notebook</title>
+  <link rel="stylesheet" href="notebook.css">
+</head>
+<body>
+  <header>Bindery notebook</header>
+  <main>
+    <h1>Bench notes</h1>
+    <label for="query">Search notes</label>
+    <input id="query" type="search">
+    <p id="count" role="status">3 notes</p>
+    <article><h2>Fold the sheets</h2><p>Bring the corners together, then press along the fold with a bone folder.</p></article>
+    <article><h2>Pierce the sewing holes</h2><p>Seat the folded sheets in a cradle. Guide the awl through the marks on the fold.</p></article>
+    <article><h2>Trim the thread</h2><p>Leave a tail long enough to tie off inside the last gathering.</p></article>
+  </main>
+  <script>
+    const query = document.querySelector('#query');
+    const notes = [...document.querySelectorAll('article')];
+    query.addEventListener('input', () => {
+      const terms = query.value.toLowerCase().split(/\s+/).filter(Boolean);
+      for (const note of notes) {
+        const text = Array.from(note.children, part => part.textContent).join(' ');
+        const searchable = text.toLowerCase();
+        note.hidden = !terms.every(term => searchable.includes(term));
+      }
+      const count = notes.filter(note => !note.hidden).length;
+      document.querySelector('#count').textContent = count === 1 ? '1 note' : count + ' notes';
+    });
+  </script>
+</body>
+</html>

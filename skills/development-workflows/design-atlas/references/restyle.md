@@ -21,11 +21,18 @@ Then read the page on eight dimensions. For each one, name the evidence (a selec
 | Typography | The sizes actually used, and whether the reading order is clear |
 | Whitespace | Which gaps group related items, and which gaps are empty padding |
 | Visual hierarchy | What leads on the first screen, and what competes with it |
-| Colour | Which colours mark action, status, and surface, and which do not |
+| Colour | For each proposed colour change, name the element and its use (product identity, data, action/state, surface or decoration). Trace a shared token to its consumers. Keep meaningful repetition. Change the consumer that misleads or distracts. |
 | Motion | What moves, what triggers it, and whether it ends |
 | Micro-interaction | Hover, focus, and press feedback on real controls |
 | Responsive | What changes at a narrow width, and what overflows |
 | Originality | Which parts could sit on any product, with the selector |
+
+### Colour on the rendered surface
+
+- Measure necessary text against the surface actually painted beneath it, including opacity. Record the effective pair and ratio for gate 40. Check the on-colour pair on a filled control or dark panel under 41.
+- Match each affected legend key to its data. Exercise a relevant focus, error or selected state and describe the visible cue. A common selection colour can identify the active control across categories. Check its role against the interaction and DESIGN.md.
+- Record the selector, state and method. An audit records the current state. A restyle compares it before and after. Mark missing observations `unverified`.
+- Apply 2a to the specific gradients it detects and 74 to framework presets, with their existing declarations and waivers. Determine what each colour conveys from its use on the page.
 
 ## 4. Pick the design source
 
@@ -42,7 +49,7 @@ Leave these alone:
 
 - Business logic, data, routes, and script behavior.
 - Form semantics, including each control's label and its association.
-- The Keep list in `anti-slop.md`: labels, input limits and formats, errors, prices and fees, consent and legal text, risk and irreversible-action warnings, credits, and the user's declared brand choices. Move or restyle an item on that list. Do not delete it, and do not move it into a hover-only tooltip.
+- The Keep list in `anti-slop.md`: labels, input limits and formats, errors, prices and fees, consent and legal text, risk and irreversible-action warnings, credits, and the user's declared brand choices. Keep each item's meaning, readable contrast and prominence at the point of use, including after a move or restyle. Referenced brand assets remain subject to `brand-boundary.md`.
 - The framework, the component library, and the dependency set. Do not add a dependency in order to change the styling.
 - Existing component API/props and semantics; use its current variants/tokens instead of a parallel component.
 
@@ -52,7 +59,7 @@ Leave these alone:
 2. Whatever blocks the page's main task.
 3. House, then Reflex, then Finish.
 
-Change the few things with the largest effect. Do not rebuild a page that is already clear in order to satisfy gates. Gate 58's word ceiling is met by cutting restatement, not by cutting a constraint, an error, or a price.
+Change the few things with the largest effect. Do not rebuild a page that is already clear in order to satisfy gates. Use gate 58’s word guide on promotional prose. Keep task text, prices, labels and record actions. For a dense directory, use gate 3’s matched viewport counts and action checks to explain the space a change costs or saves.
 
 After diagnosis, use [craft-polish.md](craft-polish.md) only for applicable feedback, overlays, type, dynamic content or surface findings. Record the selection sheet and n/a reasons. Its recipes keep the selected design and existing gate ownership; they do not authorise glass, bounce, new dependencies or business changes.
 
