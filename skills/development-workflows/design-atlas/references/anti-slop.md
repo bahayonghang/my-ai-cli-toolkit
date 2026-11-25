@@ -42,11 +42,11 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 1     | Reflex | M     | A default UI face (Inter, Roboto, Open Sans, Poppins, Lato, Arial, Helvetica, a system stack) sets the display or heading type.                            | Use the display face `DESIGN.md` names.                                              |
 | 2a    | House  | M     | A purple-to-blue or purple-to-pink gradient, or a cyan gradient on a dark page, on any surface or clipped to text.                                         | One anchor hue; solid ink for text.                                                  |
 | 2b    | Reflex | M     | Gradient-filled text in any other hue.                                                                                                                     | Solid ink; get emphasis from weight, size, or the display face.                      |
-| 3     | Reflex | J     | Three equal tiles, each an icon in a rounded box over a heading; or a thick coloured stripe down one side of a card.                                       | Vary widths and heights; inline icons; a hairline or no border.                      |
+| 3     | Reflex | J     | Equal icon tiles or side stripes give unrelated items the same weight, or spacing makes an action look attached to the next record.                                       | Group each record with its metadata and actions. Keep aligned peers when people compare them.                      |
 | 4     | House  | M     | A card nested inside another card.                                                                                                                         | Keep one containment layer.                                                          |
 | 6b    | Reflex | J     | The hero stacks headline, lede, action, and visual on one centred axis.                                                                                    | At most two centred elements; break one alignment.                                   |
 | 7a    | Floor  | M     | Pure `#000` or `#fff` (or `oklch(0% …)` / `oklch(100% …)`) written as a literal outside the token layer.                                                    | Reference a token. If `DESIGN.md` declares pure white or black, the token holds it.  |
-| 8     | Reflex | J     | The stock page: hero, three features, call to action, footer, in that order, for a product that has its own shape.                                         | Order sections by what the visitor came to do.                                       |
+| 8     | Reflex | J     | A stock sequence (hero, features, call to action, footer) interrupts lookup, comparison, or reading.                                         | Order sections around the visitor’s task; repeated rows may serve it.                                       |
 | 9     | Reflex | J     | Every section is separated the same way with the same gap.                                                                                                 | Mix separators: space, a rule, a tinted band, a change of surface.                   |
 | 10a   | Floor  | M     | `transition: all`, or a transition or keyframe that animates `width`, `height`, `top`, `left`, `right`, `bottom`, or `inset`; Tailwind `transition-all`.    | Name the properties; move things with `transform` and `opacity`.                     |
 | 10b   | Reflex | M     | A transition or keyframe on `margin` or `padding`.                                                                                                         | `transform`.                                                                         |
@@ -80,7 +80,7 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 53    | Floor  | M     | CSS-only radio tabs at `position: absolute; top: 0` with no script guard, so the page jumps on each click.                                                | Radios in flow at zero size, or a handler using `preventScroll`.                     |
 | 54    | House  | M+J   | The eyebrow: short inert text above a heading that only announces it ("Features", "01 / The tour"), in any shape.                                         | Open the section another way; if the line carries a fact, keep it as a fact.          |
 | 55a   | Floor  | M     | An uppercase display heading that can wrap, with `line-height` under 1.0.                                                                                 | 1.0 or more.                                                                         |
-| 58    | House  | J     | More than about 80 words in one 900px-tall screen, or a hero with more than two text blocks before its actions.                                            | Headline, one sentence, actions; cut restatement, not a constraint, an error, or a price. |
+| 58    | House  | J     | Promotional copy overwhelms one screen or delays the hero’s real action.                                            | Use about 80 words of promotional copy per 1440 × 900 screen as a guide. Trim repeated claims. |
 | 62    | Floor  | M     | Content hidden at rest (`opacity: 0`, `visibility: hidden`) by a reveal class that needs a script to show it.                                              | Visible by default; hide only under a `.js` class or use `@starting-style`.          |
 | 63    | House  | M+J   | Template punctuation: meta strings joined by middle dots (`A · B · C`), an arrow glued to link text (`Read more →`), decorative status dots, `WORD - fragment` labels. | Line breaks, columns, rules; a verb as the label.                                    |
 | 64    | Reflex | M     | Monospace on labels, captions, meta rows, or table heads when neither the display nor the body face is monospace and the text is not code or a figure.     | Labels in the body face, a step smaller, normal case.                                |
@@ -149,7 +149,7 @@ Rules the script applies:
 
 ## Keep list
 
-Anti-slop fixes never remove: form labels and their association, input limits and formats, error and recovery text, prices and fees, consent and legal text, risk and irreversible-action warnings, credits and image attributions, the user's declared brand choices. A finding that seems to require removing one of these is fixed by moving or restyling it, not by deleting it. Gate 58's word ceiling counts these words but is met by cutting restatement, not constraints.
+Anti-slop fixes never remove: form labels and their association, input limits and formats, error and recovery text, prices and fees, consent and legal text, risk and irreversible-action warnings, credits and image attributions, the user's declared brand choices. A finding that seems to require removing one of these is fixed by moving or restyling it, not by deleting it. Exclude required information from gate 58’s promotional word count, including lookup text, table cells, labels, prices and actions.
 
 Keep the meaning and prominence of required information on its actual surface. A label can survive in the DOM while a faded disclosure or mismatched legend misleads the visitor. Preserve the user’s own identity and deliberate expressive colour where the task remains clear. For each proposed recolour, identify the affected use and follow the [rendered colour checks](restyle.md#colour-on-the-rendered-surface).
 
@@ -157,17 +157,20 @@ Keep the meaning and prominence of required information on its actual surface. A
 
 Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`, `fixed: <what>`, or `n/a: <why>` for each id in the report. The Keep list above names text you may move or restyle and may not delete.
 
-- [ ] **8** Could this sequence of sections sit under a different business's name? If yes, reorder by what the visitor came to do.
+- [ ] **8** Trace the visitor’s lookup, comparison, reading or conversion task through the sections. If a stock sequence interrupts it, name the section and its better position. An ordered catalogue can pass unchanged.
 - [ ] **9** Are sections separated in more than one way?
 - [ ] **46a** Is every number, quote, rating, customer name, and logo supplied by the user or the project? Remove or mark any that are not.
 - [ ] **54** For each short line above a heading: delete it and reread. If nothing but a name for the next block was lost, it was an eyebrow. Keep it only when it carries a fact, a destination, or an identifier. On a Chinese page, an English uppercase line such as `PLATFORM` above `潮汐时刻表` is the same test.
-- [ ] **58** Count words in each 900px-tall screen at 1440 wide, labels and table cells included. About 80 is the ceiling; the hero is a headline, one sentence, and its actions.
+- [ ] **58** In a marketing section, identify promotional prose that buries the offer or action. About 80 promotional words in a 1440 × 900 screen is a guide. For a task-only directory, record `n/a` with its task; assess usable records and actions under 3.
 - [ ] **63** Each remaining single middle dot: is it in a byline, a caption, or a live state? Otherwise replace it. On a Chinese page, a habit string such as `产品 · 价格 · 文档` is the same tell.
 - [ ] **69** Is any price, date, time, or count printed in four or more sections?
 - [ ] **70** Does every form either post to a real endpoint or say that nothing was sent?
 - [ ] **84** Does the product already run? Then the page shows captures of it, not a drawn mock.
 - [ ] **85** Is the last section before the footer an email sign-up? Keep it only when a mailing list is the visitor's goal.
-- [ ] **3** Do three equal icon tiles stand where one stronger composition would do? Related figures split into separate shadowed tiles also count; put them in one section and separate them with alignment and hairlines. On a Chinese page, three shadowed tiles each holding one figure (注册用户, 本月订单, 平均时长) count the same way.
+- [ ] **3** Pick adjacent records. Point to the title, metadata and actions belonging to each. If spacing attaches an action to its neighbour, tighten the group or use aligned rows. Merge isolated metric tiles when the figures are read together. Keep an equal grid when its shared axes make comparison easier. Gate 4 covers nested cards; DA1 covers copy that repeats a heading or action.
+
+  For a dense list, record the input, state, viewport, scroll container and settled scroll offset. Count records fully inside its visible area and list their IDs and available actions; operate a record to confirm ownership. Count repeated observations at the same actual position once. Compare the same data, state, viewport and position after editing at desktop and narrow widths. Explain any gain or loss in records or actions; an audit reports only current values.
+
 - [ ] **6b** Is the hero four things stacked on one centre line?
 - [ ] **11** Does each element have at most one hover signal, on the container, and only when it is interactive?
 - [ ] **29** Is there a blurred orb, halo, or coloured glow behind content?

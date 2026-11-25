@@ -1,0 +1,38 @@
+--- a/cards.html
++++ b/cards.html
+@@ -6,10 +6,6 @@
+   <meta name="description" content="Compare daily hire rates and assemble an equipment list.">
+   <title>Field equipment directory</title>
+   <link rel="stylesheet" href="directory.css">
+-  <style>
+-    .record { background: var(--sheet); padding: 8px 14px 2px; margin-block-end: 2px; }
+-    .actions { margin-block-start: 48px; }
+-  </style>
+   <script defer src="directory.js"></script>
+ </head>
+ <body>
+--- a/directory.css
++++ b/directory.css
+@@ -45,3 +45,22 @@
+ button:active { outline: 1px solid var(--ink); }
+ button:focus-visible, #records:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+ button:disabled { cursor: default; border-style: dashed; color: var(--secondary); }
++.record {
++  display: grid;
++  gap: 4px;
++  padding: 10px 14px;
++}
++.record + .record { border-block-start: 1px solid color-mix(in srgb, var(--rule) 45%, var(--sheet)); }
++.rate { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
++.record .actions { margin-block-start: 4px; }
++@media (min-width: 52rem) {
++  .record {
++    grid-template-columns: minmax(0, 1fr) minmax(19rem, 1fr) auto;
++    align-items: center;
++    gap: 1.25rem;
++    padding: 12px 18px;
++  }
++  .specs { display: grid; grid-template-columns: 4rem 1fr 1fr; gap: .75rem; }
++  .specs span + span { margin-inline-start: 0; }
++  .record .actions { margin-block-start: 0; }
++}
