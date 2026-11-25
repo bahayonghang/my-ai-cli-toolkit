@@ -24,7 +24,8 @@ Read DESIGN.md first. It is the contract: colours, type, spacing, components, th
 and any "## Anti-slop Waivers" lines. A choice the contract declares is not a fault.
 
 First screen (look at the desktop and mobile first screens only)
-1. In five seconds, can you tell what this is, who it is for, and what to do next?
+1. In five seconds, is it clear who this is for and which task they can start? Point to the search, index or text for a reading task,
+   or the visible primary action for a conversion. Flag a missing task entry. A reading view can have zero primary buttons.
 2. Does one element clearly lead, or do several compete?
 3. Would this first screen still make sense with the brand name swapped for another? If yes, it is generic.
 4. Is anything on it invented: a customer logo, a metric, a quote, a person, an award?

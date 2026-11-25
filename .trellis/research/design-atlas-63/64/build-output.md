@@ -1,0 +1,3 @@
+Built [tools.html](./tools.html) using the existing notebook stylesheet. Readers can search by tool name or technique, including “folding” or “creasing” for the bone folder and “piercing” for the awl. Each entry includes the original bench-note instructions.
+
+Verified search, result counts, keyboard focus, and the empty state in headless Edge at desktop and mobile widths. The design-atlas check passed with zero warnings or failures.

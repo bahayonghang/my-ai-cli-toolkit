@@ -1,0 +1,12 @@
+**Visitors can read the workshop description, time and price, but “Reserve a seat” starts below a large blank area on both desktop and mobile.** Removing the introduction’s `min-height: 100vh` would put the button directly after the price. That is the first change I’d make.
+
+| Priority | Finding | Suggested fix |
+|---|---|---|
+| High · Floor 44b | At initial load, `#reserve` starts at **y=876** in the 1280 × 800 viewport and **y=920** in the 390 × 844 viewport. In both cases the button begins 76 px below the screen, with no visible cue that the page continues. The full-height rule is at `workshop.html:10`. | Remove the minimum height and let the workshop details determine the section height. |
+| Medium · Quantity interaction | The field at `workshop.html:25` lets visitors type `0` or `5` and leave it displayed. Edge marks both invalid internally, but the page gives no visible feedback. Clearing the field also leaves a value the browser considers valid. | Use a native quantity selector with choices 1 through 4, defaulting to 1. This preserves keyboard access and makes every available choice valid. |
+| Minor · Finish F26 | At 375 px wide, the description at `workshop.html:18` leaves “supplied.” alone on its last line. | Shorten the second sentence to “We supply paper and tools.” |
+| Minor · House 63 | A middle dot joins the schedule and price at `workshop.html:19`. Both facts are readable, so this is a low-priority typography detail. | Use spacing between the two facts and allow the price to wrap as a unit. |
+
+**Keep** the compact masthead, the left-aligned column, and the visible time and per-seat price. Once reached, the reservation button works well. I opened it by keyboard on desktop and by click at mobile width. It expanded the booking section, moved focus to the labelled quantity field, and started at 1. Choosing 2 or 4 worked, and the preview explicitly says no booking or payment is sent.
+
+The design-atlas mechanical scan reported **0 Floor failures, 0 House failures and 0 Reflex findings**, with no waivers applied or rejected. The first-screen failure appeared in the rendered check. Text contrast passed at 14.7:1 for body copy and 8.3:1 for the reservation button (gates 40–41). The audit was read-only.

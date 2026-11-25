@@ -44,7 +44,7 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 2b    | Reflex | M     | Gradient-filled text in any other hue.                                                                                                                     | Solid ink; get emphasis from weight, size, or the display face.                      |
 | 3     | Reflex | J     | Three equal tiles, each an icon in a rounded box over a heading; or a thick coloured stripe down one side of a card.                                       | Vary widths and heights; inline icons; a hairline or no border.                      |
 | 4     | House  | M     | A card nested inside another card.                                                                                                                         | Keep one containment layer.                                                          |
-| 6b    | Reflex | J     | The hero stacks headline, lede, action, and visual on one centred axis.                                                                                    | At most two centred elements; break one alignment.                                   |
+| 6b    | Reflex | J     | An existing hero stacks headline, lede, action, and visual on one centred axis.                                                                                    | At most two centred elements; break one alignment.                                   |
 | 7a    | Floor  | M     | Pure `#000` or `#fff` (or `oklch(0% …)` / `oklch(100% …)`) written as a literal outside the token layer.                                                    | Reference a token. If `DESIGN.md` declares pure white or black, the token holds it.  |
 | 8     | Reflex | J     | The stock page: hero, three features, call to action, footer, in that order, for a product that has its own shape.                                         | Order sections by what the visitor came to do.                                       |
 | 9     | Reflex | J     | Every section is separated the same way with the same gap.                                                                                                 | Mix separators: space, a rule, a tinted band, a change of surface.                   |
@@ -69,7 +69,7 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 39a   | Floor  | M     | Input states that shift layout or hide meaning: border width changes between states, focus drawn only with `border`, disabled shown by opacity alone.       | Constant border, `outline` for focus, three disabled signals.                        |
 | 40    | Floor  | J     | Text, icons, focus rings, or field edges below WCAG AA against their background.                                                                           | Fix the pair in `DESIGN.md`, then in the token layer.                                |
 | 41    | Floor  | J     | Button text too close to its fill, a dark panel that keeps dark text, grey text on a coloured surface.                                                    | Use the paired on-colour token.                                                      |
-| 44b   | Floor  | J     | At 1280 x 800 the headline, lede, primary action, and main visual are not all visible without scrolling.                                                  | Smaller display clamp, tighter leading, a shorter lede.                              |
+| 44b   | Floor  | J     | At 1280 x 800 the first screen hides the task entry, such as the search field, readable index or genuine conversion action.                                                  | Bring the task entry into view. Keep the existing hierarchy when it already serves readers.                              |
 | 46a   | Floor  | J     | A metric, testimonial, customer logo, rating, or case-study count that the user did not supply.                                                           | The user's number, a marked text slot, or nothing (section 6).                       |
 | 47a   | House  | M     | A drawn browser bar or window title bar (traffic lights, URL pill).                                                                                        | A real screenshot in a `<figure>`, or no chrome.                                     |
 | 47b   | Reflex | M     | A drawn phone, laptop, terminal, or editor frame.                                                                                                          | One frame at most, holding real content, or none.                                    |
@@ -97,7 +97,7 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 83    | Reflex | J     | The photo wall: below the hero, photographs fill more than about a third of the page, so it reads as a stock gallery.                                    | Keep the strongest pictures large; build the rest from the material: type, tables, the product. |
 | 84    | Reflex | J     | A drawn mock of a product that already runs and could be captured.                                                                                        | Run it, capture real screens, frame them in the design.                              |
 | 85    | Reflex | J     | The page ends on an email sign-up when a mailing list is not what the visitor came for.                                                                  | End on the visitor's real next action (book, buy, download), or on the last strong section. |
-| F4    | Finish | J     | More than one filled primary button style, or two filled buttons side by side.                                                                           | One filled primary per view.                                                         |
+| F4    | Finish | J     | More than one filled primary button style, or two filled buttons side by side.                                                                           | Use at most one filled primary per view. A reading or lookup task can have zero.                                                         |
 | F21   | Finish | J     | A skipped heading level.                                                                                                                                   | Use consecutive levels.                                                              |
 | F23   | Finish | J     | A document without `lang`, `<title>`, or a meta description.                                                                                              | Add them.                                                                            |
 | F26   | Finish | J     | A paragraph ending on one word, or a heading ending on a stub, at 375 or 1280.                                                                            | Rewrite, or `text-wrap: pretty` on copy.                                             |
@@ -153,7 +153,15 @@ Anti-slop fixes never remove: form labels and their association, input limits an
 
 ## 6. Judged checklist
 
-Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`, `fixed: <what>`, or `n/a: <why>` for each id in the report. The Keep list above names text you may move or restyle and may not delete.
+For each judged item record its ID, selector or screenshot region, and one result. Audit the current state even when the scanner has open findings. For build and restyle, repeat the affected observations after editing.
+
+- `pass` with the actual evidence that satisfies the gate.
+- `fail: <located problem>` for an observed failure. Leave it open in a read-only audit.
+- `fixed: <change and retest>` only after observing the correction under the same conditions.
+- `n/a: <absent task condition>` when the check has no subject. Hero-specific clauses in 6b, 8 and 58 apply only where there is a hero. A lookup page can start with search and entries. An applicable Floor failure cannot be waived.
+- `unverified: <missing observation>` when the evidence is unavailable, for example first-screen visibility without a rendered page or native window.
+
+These results belong to the judged checklist. Use the scanner’s own grades and exit codes and the independent review’s ship/fix/rebuild verdict for their respective reports.
 
 - [ ] **8** Could this sequence of sections sit under a different business's name? If yes, reorder by what the visitor came to do.
 - [ ] **9** Are sections separated in more than one way?
@@ -166,13 +174,13 @@ Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`,
 - [ ] **84** Does the product already run? Then the page shows captures of it, not a drawn mock.
 - [ ] **85** Is the last section before the footer an email sign-up? Keep it only when a mailing list is the visitor's goal.
 - [ ] **3** Do three equal icon tiles stand where one stronger composition would do? Related figures split into separate shadowed tiles also count; put them in one section and separate them with alignment and hairlines. On a Chinese page, three shadowed tiles each holding one figure (注册用户, 本月订单, 平均时长) count the same way.
-- [ ] **6b** Is the hero four things stacked on one centre line?
+- [ ] **6b** If there is a hero, are its four elements stacked on one centre line?
 - [ ] **11** Does each element have at most one hover signal, on the container, and only when it is interactive?
 - [ ] **29** Is there a blurred orb, halo, or coloured glow behind content?
 - [ ] **38iii** Is one word in a heading set apart by colour, weight, or a highlight? Allowed once, in the hero, only when the entry names it as its signature.
 - [ ] **40** Run a contrast check on each text and surface pair actually used, in every theme.
 - [ ] **41** Does text on every filled button and dark panel use the paired on-colour token?
-- [ ] **44b** At 1280 x 800, are headline, lede, primary action, and main visual all visible without scrolling?
+- [ ] **44b** At 1280 x 800 before scrolling (default window for native), can the user start the actual task? Locate and try the search field, index or reading content for lookup, or the real primary action for conversion. Record a displaced action at its control and viewport edge.
 - [ ] **47c** Is any styled-div imitation of a product, object, or photo pretending to be real?
 - [ ] **49a** Do button labels and primary nav links stay on one line from 320 to 1920?
 - [ ] **65** Is the page cream paper plus a high-contrast serif plus a clay accent without `DESIGN.md` asking for it?
@@ -182,7 +190,7 @@ Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`,
 - [ ] **76** Does every image load, and is every image one the project may use?
 - [ ] **80** Is a drawing standing in for a photograph?
 - [ ] **83** Do photographs fill more than about a third of the page below the hero?
-- [ ] **F4** One filled primary button style per view?
+- [ ] **F4** Do filled actions compete? Zero is valid, including for an ordinary search or reading view.
 - [ ] **F21** Heading levels consecutive?
 - [ ] **F23** `lang`, `<title>`, and meta description present?
 - [ ] **F26** No one-word last lines in copy at 375 and 1280?
