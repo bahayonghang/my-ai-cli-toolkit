@@ -36,7 +36,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | `skills/development-workflows/design-atlas/README.md` | file | 1 | Top-level file |
 | `skills/development-workflows/design-atlas/references` | directory | 11 | Reference material |
 | `skills/development-workflows/design-atlas/scripts` | directory | 4 | Executable scripts |
-| `skills/development-workflows/design-atlas/tests` | directory | 43 | Automated tests |
+| `skills/development-workflows/design-atlas/tests` | directory | 57 | Automated tests |
 
 ## Scripts, references, and test resources
 

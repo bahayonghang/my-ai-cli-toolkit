@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare daily hire rates and assemble an equipment list.">
+  <title>Field equipment directory</title>
+  <link rel="stylesheet" href="directory.css">
+  <style>
+    .record { background: var(--sheet); padding: 8px 14px 2px; margin-block-end: 2px; }
+    .actions { margin-block-start: 48px; }
+  </style>
+  <script defer src="directory.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Field equipment</h1>
+      <p>Compare daily hire rates and pick equipment for a field visit.</p>
+    </header>
+    <output aria-live="polite">Pick list empty</output>
+    <section id="records" aria-label="Equipment directory" tabindex="0"></section>
+  </main>
+</body>
+</html>
