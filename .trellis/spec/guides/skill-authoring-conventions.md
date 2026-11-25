@@ -335,6 +335,19 @@ Choices the ticket did not confirm (inference):
 - The native review is a variant section in `references/review-prompt.md`
   that lists replacements for the web prompt, not a second full prompt.
 
+### Task-aware visual judgments (design-atlas 0.8.0)
+
+- Pair a failing page with a working control for the same task. A lookup may
+  work with zero primary buttons, and an aligned directory may need more than
+  80 visible words. Judge the actual action, content and ownership on screen.
+- For a visual comparison, reuse the same input, viewport and state. Record the
+  settled scroll offset inside the affected pane. Count each distinct view once,
+  listing whole record IDs and their operable actions. Exercise an action to
+  check which record it changes.
+- For read-only audits and conditional restyles, keep evidence outside the
+  project and compare its file list and bytes. Link the actual response and
+  rendered observation separately from scanner and schema results.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

@@ -17,7 +17,7 @@ Offline UI catalog of 203 design languages (84 brands, 68 styles, 50 material th
 | --- | --- |
 | 名称 | `design-atlas` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.7.0` |
+| 版本 | `0.8.0` |
 | 标签 | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility`, `anti-ai-slop` |
 
 ## 安装命令
@@ -32,11 +32,11 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | 目录 | 1 | 配套 agent |
 | `skills/development-workflows/design-atlas/assets` | 目录 | 220 | 素材资源 |
-| `skills/development-workflows/design-atlas/evals` | 目录 | 1 | 评测样例 |
+| `skills/development-workflows/design-atlas/evals` | 目录 | 2 | 评测样例 |
 | `skills/development-workflows/design-atlas/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/development-workflows/design-atlas/references` | 目录 | 11 | 引用资料 |
 | `skills/development-workflows/design-atlas/scripts` | 目录 | 4 | 可执行脚本 |
-| `skills/development-workflows/design-atlas/tests` | 目录 | 57 | 自动化测试 |
+| `skills/development-workflows/design-atlas/tests` | 目录 | 58 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 

@@ -454,6 +454,260 @@
         "Verifies in a running page with desktop and narrow screenshots and runs slop_check.mjs on the web source",
         "Does not run cargo metadata to probe GPUI capabilities and does not create a Rust token module"
       ]
+    },
+    {
+      "id": 38,
+      "prompt": "Audit index.html for me. Readers look up binding techniques here. Please include the checklist IDs for the first screen and keep the project as it is.",
+      "expected_output": "A read-only audit accepts direct lookup and reading on the first screen.",
+      "files": [
+        "tests/fixtures/task-aware/first-screen/DESIGN.md",
+        "tests/fixtures/task-aware/first-screen/notebook.css",
+        "tests/fixtures/task-aware/first-screen/index.html"
+      ],
+      "assertions": [
+        "Locates the search field and readable entries at scroll zero, with 44b and F4 passing and the hero composition inapplicable.",
+        "Searches for awl, observes the piercing technique, and clears the query to restore all three entries.",
+        "Accepts zero primary buttons and preserves the input file list and bytes."
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "Audit workshop.html. Visitors use this local preview to start a seat reservation and choose a quantity. Tell me where the page gets in their way and leave the files as they are.",
+      "expected_output": "A read-only audit identifies the displaced reservation button as an open first-screen failure.",
+      "files": [
+        "tests/fixtures/task-aware/first-screen/DESIGN.md",
+        "tests/fixtures/task-aware/first-screen/notebook.css",
+        "tests/fixtures/task-aware/first-screen/workshop.html"
+      ],
+      "assertions": [
+        "Records the initial viewport and the bounds of #reserve below .introduction before the browser scrolls to activate it.",
+        "Marks 44b as fail for this conversion task and distinguishes first-screen visibility from the working seat control after scrolling.",
+        "Leaves the project unchanged and reports only the observed state."
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "Polish workshop.html so visitors can start a reservation more easily. Keep the bindery’s design and the existing booking flow.",
+      "expected_output": "The existing reservation action becomes visible and operable on entry, with its original booking details intact.",
+      "files": [
+        "tests/fixtures/task-aware/first-screen/DESIGN.md",
+        "tests/fixtures/task-aware/first-screen/notebook.css",
+        "tests/fixtures/task-aware/first-screen/workshop.html"
+      ],
+      "assertions": [
+        "Compares the same page, viewport, closed panel and initial scroll position before and after the edit.",
+        "Checks that the whole Reserve a seat button is visible, activates it and verifies focus, the seat quantity range and disclosure before marking 44b fixed.",
+        "Preserves the schedule, price, notebook design and single booking flow."
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "Build tools.html from our existing DESIGN.md. Make a searchable tool index using the bone folder and awl from the bench notes. Include each tool’s technique so readers can look it up.",
+      "expected_output": "A new searchable tool index uses the bindery’s existing design contract.",
+      "files": [
+        "tests/fixtures/task-aware/first-screen/DESIGN.md",
+        "tests/fixtures/task-aware/first-screen/notebook.css",
+        "tests/fixtures/task-aware/first-screen/index.html"
+      ],
+      "assertions": [
+        "Builds tools.html from the existing DESIGN.md and preserves the original notes, stylesheet and design source.",
+        "Renders the ivory, oxblood and Georgia hierarchy and accepts direct lookup without a conversion button.",
+        "Checks that searching for awl shows the piercing technique and clearing the query restores the bone folder."
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "Audit our proof desk before the next print run. Can a printer read the ink order, choose a plate and see the revision notice? Keep the Nightjar Press look. Report what you find without editing the page.",
+      "expected_output": "The report locates the incorrect B legend mark and faint revision notice on the actual proof panel.",
+      "files": [
+        "tests/fixtures/task-aware/colour/project/index.html",
+        "tests/fixtures/task-aware/colour/project/DESIGN.md",
+        "tests/fixtures/task-aware/colour/project/edition.css"
+      ],
+      "assertions": [
+        "Reports the marigold dot beside B · Iris against the iris second pass, while preserving their useful shape distinction.",
+        "Assesses the notice against its painted plum background, explains the effect of opacity and identifies the separate decorative top rule.",
+        "Checks the selected radio and its mixing note, retains the press signature, and leaves all project files unchanged."
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "Polish our proof desk for the next print run. Keep the Nightjar Press look and the job details. Make the ink order, plate selection and revision notice clear. If an area already works, leave it alone.",
+      "expected_output": "The proof desk restores the B key and the notice while keeping meaningful brand, data and control colours.",
+      "files": [
+        "tests/fixtures/task-aware/colour/project/index.html",
+        "tests/fixtures/task-aware/colour/project/DESIGN.md",
+        "tests/fixtures/task-aware/colour/project/edition.css"
+      ],
+      "assertions": [
+        "Matches the B marker to pass two, retains the shape cues and keeps the A marker, first and third passes and press signature marigold.",
+        "Measures the restored notice and the checked radio label against their own painted surfaces at matching viewports and state.",
+        "Selects Plate B by keyboard, verifies its visible focus and Iris note, and distinguishes the decorative rule from uses of the shared colour."
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "Audit our proof desk before the next print run. Can a printer read the ink order, choose a plate and see the revision notice? Keep the Nightjar Press look. Report what you find without editing the page.",
+      "expected_output": "The audit accepts the expressive two-ink proof desk and locates the evidence for its colour decisions.",
+      "files": [
+        "tests/fixtures/task-aware/colour/project/index.html",
+        "tests/fixtures/task-aware/colour/project/DESIGN.md",
+        "tests/fixtures/task-aware/colour/control.css"
+      ],
+      "assertions": [
+        "Verifies the A and B keys against all three passes and the notice contrast on the plum panel.",
+        "Uses the keyboard to select Plate B, observes its focus and Iris note, and accepts the shared marigold selection fill.",
+        "Retains the signature and expressive colours and leaves all project files unchanged."
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "Polish our proof desk for the next print run. Keep the Nightjar Press look and the job details. Make the ink order, plate selection and revision notice clear. If an area already works, leave it alone.",
+      "expected_output": "A conditional polish accepts the control edition with its working ink key, plate selector and disclosure.",
+      "files": [
+        "tests/fixtures/task-aware/colour/project/index.html",
+        "tests/fixtures/task-aware/colour/project/DESIGN.md",
+        "tests/fixtures/task-aware/colour/control.css"
+      ],
+      "assertions": [
+        "Retains the original project files when the observed colour, disclosure and state already satisfy the task.",
+        "Verifies both colour-and-shape pairs, the actual notice contrast, keyboard focus and the B-specific mixing note.",
+        "Keeps the marigold signature and selection, lilac data, plum panel and thin separator consistent with DESIGN.md."
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "用 design-atlas 审查这个设备租借目录。值班人员要比较各设备的地点、日租和操作，请指出需要改的地方，也说明哪些可以保留。只出报告，页面保持原样。",
+      "expected_output": "The read-only audit locates the misleading ownership of the first pair of controls in the equipment directory.",
+      "files": [
+        "tests/fixtures/task-aware/density/DESIGN.md",
+        "tests/fixtures/task-aware/density/directory.css",
+        "tests/fixtures/task-aware/density/directory.js",
+        "tests/fixtures/task-aware/density/cards.html"
+      ],
+      "assertions": [
+        "Compares the FE-01 controls with their own details and the FE-02 title in the running pane, addressing judged grouping gates 3 and 8.",
+        "Reports current complete IDs and enabled Inspect/Pick actions at actual desktop and narrow pane offsets. A repeated top capture counts once.",
+        "Excludes required depot, price, record and action text from the promotional guidance in 58 and leaves the project unchanged."
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "用 design-atlas 改一下这个设备租借目录。值班人员需要快速比较设备、查看详情并挑选器材。保留现有设计语言、数据和操作，说明改动前后在桌面和窄屏上的差别。",
+      "expected_output": "The layout gives each record unambiguous controls and reports the observed density tradeoff.",
+      "files": [
+        "tests/fixtures/task-aware/density/DESIGN.md",
+        "tests/fixtures/task-aware/density/directory.css",
+        "tests/fixtures/task-aware/density/directory.js",
+        "tests/fixtures/task-aware/density/cards.html"
+      ],
+      "assertions": [
+        "Keeps IDs FE-01 through FE-24, depots, daily rates, accessible action names and both actions for each record.",
+        "Compares whole usable records and actions in #records at the same two viewport sizes and actual settled offsets, collapsing duplicate observations.",
+        "Checks the boundary between adjacent records at reading size and operates Inspect, Pick and undo on the intended record.",
+        "Retains the existing design contract and explains any density cost alongside the ownership improvement."
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "用 design-atlas 审查这个设备租借目录。值班人员要比较各设备的地点、日租和操作，请指出需要改的地方，也说明哪些可以保留。只出报告，页面保持原样。",
+      "expected_output": "The audit accepts the aligned comparison grid for the staff comparison task.",
+      "files": [
+        "tests/fixtures/task-aware/density/DESIGN.md",
+        "tests/fixtures/task-aware/density/directory.css",
+        "tests/fixtures/task-aware/density/directory.js",
+        "tests/fixtures/task-aware/density/comparison.html"
+      ],
+      "assertions": [
+        "Checks the ruled groups and their per-row controls at desktop and narrow width, reporting current complete records and actions.",
+        "Retains required facts even when the visible screen exceeds 80 words, and distinguishes this from a promotional section under 58.",
+        "Confirms the row identity when opening details and picking an instrument, and preserves every project file."
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "用 design-atlas 检查并在需要时调整目录的行距和操作分组。值班人员要对比同类设备、看清每个按钮属于哪台设备。已经合适的布局请原样保留。保持现有数据、文字和行为。",
+      "expected_output": "A conditional restyle keeps an already legible comparison layout unchanged.",
+      "files": [
+        "tests/fixtures/task-aware/density/DESIGN.md",
+        "tests/fixtures/task-aware/density/directory.css",
+        "tests/fixtures/task-aware/density/directory.js",
+        "tests/fixtures/task-aware/density/comparison.html"
+      ],
+      "assertions": [
+        "Accepts the current row structure after inspecting adjacent groups and the narrow button stack.",
+        "Checks the complete record IDs, enabled Inspect/Pick actions and selected-row feedback at actual pane positions.",
+        "Leaves the input tree byte-identical and reports the observed reason for keeping it."
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "我们在做版画目录。请比较 Scandinavian、minimal、spacious 和 atelier，看版画及读图注时会有什么不同？先让我选。",
+      "expected_output": "Compares the named entries using the print and its caption, offers the published preview, and waits for a choice.",
+      "files": [
+        "assets/reference/scandinavian/index.html",
+        "assets/reference/scandinavian/kelp.png",
+        "assets/reference/scandinavian/oxide.png"
+      ],
+      "assertions": [
+        "Distinguishes the four catalog entries in terms of type, grouping and how each treats the artwork and caption.",
+        "Identifies style:scandinavian and its offline reference page, where the original two-ink artwork and plate selector can be inspected.",
+        "Finishes the comparison with the project untouched. A later explicit selection may create DESIGN.md with the selected entry provenance."
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "Build a standalone, responsive Web page for Tide register’s Low water using the supplied Kelp and Oxide plates. Let me switch between Both plates, Kelp and Oxide, and switch Dark paper on and off. Keep the artwork on cream paper with a live caption. In Print notes, Kelp shows the headland, beacon and tidal cuts, Oxide shows the sun disc and broken reflection, and the register is 1,000 × 740 pixels per plate. Please apply style:scandinavian.",
+      "expected_output": "The Scandinavian build uses its first-party design contract on the same print and controls as the expressive comparison.",
+      "files": [
+        "assets/reference/scandinavian/kelp.png",
+        "assets/reference/scandinavian/oxide.png"
+      ],
+      "assertions": [
+        "Applies style:scandinavian and carries its first-party provenance into DESIGN.md.",
+        "Uses the written type hierarchy and spacing for the print, caption and records, with the original ink image carrying the visual emphasis.",
+        "Shows the original two-plate study with Both plates selected initially and keeps the artwork and print notes associated at desktop and narrow sizes.",
+        "Operates both individual plates, restores Both plates, and toggles Dark paper while retaining the ink meanings, live caption and keyboard focus."
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "Build a standalone, responsive Web page for Tide register’s Low water using the supplied Kelp and Oxide plates. Let me switch between Both plates, Kelp and Oxide, and switch Dark paper on and off. Keep the artwork on cream paper with a live caption. In Print notes, Kelp shows the headland, beacon and tidal cuts, Oxide shows the sun disc and broken reflection, and the register is 1,000 × 740 pixels per plate. Please apply style:neobrutalism.",
+      "expected_output": "The expressive build follows the selected Neobrutalism contract on the same content and interaction.",
+      "files": [
+        "assets/reference/scandinavian/kelp.png",
+        "assets/reference/scandinavian/oxide.png"
+      ],
+      "assertions": [
+        "Applies style:neobrutalism and retains its own catalog provenance in DESIGN.md.",
+        "Uses the selected type, bold borders and accent colours for grouping while keeping the print and caption together.",
+        "Shows the original two-plate study with Both plates selected initially and keeps the artwork and print notes associated at desktop and narrow sizes.",
+        "Operates both individual plates, restores Both plates, and toggles Dark paper while retaining the ink meanings, live caption and keyboard focus."
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "我们要做简洁的账户查询页。请按目录推荐的方向为项目创建 DESIGN.md，先只交付这一份文件。",
+      "expected_output": "A generic request for simplicity uses ordinary catalog routing; Scandinavian remains opt-in.",
+      "files": [],
+      "assertions": [
+        "Uses the normal recommendation workflow on the empty project.",
+        "Writes only the requested design contract and selects an eligible entry other than style:scandinavian."
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "这个查阅页有点 AI 味。我只想保留原来的外观去掉模板感。先告诉我会沿用哪套设计，一句话就好，先别改文件。",
+      "expected_output": "The existing bindery design governs the decision on a request to keep the lookup page’s appearance.",
+      "files": [
+        "tests/fixtures/task-aware/first-screen/DESIGN.md",
+        "tests/fixtures/task-aware/first-screen/notebook.css",
+        "tests/fixtures/task-aware/first-screen/index.html"
+      ],
+      "assertions": [
+        "Identifies the existing DESIGN.md as the design source and preserves its bindery identity.",
+        "Leaves every project file unchanged and does not select a Nordic replacement."
+      ]
     }
   ]
 }

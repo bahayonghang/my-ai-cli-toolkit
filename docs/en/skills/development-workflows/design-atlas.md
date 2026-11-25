@@ -17,7 +17,7 @@ Offline UI catalog of 203 design languages (84 brands, 68 styles, 50 material th
 | --- | --- |
 | Name | `design-atlas` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.7.0` |
+| Version | `0.8.0` |
 | Tags | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility`, `anti-ai-slop` |
 
 ## Install command
@@ -32,11 +32,11 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | directory | 1 | Companion agents |
 | `skills/development-workflows/design-atlas/assets` | directory | 220 | Assets |
-| `skills/development-workflows/design-atlas/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/design-atlas/evals` | directory | 2 | Evaluation samples |
 | `skills/development-workflows/design-atlas/README.md` | file | 1 | Top-level file |
 | `skills/development-workflows/design-atlas/references` | directory | 11 | Reference material |
 | `skills/development-workflows/design-atlas/scripts` | directory | 4 | Executable scripts |
-| `skills/development-workflows/design-atlas/tests` | directory | 57 | Automated tests |
+| `skills/development-workflows/design-atlas/tests` | directory | 58 | Automated tests |
 
 ## Scripts, references, and test resources
 

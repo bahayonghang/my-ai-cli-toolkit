@@ -10,7 +10,7 @@ tags:
   - design-tokens
   - accessibility
   - anti-ai-slop
-version: 0.7.0
+version: 0.8.0
 argument-hint: "[entry-id | style request | audit <path>]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
