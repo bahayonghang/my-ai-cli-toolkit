@@ -75,4 +75,4 @@ For selected craft changes, also exercise the recipe's interruption, keyboard/to
 
 ## 9. Report
 
-For each dimension you touched, say what changed, what stayed, and why. List waivers in force, the checks you ran, and what is still unverified. Stay inside that evidence. Do not claim the page is faster, smoother, or more performant unless you measured it. Do not conclude that the page was AI-generated.
+For each dimension you touched, say what changed, what stayed, and why. For each changed judgement, give the gate ID, control or location, and the checklist result. For `fixed`, include the before/after observation and what happened when you tried the task, including any required disclosure at the point of use. List the verified Keep items, waivers in force, checks run and remaining gaps. Report the independent review's actual verdict separately, or label a self-check as such. Stay inside that evidence. Do not claim the page is faster, smoother, or more performant unless you measured it. Do not conclude that the page was AI-generated.

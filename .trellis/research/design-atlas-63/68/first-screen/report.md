@@ -10,9 +10,22 @@ We loaded the two exported skill directories in six new Codex CLI 0.172.0 sessio
 
 The finding on 58 concerns what the audit counted. Both versions already delivered usable navigation and preserved the notebook's design. The colour and directory runs exercise other gate subjects separately. The local booking fixture ends after quantity selection. No real reservation or payment was sent.
 
+**Eval 40, original candidate response: partial.** The builder reported the visible button, keyboard and pointer activation, focused quantity field and 1–4 limits at two widths. Its [answer](candidate-restyle.md) omitted the gate ID 44b, the `fixed` result and any disclosure check. It claimed a passing independent visual review. The retained session events contain no identifiable reviewer verdict for that claim. The operator's [rendered replay](measurements.json) verified the fix and the disclosure, and the three separately recorded [operator review rounds](reviews.md) each returned `fix`.
+
+The [first repair rerun](../review-calls.json) used the same uncoached request and original fixture. The builder again moved the real button and exercised the booking form at both widths, but its final reply again omitted 44b, `fixed` and the disclosure observation. Its report also scores **partial**.
+
+The [final rerun and operator replay](../review-calls.json) retained the original prompt and input. The reply named 44b, `#reserve`, `fixed`, both before/after positions, focus, the quantity limits and the disclosure. Its claimed independent review has no identifiable verdict, so this run is scored as a self-check. All seven operator captures at the three viewport sizes matched the original paired candidate's first edit byte for byte.
+
 ## Reproduction
 
-Export the skill directory from commits `493a1a3aaf7e6da98dc9cc34629b5a13affb5c86` and `ed99d785da44b9fd3af67fa33439497f91bfe63e` with `git archive`. For each pair copy just the named candidate fixture files into two empty projects, then use the same request from the run record. In each new session read the corresponding absolute SKILL.md first. Render the initial viewport before activating any control, exercise the task, and compare the entire project inventory and SHA-256 values. The paired outputs above are from the initial calls. Follow-up review edits are recorded separately.
+From the repository root, create the archives with the line endings used in the Windows runs:
+
+```powershell
+git -c core.autocrlf=true archive --format=zip --output="$env:TEMP/atlas68-baseline.zip" 493a1a3aaf7e6da98dc9cc34629b5a13affb5c86 skills/development-workflows/design-atlas
+git -c core.autocrlf=true archive --format=zip --output="$env:TEMP/atlas68-candidate.zip" ed99d785da44b9fd3af67fa33439497f91bfe63e skills/development-workflows/design-atlas
+```
+
+Extract each archive separately. For each pair copy just the named fixture files **from the candidate archive** into two empty projects, then use the same request from the run record. The CRLF export reproduced every input hash in `measurements.json`. In each new session read the corresponding absolute SKILL.md first. Render the initial viewport before activating any control, exercise the task, and compare the entire project inventory and SHA-256 values. The paired outputs above are from the initial calls. Follow-up review edits are recorded separately.
 
 ## Independent review
 

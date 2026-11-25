@@ -34,6 +34,9 @@ header { display: flex; align-items: center; justify-content: space-between; pad
 button { color: inherit; background: var(--canvas); border: 1px solid var(--edge); border-radius: 2px; padding: 0 14px; min-height: 40px; cursor: pointer; font: inherit; font-size: 14px; }
 button:hover, label:hover { background: var(--board); }
 button:active, button[aria-pressed="true"] { background: var(--ink); color: var(--canvas); }
+#appearance { display: inline-flex; align-items: center; gap: 8px; }
+.tick { width: 14px; height: 14px; display: inline-grid; place-items: center; border: 1px solid currentColor; border-radius: 2px; }
+#appearance[aria-pressed="true"] .tick::after { content: ""; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
 button:disabled, label:has(input:disabled) { color: var(--secondary); border-style: dashed; cursor: default; }
 :focus-visible, label:has(:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
 main { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); grid-template-areas: "media heading" "media tools"; grid-template-rows: auto 1fr; align-items: start; gap: 22px clamp(26px, 4.8vw, 72px); margin: clamp(30px, 5.5vw, 78px) 0 40px; }
@@ -78,7 +81,7 @@ dd { font-variant-numeric: tabular-nums; }
 <body>
 <header>
   <div class="name"><span class="mark" aria-hidden="true"></span>Tide register</div>
-  <button type="button" id="appearance" aria-pressed="false">Dark paper</button>
+  <button type="button" id="appearance" aria-pressed="false"><span class="tick" aria-hidden="true"></span>Dark paper</button>
 </header>
 <main>
   <div class="heading">

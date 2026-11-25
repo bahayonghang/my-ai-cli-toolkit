@@ -13,4 +13,10 @@ Open `project/index.html` locally. For each run, copy `project/` to a new direct
 
 At the same viewport and scroll position, Tab into the radio group, then press ArrowRight. B must become checked, retain a visible focus indicator and show the Iris mixing note. Compare the actual disclosure foreground/background and the checked label's pair on both editions and after restyle. Compare the signature, legend and passes independently of the decorative border. A static scanner result alone cannot answer these questions.
 
-To repeat the browser measurements, run `python measure_proof.py <project-copy> <external-output-dir> --check-clear` with Playwright, its Chromium binary and Pillow available. Use `--channel msedge` for an installed Edge. The check prints the computed styles, composited notice pixels and ratio, saves two screenshots with B selected and exits nonzero on the broken input. Keyboard focus, shape and selection colour are checked separately from the notice ratio.
+To repeat the browser measurements from any project, substitute the installed skill's absolute path for `<skill-dir>`. Use the directory containing the prepared `index.html` as `<project-copy>`. With Playwright, Chromium and Pillow available, run:
+
+```text
+python "<skill-dir>/tests/fixtures/task-aware/colour/measure_proof.py" "<project-copy>" "<external-output-dir>" --check-clear
+```
+
+Use `--channel msedge` for an installed Edge. The check prints computed styles and composited pixels, saves a screenshot with B selected at each width, and exits nonzero on the broken input.

@@ -155,6 +155,13 @@
       "index.html": "953a4b6772769836fd5ca8f4e12f5432678fbfe03233dd4e41a739eb82f5a50a",
       "DESIGN.md": "44b5b454b123a6301f1d0ca45fc6860bbac85a3dee2aaf887dab55dd88ddb924"
     },
+    "retained_index_html": {
+      "path": "neobrutalism/index.html",
+      "round_3_reviewer_input_sha256": "953a4b6772769836fd5ca8f4e12f5432678fbfe03233dd4e41a739eb82f5a50a",
+      "git_blob_content_sha256_lf": "dff0e4239e458218e4cc040855178199371434a60ff89cfdd893b1b82fe76a73",
+      "windows_checkout_sha256_crlf": "cf36b4cc8fc39e8bde065f211df3f85ba84a34415dac3ea0529dd7f857823249",
+      "normalization": "Two blank lines after </html> were removed for the repository whitespace check. The retained Windows checkout ends in one CRLF. Appending two more CRLF sequences reproduces the original review input hash."
+    },
     "final_scan": {
       "summary": {
         "floorFail": 0,

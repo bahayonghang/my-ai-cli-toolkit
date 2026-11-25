@@ -3,6 +3,7 @@
 import argparse
 import io
 import json
+from math import ceil, floor
 from pathlib import Path
 
 from PIL import Image
@@ -24,6 +25,31 @@ def text_on_panel(notice):
     ink = max((rgb for _, rgb in colours), key=luminance)
     ratio = (luminance(ink) + .05) / (luminance(background) + .05)
     return {"background": background, "brightest_text": ink, "ratio": round(ratio, 2)}
+
+
+def painted_focus(page, radio):
+    """Compare the same checked label and its surrounding surface before and after blur."""
+    label = radio.locator("..").bounding_box()
+    crop = (floor(label["x"]) - 8, floor(label["y"]) - 8,
+            ceil(label["x"] + label["width"]) + 8, ceil(label["y"] + label["height"]) + 8)
+
+    def capture():
+        return Image.open(io.BytesIO(page.screenshot())).convert("RGB").crop(crop)
+
+    focused = capture()
+    radio.blur()
+    blurred = capture()
+    visible = 0
+    for y in range(focused.height):
+        for x in range(focused.width):
+            before, after = focused.getpixel((x, y)), blurred.getpixel((x, y))
+            if before == after:
+                continue
+            low, high = sorted((luminance(before), luminance(after)))
+            if (high + .05) / (low + .05) >= 3:
+                visible += 1
+    # In this static, 1x fixture a solid line one radio width long is a lower bound.
+    return {"pixels_at_3_to_1": visible, "minimum_pixels": ceil(radio.bounding_box()["width"])}
 
 
 def inspect(page, project, output, width):
@@ -48,6 +74,7 @@ def inspect(page, project, output, width):
       };
     }""")
     state["disclosure"] = text_on_panel(page.locator(".proof-notice"))
+    state["focusIndicator"] = painted_focus(page, page.locator("input[value=b]"))
     return state
 
 
@@ -75,7 +102,8 @@ def main():
             prefix = f"{state['width']}px: "
             if state["disclosure"]["ratio"] < 4.5:
                 failures.append(prefix + "revision notice contrast below 4.5")
-            if state["legend"] != state["passes"][:2]:
+            plate_a, plate_b = state["legend"]
+            if state["passes"] != [plate_a, plate_b, plate_a]:
                 failures.append(prefix + "legend colours disagree with passes")
             if state["signature"] != state["passes"][0] or state["selectedLabel"][1] != state["signature"]:
                 failures.append(prefix + "press signature, marigold data or shared selection colour lost")
@@ -83,6 +111,9 @@ def main():
                 failures.append(prefix + "distinct legend shapes lost")
             if not state["keyboardFocus"] or state["note"] != "Iris · Mix before the second pass.":
                 failures.append(prefix + "keyboard selection or mixing note lost")
+            focus = state["focusIndicator"]
+            if focus["pixels_at_3_to_1"] < focus["minimum_pixels"]:
+                failures.append(prefix + "focus indicator is not visible on the checked control")
         if failures:
             raise SystemExit("\n".join(failures))
 

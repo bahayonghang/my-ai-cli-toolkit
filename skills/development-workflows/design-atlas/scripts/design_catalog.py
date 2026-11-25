@@ -305,12 +305,15 @@ def show_colourway(entry: dict, spec: dict, args: argparse.Namespace) -> int:
 
 GENRES = ("editorial", "modern-minimal", "atmospheric", "playful")
 ROUTABLE_KINDS = ("style", "theme", "scene")
-# A collection can be Nordic in subject without asking for Nordic styling.
+# Only a standalone style choice can enter the automatic pool. The skill handles
+# style choices embedded in a broader brief through the named show/apply workflow.
 SCANDINAVIAN_REQUEST = re.compile(
-    r"^(?:nordic|scandinavian|北欧|斯堪的纳维亚)$|\bstyle:scandinavian\b"
-    r"|\b(?:nordic|scandinavian)[ -](?:style|look|aesthetic|design|modern|functionalism)\b"
-    r"|(?:北欧|斯堪的纳维亚)(?:风|设计|美学|现代主义|功能主义)",
-    re.IGNORECASE,
+    r"""(?:
+        (?:(?:please\s+)?(?:use|apply|choose|switch\s+to|give\s+the\s+(?:site|page|app))\s+(?:a\s+|the\s+)?)?
+        (?:style:scandinavian|(?:nordic|scandinavian)(?:[ -](?:style|look|aesthetic|design|modern|functionalism))?)
+      | (?:请)?(?:用|使用|采用|选用|换成)?(?:北欧|斯堪的纳维亚)(?:风格?|设计|美学|现代主义|功能主义)?
+    )[.!。！]?""",
+    re.IGNORECASE | re.VERBOSE,
 )
 ASK = {
     "build", "make", "create", "design", "need", "want", "please", "page", "site",
@@ -1096,7 +1099,7 @@ def route(
 ) -> dict:
     """Pure routing core. Returns a result dict; picks is empty when nothing is routable."""
     records = routable(items, overlay, kinds, include_brands)
-    named_style = SCANDINAVIAN_REQUEST.search(prompt.strip())
+    named_style = SCANDINAVIAN_REQUEST.fullmatch(prompt.strip())
     if not named_style:
         records = [r for r in records if r["id"] != "style:scandinavian"]
     project = project_text(signals)
@@ -1105,7 +1108,9 @@ def route(
     palette = (signals or {}).get("palette") or {}
     genre, genre_hits = infer_genre(prompt, project, hints)
     if named_style and not genre_hits:
-        genre, genre_hits = "modern-minimal", [named_style.group()]
+        named_genre = next((r["genre"] for r in records if r["id"] == "style:scandinavian"), None)
+        if named_genre:
+            genre, genre_hits = named_genre, [named_style.group()]
     df_en, df_zh = doc_frequencies(records)
     scored = [
         score_record(

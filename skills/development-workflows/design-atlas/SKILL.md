@@ -66,10 +66,10 @@ Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`.
 1. **Classify the request.** List or compare only → stop after step 3 output. `audit <path>` → the Audit branch below. Restyle or de-template an existing page → the Restyle branch below. Build new UI → continue to step 2.
 2. **Check for an existing design source.** If the project root has `DESIGN.md` (any letter case), implement from it and skip to step 6. Replace it only when the user asks for a different design; then use `apply --force`, which keeps a timestamped backup.
 3. **Select an entry.**
-   - The user names a brand, style, theme, or scene → `show` it.
+   - The user asks to use a brand, style, theme, or scene → `show` it. Treat a style mentioned as the subject of the content or as an exclusion as part of the brief.
    - The user names BI, 经营分析, 数据看板, or another business scene → `route` or `list --kind scene`; the scene wins.
    - The user names a scene and also a brand or style → list those candidates and wait for a choice. Do not merge two entry bodies into one `DESIGN.md`.
-   - The user asks to compare → `show` each named candidate; for open-ended options use `route --n 3`. Give one reason each and wait for a choice. `style:scandinavian` is opt-in. Offer its offline preview at `assets/reference/scandinavian/index.html` when named. A generic request for simplicity, de-templating or brand preservation keeps the existing design.
+   - The user asks to compare → `show` each named candidate; for open-ended options use `route --n 3`. Give one reason each and wait for a choice. `style:scandinavian` is opt-in. Offer its offline preview at `<skill-dir>/assets/reference/scandinavian/index.html` when requested. A generic request for simplicity, de-templating or brand preservation keeps the existing design.
    - Otherwise (a mood, audience, industry, or no hint) → run `signals` and `route` with the user's words, **take #1 without waiting**, then put the Picks block (chosen entry and one-line reason, 2 alternates, how to switch) at the top of the reply and continue. On `confidence: low` still take #1, say the match is weak, and list the signals used. Headless runs take #1 and do not ask. Rules and template: `references/routing.md`.
    - For a list request, print the grouped `list` output (or a filtered part) and stop.
 4. **Write `DESIGN.md`.** Run `apply` with the project root. Do not hand-copy entry files; `apply` adds the provenance comment and handles overwrite protection. `style:airy-glass` has a colourway dial: `apply` picks its colours from the project's accent token, then from content keywords (pass the user's words as `--prompt`), then falls back to `mint`. It always writes the light group and the dark group together, each with its measured contrast table. Copy the printed `palette:` line into the Picks block. Pass `--palette` only when the user names a colourway or a hue.
@@ -134,4 +134,8 @@ Every page this skill builds must pass `references/anti-slop.md`.
 
 ## Output
 
-Report: the Picks block or the named entry and reason, the colourway and its reason when the entry has a dial, `DESIGN.md` path (and backup path if any), customizations, changed files, token layer location, runtime verification with screenshot paths, the `slop_check` summary line, waivers in force, the review verdict, and remaining gaps.
+For a build, report the Picks block or named entry and reason, the colourway choice when applicable, `DESIGN.md` and any backup path, customizations, changed files, and token layer location.
+
+For audit and restyle, include one line in the **final reply** for each judged finding: `gate ID · location · result — observed evidence`. For a correction, write `fixed` and give the before/after observation under the same conditions. Example: `40 · .notice · fixed — warning text rose from 2.6:1 to 6.1:1 on the plum panel.` Add a Keep line naming the information and behavior you verified at the point of use, including any disclosure shown by an action you exercised.
+
+Include runtime checks with screenshot paths, the `slop_check` summary, waivers and gaps. Attribute an independent verdict to the reviewer's actual response and give its session or evidence location. If that response is unavailable, report `自检，非独立复核` and describe what you checked yourself.
