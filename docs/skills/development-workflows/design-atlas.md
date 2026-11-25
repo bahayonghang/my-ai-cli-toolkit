@@ -36,7 +36,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | `skills/development-workflows/design-atlas/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/development-workflows/design-atlas/references` | 目录 | 11 | 引用资料 |
 | `skills/development-workflows/design-atlas/scripts` | 目录 | 4 | 可执行脚本 |
-| `skills/development-workflows/design-atlas/tests` | 目录 | 38 | 自动化测试 |
+| `skills/development-workflows/design-atlas/tests` | 目录 | 46 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 

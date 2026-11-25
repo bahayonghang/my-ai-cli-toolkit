@@ -52,7 +52,7 @@ Leave these alone:
 2. Whatever blocks the page's main task.
 3. House, then Reflex, then Finish.
 
-Change the few things with the largest effect. Do not rebuild a page that is already clear in order to satisfy gates. Gate 58's word ceiling is met by cutting restatement, not by cutting a constraint, an error, or a price.
+Change the few things with the largest effect. Do not rebuild a page that is already clear in order to satisfy gates. Use gate 58’s word guide on promotional prose. Keep task text, prices, labels and record actions. For a dense directory, use gate 3’s matched viewport counts and action checks to explain the space a change costs or saves.
 
 After diagnosis, use [craft-polish.md](craft-polish.md) only for applicable feedback, overlays, type, dynamic content or surface findings. Record the selection sheet and n/a reasons. Its recipes keep the selected design and existing gate ownership; they do not authorise glass, bounce, new dependencies or business changes.
 
