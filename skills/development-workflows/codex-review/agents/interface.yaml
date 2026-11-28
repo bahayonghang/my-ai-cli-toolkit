@@ -1,0 +1,15 @@
+interface:
+  display_name: "Codex Review"
+  short_description: "用本地 Codex CLI 审查全仓、未提交改动、提交、基线或 PR，并留存 Markdown。"
+  default_prompt: "使用 $codex-review 调用本地 Codex CLI 审查指定范围，返回报告路径、主要发现与覆盖限制。"
+compatibility:
+  canonical_format: agent-skills-v1
+  adapter_targets: [openai, claude, generic, agent-skills-compatible]
+  execution:
+    entrypoint: scripts/review.py
+    dependencies: [Python, Git, Codex CLI]
+    pr: GitHub CLI
+  permissions:
+    filesystem: Read target evidence and persist a new report under reports/codex-review.
+    network: Configured account for the Codex model, plus GitHub reads for PR scope.
+  degradation: Nonzero status and a partial or failed report when evidence or the CLI is unavailable.

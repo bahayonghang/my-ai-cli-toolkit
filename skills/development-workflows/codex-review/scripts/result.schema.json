@@ -1,0 +1,58 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P0",
+              "P1",
+              "P2",
+              "P3"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "layer": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "problem": {
+            "type": "string"
+          },
+          "verify": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "priority",
+          "path",
+          "layer",
+          "line",
+          "problem",
+          "verify"
+        ]
+      }
+    },
+    "limits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "findings",
+    "limits"
+  ]
+}

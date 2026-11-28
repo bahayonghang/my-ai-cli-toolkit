@@ -1,0 +1,36 @@
+{
+  "evidence_kind": "provider_backed",
+  "ok": true,
+  "date": "2026-11-28",
+  "host": "Windows",
+  "cli": "codex-cli 0.172.0",
+  "fixture": {
+    "goal": "double(n) returns two times n",
+    "regression": "return n + 2",
+    "runtime_check": "double(3) == 5, expected 6",
+    "reported_location": "mathutil.py:3",
+    "modes": [
+      "worktree",
+      "repo",
+      "commit",
+      "base"
+    ],
+    "sample": "example-review.md"
+  },
+  "public_pull_requests": [
+    {
+      "url": "https://github.com/cli/cli/pull/15172",
+      "fork": false,
+      "status": "complete"
+    },
+    {
+      "url": "https://github.com/cli/cli/pull/14854",
+      "fork": true,
+      "status": "complete"
+    }
+  ],
+  "limits": [
+    "Private GitHub and Enterprise credentials untested",
+    "No real multi-host activation or blinded quality benchmark"
+  ]
+}

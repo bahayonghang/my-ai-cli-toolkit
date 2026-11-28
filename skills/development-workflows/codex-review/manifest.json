@@ -1,0 +1,36 @@
+{
+  "name": "codex-review",
+  "version": "0.1.0",
+  "owner": "bahayonghang/my-ai-cli-toolkit",
+  "updated_at": "2026-11-28",
+  "status": "local",
+  "maturity_tier": "Production",
+  "context_budget_tier": "production",
+  "release_gates": [
+    "trigger",
+    "unit",
+    "live-cli",
+    "local-install",
+    "just-ci"
+  ],
+  "intent": {
+    "job_to_be_done": "Run a local Codex code review and hand another agent a persistent, scoped Markdown report.",
+    "target_users": [
+      "repository developers",
+      "reviewing agents"
+    ],
+    "inputs": [
+      "Git working directory",
+      "scope",
+      "optional review focus"
+    ],
+    "outputs": [
+      "versioned-scope Markdown report"
+    ],
+    "exclusions": [
+      "code fixes",
+      "remote PR comments",
+      "merge or deployment"
+    ]
+  }
+}
