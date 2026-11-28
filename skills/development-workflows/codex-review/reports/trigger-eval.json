@@ -1,0 +1,158 @@
+{
+  "ok": true,
+  "threshold": 0.65,
+  "description_concepts": [
+    "action",
+    "reviewer"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "使用 GPT 审查",
+        "family": "default",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "action",
+          "reviewer"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "让 Codex 审查整个仓库",
+        "family": "default",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "action",
+          "reviewer"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Codex review PR #42",
+        "family": "default",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "action",
+          "reviewer"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "使用Codex审查这个提交",
+        "family": "default",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "action",
+          "reviewer"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "GPT review my uncommitted changes",
+        "family": "default",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "action",
+          "reviewer"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "写 PR 描述",
+        "family": "default",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "解释 GPT 的输出",
+        "family": "default",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "reviewer"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "运行单元测试",
+        "family": "default",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "帮我审查这些 tickets",
+        "family": "default",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我审查这个 PR",
+        "family": "default",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Configure Codex CLI",
+        "family": "default",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "reviewer"
+        ],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

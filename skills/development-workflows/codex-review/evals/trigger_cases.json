@@ -1,0 +1,38 @@
+{
+  "positive_concepts": {
+    "reviewer": [
+      "GPT",
+      "Codex",
+      "使用GPT",
+      "使用Codex",
+      "让Codex"
+    ],
+    "action": [
+      "审查",
+      "review",
+      "reviewing"
+    ]
+  },
+  "description_required_concepts": [
+    "reviewer",
+    "action"
+  ],
+  "recommended_threshold": 0.65,
+  "should_trigger": [
+    "使用 GPT 审查",
+    "让 Codex 审查整个仓库",
+    "Codex review PR #42",
+    "使用Codex审查这个提交",
+    "GPT review my uncommitted changes"
+  ],
+  "near_neighbor": [
+    "帮我审查这些 tickets",
+    "帮我审查这个 PR",
+    "Configure Codex CLI"
+  ],
+  "should_not_trigger": [
+    "写 PR 描述",
+    "解释 GPT 的输出",
+    "运行单元测试"
+  ]
+}

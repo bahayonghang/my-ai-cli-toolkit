@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 25 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 26 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -41,8 +41,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Development Workflows
 
-`development-workflows` · 7 skills
+`development-workflows` · 8 skills
 
+- [codex-review](/en/skills/development-workflows/codex-review) — Use when the user asks for GPT or Codex to review code with the local Codex CLI (使用 GPT 审查、让 Codex 审查、codex review).
 - [design-atlas](/en/skills/development-workflows/design-atlas) — Offline UI catalog of 203 design languages (84 brands, 68 styles, 50 material themes, 1 business scene). Picks one automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it (web or GPUI), and checks the result against anti-AI-slop gates.
 - [html-artifact](/en/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts (single-file by default, split bundles when oversized) for complex, reviewable, or shareable work outputs.
 - [in-your-own-words](/en/skills/development-workflows/in-your-own-words) — Restate in your own words what you think the user's goals are, what underlying problem they are trying to solve, what observable success looks like, and any high-leverage assumptions or open forks, then stop for confirmation before editing files or acting.

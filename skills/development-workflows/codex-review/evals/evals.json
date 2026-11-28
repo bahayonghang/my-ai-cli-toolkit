@@ -1,0 +1,53 @@
+{
+  "skill_name": "codex-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "使用 GPT 审查还没有提交的改动，关注交互有没有反馈。",
+      "expected_output": "Run a local worktree review and return the persisted report.",
+      "files": [],
+      "assertions": [
+        "Includes staged, unstaged and untracked layers",
+        "Passes the UX focus and distinguishes runtime observations"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "让 Codex 审查整个仓库。",
+      "expected_output": "Review current tracked and non-ignored source, with coverage and gaps.",
+      "files": [],
+      "assertions": [
+        "Includes unchanged source",
+        "Returns a report path and discloses skipped inputs"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "用 Codex review https://github.com/example/app/pull/42。",
+      "expected_output": "Resolve the PR and review its pinned change.",
+      "files": [],
+      "assertions": [
+        "Reports base, merge-base and head",
+        "Leaves the current checkout intact"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我审查父 spec 和 tickets 的依赖。",
+      "expected_output": "Route to ticket review.",
+      "files": [],
+      "assertions": [
+        "Does not run the Codex CLI or create a code review report"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "给这个 PR 写一段描述。",
+      "expected_output": "Route to PR writing.",
+      "files": [],
+      "assertions": [
+        "Does not invoke the code reviewer"
+      ]
+    }
+  ]
+}

@@ -52,6 +52,7 @@ ast-grep-workspace/
 
 # skill-session-review output (private session-derived reports)
 reports/skill-session-review/
+reports/codex-review/
 
 out/
 skills-lock.json
